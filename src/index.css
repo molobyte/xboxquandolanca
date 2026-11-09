@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Xbox Official Store Typography (Bahnschrift + Segoe UI Variable)
+   ========================================================================== */
+
+/* Bahnschrift - Fonte de Títulos, Badges, Botões e Destaques do Xbox */
+@font-face {
+  font-family: 'Bahnschrift';
+  font-style: normal;
+  font-weight: 300 700;
+  src: local('Bahnschrift'),
+       url('https://assets-xbxweb.xbox.com/xbox-web/static/media/Bahnschrift.30b0e116.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Bahnschrift Light';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Bahnschrift Light'), local('Bahnschrift'),
+       url('https://assets-xbxweb.xbox.com/xbox-web/static/media/Bahnschrift.30b0e116.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Bahnschrift Regular';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Bahnschrift Regular'), local('Bahnschrift'),
+       url('https://assets-xbxweb.xbox.com/xbox-web/static/media/Bahnschrift.30b0e116.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Bahnschrift Semibold';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Bahnschrift Semibold'), local('Bahnschrift'),
+       url('https://assets-xbxweb.xbox.com/xbox-web/static/media/Bahnschrift.30b0e116.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Bahnschrift Bold';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Bahnschrift Bold'), local('Bahnschrift'),
+       url('https://assets-xbxweb.xbox.com/xbox-web/static/media/Bahnschrift.30b0e116.woff') format('woff');
+}
+
+/* Segoe Sans Variable - Texto de corpo e subtítulos */
+@font-face {
+  font-family: 'Segoe Sans Variable Display';
+  font-style: normal;
+  font-variation-settings: 'opsz' 36;
+  font-weight: 300 700;
+  src: local('Segoe Sans Variable Display'), local('Segoe UI Variable Display'),
+       url('https://assets-xbxweb.xbox.com/xbox-web/static/media/Segoe-Sans-Variable-2-021.82915b6a.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Segoe Sans Variable Text';
+  font-style: normal;
+  font-variation-settings: 'opsz' 10.5;
+  font-weight: 300 700;
+  src: local('Segoe Sans Variable Text'), local('Segoe UI Variable Text'), local('Segoe UI'),
+       url('https://assets-xbxweb.xbox.com/xbox-web/static/media/Segoe-Sans-Variable-2-021.82915b6a.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'SegoeUI';
+  font-weight: 400;
+  src: local('Segoe UI'),
+       url('https://assets-xbxweb.xbox.com/xbox-web/static/media/normal.1a84982f.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'SegoeUI';
+  font-weight: 600;
+  src: local('Segoe UI Semibold'), local('Segoe UI'),
+       url('https://assets-xbxweb.xbox.com/xbox-web/static/media/semibold.c408ee08.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'SegoeUI';
+  font-weight: 700;
+  src: local('Segoe UI Bold'), local('Segoe UI'),
+       url('https://assets-xbxweb.xbox.com/xbox-web/static/media/bold.8be8c837.woff2') format('woff2');
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-xbox-bg font-sans text-slate-100 antialiased;
+  }
+  ::selection {
+    @apply bg-xbox-green text-white;
+  }
+}
+
+@layer utilities {
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(circle at center, black 0%, transparent 70%);
+  }
+  .capitalize-first::first-letter {
+    text-transform: uppercase;
+  }
+}
