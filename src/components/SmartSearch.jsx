@@ -15,7 +15,9 @@ export default function SmartSearch({ size = 'lg', autoFocus = false }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const [error, setError] = useState('');
+  const [maxListHeight, setMaxListHeight] = useState(340);
   const wrapRef = useRef(null);
+  const activeItemRef = useRef(null);
   const listId = useId();
 
   const directId = extractProductId(query);
@@ -56,6 +58,36 @@ export default function SmartSearch({ size = 'lg', autoFocus = false }) {
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
   }, []);
+
+  // Calcula dinamicamente a altura máxima do menu para nunca vazar da tela
+  useEffect(() => {
+    if (!open || !wrapRef.current) return;
+
+    const updateMaxHeight = () => {
+      if (!wrapRef.current) return;
+      const rect = wrapRef.current.getBoundingClientRect();
+      const margin = 24; // Margem de segurança inferior
+      const available = window.innerHeight - rect.bottom - margin;
+      // Limita confortavelmente a no máximo 340px (cerca de 5 itens) e no mínimo 140px, respeitando a tela disponível
+      const safeHeight = Math.max(140, Math.min(340, available));
+      setMaxListHeight(safeHeight);
+    };
+
+    updateMaxHeight();
+    window.addEventListener('resize', updateMaxHeight);
+    window.addEventListener('scroll', updateMaxHeight, true);
+    return () => {
+      window.removeEventListener('resize', updateMaxHeight);
+      window.removeEventListener('scroll', updateMaxHeight, true);
+    };
+  }, [open, items.length, query]);
+
+  // Mantém o item ativo sempre visível ao navegar pelo teclado
+  useEffect(() => {
+    if (active >= 0 && activeItemRef.current) {
+      activeItemRef.current.scrollIntoView({ block: 'nearest' });
+    }
+  }, [active]);
 
   const go = (id) => {
     setOpen(false);
@@ -157,9 +189,17 @@ export default function SmartSearch({ size = 'lg', autoFocus = false }) {
           ) : loading && items.length === 0 ? (
             <p className="px-4 py-4 text-sm text-white/50">Buscando…</p>
           ) : (
-            <ul className="max-h-[60vh] overflow-y-auto py-1">
+            <ul
+              className="custom-scrollbar overflow-y-auto py-1 overscroll-contain"
+              style={{ maxHeight: `${maxListHeight}px` }}
+            >
               {items.map((item, i) => (
-                <li key={item.id} role="option" aria-selected={i === active}>
+                <li
+                  key={item.id}
+                  ref={i === active ? activeItemRef : null}
+                  role="option"
+                  aria-selected={i === active}
+                >
                   <button
                     type="button"
                     onMouseDown={(e) => e.preventDefault()}
