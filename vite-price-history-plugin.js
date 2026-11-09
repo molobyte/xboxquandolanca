@@ -127,6 +127,42 @@ export function extractPriceData(html, sourceUrl) {
   };
 }
 
+const REQUEST_HEADERS = {
+  'User-Agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+};
+
+async function fetchDekuItemHtml(itemPathOrSlug) {
+  const cleanPath = itemPathOrSlug.startsWith('/items/')
+    ? itemPathOrSlug.split('?')[0]
+    : `/items/${itemPathOrSlug.replace(/^\/+/, '').split('?')[0]}`;
+  const targetUrl = `https://www.dekudeals.com${cleanPath}?country=br&platform=all`;
+
+  const res = await fetch(targetUrl, {
+    headers: REQUEST_HEADERS,
+    redirect: 'follow',
+  });
+
+  if (!res.ok || !res.url.includes('/items/')) return null;
+
+  // Caso tenha ocorrido redirecionamento para outro slug sem manter country=br e platform=all
+  if (!res.url.includes('country=br') || !res.url.includes('platform=all')) {
+    const redirectedUrl = new URL(res.url);
+    redirectedUrl.searchParams.set('country', 'br');
+    redirectedUrl.searchParams.set('platform', 'all');
+    const retryRes = await fetch(redirectedUrl.toString(), {
+      headers: REQUEST_HEADERS,
+      redirect: 'follow',
+    });
+    if (!retryRes.ok) return null;
+    return { html: await retryRes.text(), url: retryRes.url };
+  }
+
+  return { html: await res.text(), url: res.url };
+}
+
 export async function fetchPriceHistoryFromDeku({ slug, query }) {
   const cacheKey = (slug || '') + '::' + (query || '');
   if (CACHE.has(cacheKey)) {
@@ -143,17 +179,12 @@ export async function fetchPriceHistoryFromDeku({ slug, query }) {
     if (fullSlug && !candidates.includes(fullSlug)) candidates.push(fullSlug);
   }
 
-  // 1. Tenta buscar direto por cada slug candidato
+  // 1. Tenta buscar direto por cada slug candidato (forçando country=br)
   for (const candidate of candidates) {
     try {
-      const directUrl = `https://www.dekudeals.com/items/${candidate}?platform=all`;
-      const res = await fetch(directUrl, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
-        redirect: 'follow',
-      });
-      if (res.ok && res.url.includes('/items/')) {
-        const html = await res.text();
-        const parsed = extractPriceData(html, res.url);
+      const result = await fetchDekuItemHtml(candidate);
+      if (result) {
+        const parsed = extractPriceData(result.html, result.url);
         if (parsed) {
           CACHE.set(cacheKey, parsed);
           return parsed;
@@ -164,35 +195,46 @@ export async function fetchPriceHistoryFromDeku({ slug, query }) {
     }
   }
 
-  // 2. Se slugs diretos não funcionaram, tenta busca
-  const searchQuery = query ? cleanTitle(query) : slug.replace(/-/g, ' ');
-  const searchUrl = `https://www.dekudeals.com/search?q=${encodeURIComponent(searchQuery)}&platform=all`;
+  // 2. Se slugs diretos não funcionaram, tenta busca no Deku Deals
+  const searchQuery = query ? cleanTitle(query) : (slug || '').replace(/-/g, ' ');
+  if (!searchQuery) return null;
+
+  const searchUrl = `https://www.dekudeals.com/search?q=${encodeURIComponent(searchQuery)}&country=br&platform=all`;
 
   try {
     const searchRes = await fetch(searchUrl, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+      headers: REQUEST_HEADERS,
       redirect: 'follow',
     });
 
     if (searchRes.ok) {
       if (searchRes.url.includes('/items/')) {
-        const html = await searchRes.text();
-        const parsed = extractPriceData(html, searchRes.url);
-        if (parsed) {
-          CACHE.set(cacheKey, parsed);
-          return parsed;
+        // Se redirecionou direto para a página do item, garante country=br&platform=all
+        if (searchRes.url.includes('country=br') && searchRes.url.includes('platform=all')) {
+          const html = await searchRes.text();
+          const parsed = extractPriceData(html, searchRes.url);
+          if (parsed) {
+            CACHE.set(cacheKey, parsed);
+            return parsed;
+          }
+        } else {
+          const redirectedPath = new URL(searchRes.url).pathname;
+          const result = await fetchDekuItemHtml(redirectedPath);
+          if (result) {
+            const parsed = extractPriceData(result.html, result.url);
+            if (parsed) {
+              CACHE.set(cacheKey, parsed);
+              return parsed;
+            }
+          }
         }
       } else {
         const searchHtml = await searchRes.text();
-        const itemMatch = searchHtml.match(/href=["'](\/items\/[^"']+)["']/);
+        const itemMatch = searchHtml.match(/href=["'](\/items\/[^"'?]+)["']/);
         if (itemMatch) {
-          const itemUrl = `https://www.dekudeals.com${itemMatch[1]}?platform=all`;
-          const itemRes = await fetch(itemUrl, {
-            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
-          });
-          if (itemRes.ok) {
-            const itemHtml = await itemRes.text();
-            const parsed = extractPriceData(itemHtml, itemUrl);
+          const result = await fetchDekuItemHtml(itemMatch[1]);
+          if (result) {
+            const parsed = extractPriceData(result.html, result.url);
             if (parsed) {
               CACHE.set(cacheKey, parsed);
               return parsed;
@@ -208,39 +250,44 @@ export async function fetchPriceHistoryFromDeku({ slug, query }) {
   return null;
 }
 
+async function handlePriceHistoryMiddleware(req, res) {
+  try {
+    const urlObj = new URL(req.url, 'http://localhost');
+    const slug = urlObj.searchParams.get('slug') || '';
+    const query = urlObj.searchParams.get('query') || '';
+
+    if (!slug && !query) {
+      res.statusCode = 400;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ success: false, error: 'slug ou query é obrigatório' }));
+      return;
+    }
+
+    const data = await fetchPriceHistoryFromDeku({ slug, query });
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    if (data) {
+      res.end(JSON.stringify({ success: true, data }));
+    } else {
+      res.end(JSON.stringify({ success: false, error: 'Histórico não encontrado' }));
+    }
+  } catch (err) {
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.end(JSON.stringify({ success: false, error: err.message }));
+  }
+}
+
 export function priceHistoryPlugin() {
   return {
     name: 'price-history-proxy',
     configureServer(server) {
-      server.middlewares.use('/api/price-history', async (req, res) => {
-        try {
-          const urlObj = new URL(req.url, 'http://localhost');
-          const slug = urlObj.searchParams.get('slug') || '';
-          const query = urlObj.searchParams.get('query') || '';
-
-          if (!slug && !query) {
-            res.statusCode = 400;
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify({ success: false, error: 'slug ou query é obrigatório' }));
-            return;
-          }
-
-          const data = await fetchPriceHistoryFromDeku({ slug, query });
-          res.statusCode = 200;
-          res.setHeader('Content-Type', 'application/json');
-          res.setHeader('Access-Control-Allow-Origin', '*');
-          if (data) {
-            res.end(JSON.stringify({ success: true, data }));
-          } else {
-            res.end(JSON.stringify({ success: false, error: 'Histórico não encontrado' }));
-          }
-        } catch (err) {
-          res.statusCode = 500;
-          res.setHeader('Content-Type', 'application/json');
-          res.setHeader('Access-Control-Allow-Origin', '*');
-          res.end(JSON.stringify({ success: false, error: err.message }));
-        }
-      });
+      server.middlewares.use('/api/price-history', handlePriceHistoryMiddleware);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use('/api/price-history', handlePriceHistoryMiddleware);
     },
   };
 }
