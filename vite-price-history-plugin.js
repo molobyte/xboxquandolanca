@@ -280,44 +280,14 @@ async function handlePriceHistoryMiddleware(req, res) {
   }
 }
 
-import { proxyXboxImage } from './api/image-proxy.js';
-
-async function handleImageProxyMiddleware(req, res) {
-  try {
-    const urlObj = new URL(req.url, 'http://localhost');
-    const targetUrl = (urlObj.searchParams.get('url') || '').trim();
-    const result = await proxyXboxImage(targetUrl);
-
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    if (result.error) {
-      res.statusCode = result.status || 400;
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ error: result.error }));
-      return;
-    }
-
-    res.statusCode = 200;
-    res.setHeader('Content-Type', result.contentType);
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    res.end(result.buffer);
-  } catch (err) {
-    res.statusCode = 500;
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.end(JSON.stringify({ error: err.message }));
-  }
-}
-
 export function priceHistoryPlugin() {
   return {
     name: 'price-history-proxy',
     configureServer(server) {
       server.middlewares.use('/api/price-history', handlePriceHistoryMiddleware);
-      server.middlewares.use('/api/image-proxy', handleImageProxyMiddleware);
     },
     configurePreviewServer(server) {
       server.middlewares.use('/api/price-history', handlePriceHistoryMiddleware);
-      server.middlewares.use('/api/image-proxy', handleImageProxyMiddleware);
     },
   };
 }

@@ -1,51 +1,33 @@
 import { useEffect, useRef, useState } from 'react';
-import { ImageOff, Sparkles, Layers, Eye } from 'lucide-react';
-import { generateOrGetDepthMap, getProxiedImageUrl } from '../lib/depthEstimation.js';
-import { createDepthParallaxRenderer } from '../lib/depthWebGL.js';
-
-function loadImageElement(src, crossOrigin = 'anonymous') {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    if (crossOrigin) img.crossOrigin = crossOrigin;
-    img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error('Falha ao carregar imagem para textura WebGL'));
-    img.src = src;
-  });
-}
+import { ImageOff } from 'lucide-react';
 
 /**
- * Capa com efeito 3D Parallax Hover + Acabamento de Figurinha Holográfica
- * + Depth Estimation (Depth Anything V2 via WebGPU/WASM + Raymarched WebGL Parallax Occlusion).
+ * Capa com efeito 3D Parallax Hover e reflexo holográfico sutil.
  *
- * Arquitetura A (Vercel Free / Custo Zero):
- * 1. Exibe a capa imediatamente com 3D Tilt + Holografia (0ms de espera).
- * 2. Em segundo plano (Web Worker + Cache IndexedDB), gera o mapa de profundidade via Depth Anything V2.
- * 3. Quando pronto, ativa o shader WebGL que separa fisicamente o primeiro plano (personagem/logo) do fundo.
+ * Características técnicas:
+ * - Motor de interpolação (LERP) via requestAnimationFrame direto em CSS Variables (zero re-renders no React).
+ * - Para o loop de animação automaticamente quando em repouso (0% de uso de CPU ocioso).
+ * - Parallax interno na imagem + iluminação especular suave + reflexo iridescente discreto + borda 3D.
+ * - Suporte a toque em dispositivos móveis sem bloquear o scroll vertical da página.
+ * - Respeita `prefers-reduced-motion: reduce`.
  */
 export default function HoloTiltCover({
   src,
   alt,
   isSquare = false,
-  maxTilt = 13,
-  scale = 1.035,
+  maxTilt = 12,
+  scale = 1.03,
   className = '',
 }) {
   const containerRef = useRef(null);
   const cardRef = useRef(null);
-  const glCanvasRef = useRef(null);
-  const glRendererRef = useRef(null);
   const rafRef = useRef(null);
-  const showDepthRef = useRef(false);
 
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
 
-  // Estado do pipeline Depth Anything V2: 'idle' | 'loading' | 'ready' | 'unsupported'
-  const [depthState, setDepthState] = useState({ status: 'idle', progress: null });
-  const [showDepthMap, setShowDepthMap] = useState(false);
-
-  // Estado físico da animação (mantido em ref para 60/120fps sem re-renders do React)
+  // Estado físico da animação (mantido em ref para evitar re-renderizações a 60/120fps)
   const physicsRef = useRef({
     rx: 0,
     ry: 0,
@@ -64,30 +46,10 @@ export default function HoloTiltCover({
     active: false,
   });
 
-  useEffect(() => {
-    showDepthRef.current = showDepthMap;
-    if (glRendererRef.current) {
-      const s = physicsRef.current;
-      glRendererRef.current.render({
-        px: s.px,
-        py: s.py,
-        intensity: s.intensity,
-        showDepth: showDepthMap,
-      });
-    }
-  }, [showDepthMap]);
-
   // Reinicia estados quando a URL da capa muda
   useEffect(() => {
     setFailed(false);
     setLoaded(false);
-    setShowDepthMap(false);
-    setDepthState({ status: 'idle', progress: null });
-
-    if (glRendererRef.current) {
-      glRendererRef.current.destroy();
-      glRendererRef.current = null;
-    }
   }, [src]);
 
   // Detecta preferência do sistema por movimento reduzido
@@ -102,72 +64,6 @@ export default function HoloTiltCover({
       return () => mq.removeEventListener('change', onChange);
     }
   }, []);
-
-  // Pipeline em segundo plano: Depth Anything V2 + Textura WebGL
-  useEffect(() => {
-    if (!src || failed || reducedMotion) return;
-
-    let cancelled = false;
-
-    async function initDepthPipeline() {
-      try {
-        setDepthState({ status: 'loading', progress: null });
-
-        const proxiedCoverUrl = getProxiedImageUrl(src);
-
-        // Carrega em paralelo a imagem com CORS liberado e o Mapa de Profundidade (IndexedDB ou Web Worker IA)
-        const [corsCoverImg, depthDataUrl] = await Promise.all([
-          loadImageElement(proxiedCoverUrl, 'anonymous'),
-          generateOrGetDepthMap(src, {
-            onStatus: (info) => {
-              if (cancelled) return;
-              if (info.stage === 'downloading' && typeof info.progress === 'number') {
-                setDepthState({ status: 'loading', progress: info.progress });
-              } else if (info.stage === 'inferring') {
-                setDepthState({ status: 'loading', progress: null });
-              }
-            },
-          }),
-        ]);
-
-        if (cancelled || !depthDataUrl || !glCanvasRef.current) return;
-
-        const depthImg = await loadImageElement(depthDataUrl, null);
-        if (cancelled || !glCanvasRef.current) return;
-
-        const renderer = createDepthParallaxRenderer(glCanvasRef.current, corsCoverImg, depthImg);
-        if (!renderer) {
-          setDepthState({ status: 'unsupported', progress: null });
-          return;
-        }
-
-        glRendererRef.current = renderer;
-        const s = physicsRef.current;
-        renderer.render({
-          px: s.px,
-          py: s.py,
-          intensity: s.intensity,
-          showDepth: showDepthRef.current,
-        });
-
-        setDepthState({ status: 'ready', progress: null });
-      } catch {
-        if (!cancelled) {
-          setDepthState({ status: 'unsupported', progress: null });
-        }
-      }
-    }
-
-    initDepthPipeline();
-
-    return () => {
-      cancelled = true;
-      if (glRendererRef.current) {
-        glRendererRef.current.destroy();
-        glRendererRef.current = null;
-      }
-    };
-  }, [src, failed, reducedMotion]);
 
   // Limpa requestAnimationFrame ao desmontar
   useEffect(() => {
@@ -191,21 +87,12 @@ export default function HoloTiltCover({
     el.style.setProperty('--py', s.py.toFixed(3));
     el.style.setProperty('--gx', `${s.gx.toFixed(1)}%`);
     el.style.setProperty('--gy', `${s.gy.toFixed(1)}%`);
-    el.style.setProperty('--holo-opacity', (s.intensity * (0.55 + hyp * 0.45)).toFixed(3));
-    el.style.setProperty('--glare-opacity', (s.intensity * 0.85).toFixed(3));
+    // Opacidade holográfica bem sutil para não interferir na leitura da arte da capa
+    el.style.setProperty('--holo-opacity', (s.intensity * (0.18 + hyp * 0.16)).toFixed(3));
+    el.style.setProperty('--glare-opacity', (s.intensity * 0.55).toFixed(3));
     el.style.setProperty('--angle', `${angle.toFixed(1)}deg`);
     el.style.setProperty('--shadow-x', `${(-s.ry * 1.1).toFixed(1)}px`);
     el.style.setProperty('--shadow-y', `${(18 + s.rx * 0.9).toFixed(1)}px`);
-
-    // Atualiza o shader WebGL de profundidade 3D sincronizado a cada frame
-    if (glRendererRef.current) {
-      glRendererRef.current.render({
-        px: s.px,
-        py: s.py,
-        intensity: s.intensity,
-        showDepth: showDepthRef.current,
-      });
-    }
   };
 
   const tick = () => {
@@ -299,7 +186,6 @@ export default function HoloTiltCover({
   };
 
   const aspectClass = isSquare ? 'aspect-square' : 'aspect-[2/3]';
-  const isDepthReady = depthState.status === 'ready';
 
   if (!src || failed) {
     return (
@@ -321,85 +207,34 @@ export default function HoloTiltCover({
       onTouchMove={handleTouchMove}
       onTouchEnd={resetTilt}
       onTouchCancel={resetTilt}
-      className={`group/holo holo-tilt-perspective select-none ${aspectClass} w-full ${className}`}
+      className={`holo-tilt-perspective select-none ${aspectClass} w-full ${className}`}
     >
       <div
         ref={cardRef}
         className="holo-tilt-card relative h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5"
       >
-        {/* Camada 1A: Imagem base instantânea (usada imediatamente e como fallback antes do WebGL ficar pronto) */}
+        {/* Camada 1: Imagem da capa com contra-parallax interno suave */}
         <img
           src={src}
           alt={alt}
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
           draggable={false}
-          className={`holo-tilt-image h-full w-full object-cover transition-opacity duration-500 ${
-            isDepthReady ? 'opacity-0' : 'opacity-100'
-          }`}
+          className="holo-tilt-image h-full w-full object-cover"
         />
 
-        {/* Camada 1B: Renderizador WebGL 3D Depth Parallax (Depth Anything V2 Raymarching) */}
-        <canvas
-          ref={glCanvasRef}
-          aria-hidden="true"
-          className={`pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
-            isDepthReady ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
-
-        {/* Camadas ópticas holográficas */}
+        {/* Camadas ópticas sutis (ativas após o carregamento da imagem e quando sem movimento reduzido) */}
         {loaded && !reducedMotion && (
           <>
-            {/* Camada 2: Acabamento Foil Holográfico Iridescente */}
+            {/* Camada 2: Acabamento Foil Holográfico discreto concentrado apenas próximo ao reflexo */}
             <div className="holo-tilt-foil pointer-events-none absolute inset-0 rounded-2xl" />
 
-            {/* Camada 3: Reflexo de luz especular dinâmico */}
+            {/* Camada 3: Reflexo de luz especular suave que acompanha o cursor */}
             <div className="holo-tilt-glare pointer-events-none absolute inset-0 rounded-2xl" />
 
             {/* Camada 4: Borda chanfrada 3D com iluminação direcional */}
             <div className="holo-tilt-rim pointer-events-none absolute inset-0 rounded-2xl" />
           </>
-        )}
-
-        {/* Indicador discreto do status da IA de Profundidade / Botão para inspecionar o Depth Map */}
-        {!reducedMotion && depthState.status === 'loading' && (
-          <div className="pointer-events-none absolute bottom-2.5 right-2.5 z-20 flex items-center gap-1.5 rounded-full border border-white/15 bg-black/70 px-2.5 py-1 text-[10px] font-action font-semibold uppercase tracking-wider text-white/80 backdrop-blur-md">
-            <Sparkles className="h-3 w-3 animate-pulse text-xbox-neon" />
-            <span>
-              {typeof depthState.progress === 'number'
-                ? `IA 3D ${depthState.progress}%`
-                : 'Gerando 3D IA…'}
-            </span>
-          </div>
-        )}
-
-        {!reducedMotion && isDepthReady && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowDepthMap((v) => !v);
-            }}
-            title={
-              showDepthMap
-                ? 'Voltar para a arte da capa com Parallax 3D'
-                : 'Visualizar mapa de profundidade gerado pela IA (Depth Anything V2)'
-            }
-            className="absolute bottom-2.5 right-2.5 z-20 flex items-center gap-1.5 rounded-full border border-white/15 bg-black/75 px-2.5 py-1 text-[10px] font-action font-semibold uppercase tracking-wider text-white/90 opacity-0 shadow-lg backdrop-blur-md transition duration-200 hover:border-xbox-neon/60 hover:bg-black/90 hover:text-xbox-neon group-hover/holo:opacity-100 focus:opacity-100"
-          >
-            {showDepthMap ? (
-              <>
-                <Eye className="h-3 w-3 text-xbox-neon" />
-                <span>Ver Capa 3D</span>
-              </>
-            ) : (
-              <>
-                <Layers className="h-3 w-3 text-xbox-neon" />
-                <span>3D IA · Ver Mapa</span>
-              </>
-            )}
-          </button>
         )}
       </div>
     </div>

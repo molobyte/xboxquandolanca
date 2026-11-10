@@ -163,68 +163,73 @@
 
   /* Parallax interno na imagem para criar volume e janela de profundidade */
   .holo-tilt-image {
-    transform: scale(calc(1 + 0.045 * var(--glare-opacity)))
-      translate3d(calc(var(--px) * -7px), calc(var(--py) * -7px), 0);
+    transform: scale(calc(1 + 0.035 * var(--glare-opacity)))
+      translate3d(calc(var(--px) * -5px), calc(var(--py) * -5px), 0);
     will-change: transform;
     backface-visibility: hidden;
   }
 
-  /* Efeito Foil Holográfico Iridescente (estilo figurinha colecionável) */
+  /* Efeito Foil Holográfico Iridescente Sutil (concentrado apenas onde a luz reflete) */
   .holo-tilt-foil {
     opacity: var(--holo-opacity);
     background-image:
       repeating-linear-gradient(
         115deg,
         rgba(255, 255, 255, 0) 0%,
-        rgba(255, 110, 199, 0.16) 7%,
-        rgba(255, 222, 89, 0.16) 14%,
-        rgba(82, 214, 39, 0.18) 21%,
-        rgba(56, 189, 248, 0.18) 28%,
-        rgba(168, 85, 247, 0.16) 35%,
+        rgba(255, 130, 200, 0.09) 7%,
+        rgba(255, 225, 110, 0.08) 14%,
+        rgba(82, 214, 39, 0.10) 21%,
+        rgba(80, 195, 250, 0.10) 28%,
+        rgba(175, 110, 250, 0.09) 35%,
         rgba(255, 255, 255, 0) 42%
-      ),
-      radial-gradient(
-        farthest-corner circle at var(--gx) var(--gy),
-        rgba(255, 255, 255, 0.32) 0%,
-        rgba(82, 214, 39, 0.12) 38%,
-        transparent 75%
       );
-    background-size: 260% 260%, 100% 100%;
-    background-position: calc(var(--gx) * 0.85) calc(var(--gy) * 0.85), center;
-    mix-blend-mode: color-dodge;
-    filter: brightness(1.05) contrast(1.08);
+    background-size: 240% 240%;
+    background-position: calc(var(--gx) * 0.75) calc(var(--gy) * 0.75);
+    -webkit-mask-image: radial-gradient(
+      circle at var(--gx) var(--gy),
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.35) 35%,
+      transparent 65%
+    );
+    mask-image: radial-gradient(
+      circle at var(--gx) var(--gy),
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.35) 35%,
+      transparent 65%
+    );
+    mix-blend-mode: soft-light;
     will-change: opacity, background-position;
   }
 
-  /* Brilho especular suave que acompanha a posição exata do mouse */
+  /* Brilho especular suave que acompanha a posição exata do mouse sem estourar as cores */
   .holo-tilt-glare {
     opacity: var(--glare-opacity);
     background: radial-gradient(
       farthest-corner circle at var(--gx) var(--gy),
-      rgba(255, 255, 255, 0.42) 0%,
-      rgba(255, 255, 255, 0.14) 28%,
-      rgba(255, 255, 255, 0) 68%
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.07) 26%,
+      rgba(255, 255, 255, 0) 60%
     );
-    mix-blend-mode: overlay;
+    mix-blend-mode: soft-light;
     will-change: opacity, background;
   }
 
   /* Borda chanfrada 3D com reflexo direcional na quina inclinada */
   .holo-tilt-rim {
-    opacity: calc(0.25 + var(--glare-opacity) * 0.75);
+    opacity: calc(0.2 + var(--glare-opacity) * 0.65);
     background: linear-gradient(
       var(--angle),
-      rgba(255, 255, 255, 0.52) 0%,
-      rgba(82, 214, 39, 0.25) 28%,
-      rgba(255, 255, 255, 0.04) 60%,
-      rgba(255, 255, 255, 0.22) 100%
+      rgba(255, 255, 255, 0.42) 0%,
+      rgba(82, 214, 39, 0.18) 28%,
+      rgba(255, 255, 255, 0.03) 60%,
+      rgba(255, 255, 255, 0.15) 100%
     );
     -webkit-mask:
       linear-gradient(#fff 0 0) content-box,
       linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    padding: 1.5px;
+    padding: 1px;
   }
 
   @media (prefers-reduced-motion: reduce) {
