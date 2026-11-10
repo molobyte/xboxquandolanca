@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, ExternalLink, Star, AlertTriangle, RotateCw, ImageOff } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Star, AlertTriangle, RotateCw } from 'lucide-react';
 import { getGame } from '../lib/xbox.js';
 import { navigate } from '../lib/router.js';
 import SmartSearch from '../components/SmartSearch.jsx';
 import ReleaseCountdown from '../components/ReleaseCountdown.jsx';
 import XboxLogo from '../components/XboxLogo.jsx';
+import HoloTiltCover from '../components/HoloTiltCover.jsx';
 import { calcularPontosRewards, formatarPontosRewards } from '../lib/rewards.js';
 import { getPriceHistory, formatPrice } from '../lib/priceHistory.js';
 import PriceHistoryChart from '../components/PriceHistoryChart.jsx';
@@ -78,7 +79,6 @@ export default function GamePage({ id }) {
 
 function GameDetails({ game }) {
   const [expanded, setExpanded] = useState(false);
-  const [coverFailed, setCoverFailed] = useState(false);
   const [priceHistory, setPriceHistory] = useState(null);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
@@ -132,22 +132,13 @@ function GameDetails({ game }) {
       </aside>
 
       <section className="flex min-w-0 flex-1 flex-col gap-8 md:flex-row">
-        {/* Capa */}
+        {/* Capa com efeito 3D Parallax Hover & Holográfico */}
         <div className="shrink-0 md:w-64 lg:w-72">
-          {game.cover && !coverFailed ? (
-            <img
-              src={game.cover}
-              alt={`Capa de ${game.title}`}
-              onError={() => setCoverFailed(true)}
-              className={`w-full rounded-2xl border border-white/10 bg-white/5 object-cover shadow-2xl ${
-                game.coverIsSquare ? 'aspect-square' : 'aspect-[2/3]'
-              }`}
-            />
-          ) : (
-            <div className="flex aspect-[2/3] w-full items-center justify-center rounded-2xl border border-white/10 bg-white/5">
-              <ImageOff className="h-10 w-10 text-white/20" />
-            </div>
-          )}
+          <HoloTiltCover
+            src={game.cover}
+            alt={`Capa de ${game.title}`}
+            isSquare={game.coverIsSquare}
+          />
 
           {/* Nota e avaliações embaixo da capa */}
           {game.rating && (
