@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Zap, Globe, ChevronDown, ChevronUp, HelpCircle, CheckCircle2, Clock } from 'lucide-react';
 import { getRegionalReleases } from '../lib/xbox.js';
+import CountryFlag from './CountryFlag.jsx';
 
 const brDateTimeFmt = new Intl.DateTimeFormat('pt-BR', {
   day: '2-digit',
@@ -129,7 +130,8 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
               <h4 className="font-title text-xl font-light text-white">
                 Jogue <strong className="font-action text-xbox-neon font-bold">{hoursAheadOfBrazil}h antes</strong> no Xbox
               </h4>
-              <p className="mt-1 font-sans text-xs text-white/60">
+              <p className="mt-1 flex items-center gap-1.5 font-sans text-xs text-white/60">
+                <CountryFlag code="NZ" className="w-3.5 h-2.5" />
                 Disponível na loja da Nova Zelândia em:
               </p>
               <p className="mt-0.5 font-sans text-sm font-semibold text-white/90">
@@ -216,9 +218,10 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
           {showAllRegions && (
             <div className="mt-3 flex flex-col gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5 text-xs animate-fade-in">
               {/* Brasil como base */}
-              <div className="flex items-center justify-between py-1 border-b border-white/5">
-                <span className="flex items-center gap-1.5 text-white/90 font-medium">
-                  🇧🇷 Brasil (Sua região)
+              <div className="flex items-center justify-between py-1.5 border-b border-white/5">
+                <span className="flex items-center gap-2 text-white/90 font-medium">
+                  <CountryFlag code="BR" className="w-4 h-3" />
+                  Brasil (Sua região)
                 </span>
                 <span className="text-white/90 font-mono text-[11px]">
                   {shortBrDateTimeFmt.format(brazilDate)}
@@ -231,9 +234,10 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
                   if (!r.date) return null;
                   const diffHours = Math.round((brazilDate.getTime() - r.date.getTime()) / (1000 * 60 * 60));
                   return (
-                    <div key={r.code} className="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
-                      <span className="flex items-center gap-1.5 text-white/70">
-                        {r.flag} {r.name}
+                    <div key={r.code} className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
+                      <span className="flex items-center gap-2 text-white/70">
+                        <CountryFlag code={r.code} className="w-4 h-3" />
+                        {r.name}
                       </span>
                       <div className="text-right">
                         <span className="font-mono text-[11px] text-white/90 block">
