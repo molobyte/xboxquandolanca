@@ -4,6 +4,7 @@ import { getGame } from '../lib/xbox.js';
 import { navigate } from '../lib/router.js';
 import SmartSearch from '../components/SmartSearch.jsx';
 import ReleaseCountdown from '../components/ReleaseCountdown.jsx';
+import NewZealandTrickCard from '../components/NewZealandTrickCard.jsx';
 import XboxLogo from '../components/XboxLogo.jsx';
 import HoloTiltCover from '../components/HoloTiltCover.jsx';
 import { calcularPontosRewards, formatarPontosRewards } from '../lib/rewards.js';
@@ -113,6 +114,7 @@ function GameDetails({ game }) {
       {/* Coluna lateral direita: Contador + Informações do jogo */}
       <aside className="flex w-full shrink-0 flex-col gap-6 sm:w-auto sm:min-w-[20rem] lg:order-last lg:sticky lg:top-6 lg:ml-auto lg:w-80">
         <ReleaseCountdown date={game.releaseDate} tba={game.releaseTba} />
+        <NewZealandTrickCard gameId={game.id} brazilDate={game.releaseDate} tba={game.releaseTba} />
 
         {meta.length > 0 && (
           <div className="rounded-2xl border border-white/10 bg-black/40 p-5 shadow-2xl backdrop-blur-xl">

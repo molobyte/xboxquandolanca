@@ -286,3 +286,103 @@ export async function getGame(id, signal) {
 
   return game;
 }
+
+export const REGIONAL_MARKETS = [
+  { code: 'NZ', name: 'Nova Zelândia', flag: '🇳🇿', timeZone: 'Pacific/Auckland' },
+  { code: 'JP', name: 'Japão', flag: '🇯🇵', timeZone: 'Asia/Tokyo' },
+  { code: 'GB', name: 'Reino Unido / Europa', flag: '🇬🇧', timeZone: 'Europe/London' },
+  { code: 'US', name: 'Estados Unidos (ET)', flag: '🇺🇸', timeZone: 'America/New_York' },
+];
+
+const regionalCache = new Map();
+
+async function fetchMarketRelease(id, market, signal) {
+  const url = `${CATALOG}/products?bigIds=${encodeURIComponent(id)}&market=${market}&languages=en-us`;
+  const res = await fetch(url, { signal });
+  if (!res.ok) return null;
+  const data = await res.json();
+  const product = data.Products?.[0];
+  if (!product) return null;
+  let rel = extractReleaseDate(product);
+
+  // Fallback para bundles caso o hub não tenha a data no mercado
+  if (rel.tba) {
+    const relatedIds = (product.MarketProperties?.[0]?.RelatedProducts || [])
+      .filter((r) => r.RelationshipType === 'Bundle')
+      .map((r) => r.RelatedProductId)
+      .slice(0, 5);
+
+    if (relatedIds.length > 0) {
+      try {
+        const bUrl = `${CATALOG}/products?bigIds=${encodeURIComponent(relatedIds.join(','))}&market=${market}&languages=en-us`;
+        const bRes = await fetch(bUrl, { signal });
+        if (bRes.ok) {
+          const bData = await bRes.json();
+          const validDates = (bData.Products || [])
+            .map(extractReleaseDate)
+            .filter((b) => b.date && !b.tba)
+            .map((b) => b.date);
+
+          if (validDates.length > 0) {
+            validDates.sort((a, b) => a.getTime() - b.getTime());
+            rel = { date: validDates[0], tba: false };
+          }
+        }
+      } catch {
+        // Ignora erros no fallback
+      }
+    }
+  }
+
+  return rel.date;
+}
+
+/**
+ * Consulta o horário de lançamento internacional para verificar o Truque da Nova Zelândia e horários mundiais.
+ */
+export async function getRegionalReleases(id, brazilDate, signal) {
+  if (!id || !brazilDate) return null;
+
+  const cacheKey = `${id}_${brazilDate.getTime()}`;
+  if (regionalCache.has(cacheKey)) {
+    return regionalCache.get(cacheKey);
+  }
+
+  const promises = REGIONAL_MARKETS.map(async (region) => {
+    try {
+      const date = await fetchMarketRelease(id, region.code, signal);
+      return { ...region, date };
+    } catch {
+      return { ...region, date: null };
+    }
+  });
+
+  const regions = await Promise.all(promises);
+  const nz = regions.find((r) => r.code === 'NZ');
+
+  let isSimultaneous = false;
+  let hoursAheadOfBrazil = 0;
+  let canUseNewZealandTrick = false;
+
+  if (nz?.date && brazilDate) {
+    const diffMs = brazilDate.getTime() - nz.date.getTime();
+    const diffHours = Math.round(diffMs / (1000 * 60 * 60));
+    if (Math.abs(diffHours) <= 1) {
+      isSimultaneous = true;
+    } else if (diffHours > 1) {
+      canUseNewZealandTrick = true;
+      hoursAheadOfBrazil = diffHours;
+    }
+  }
+
+  const result = {
+    regions,
+    nzRelease: nz?.date || null,
+    isSimultaneous,
+    canUseNewZealandTrick,
+    hoursAheadOfBrazil,
+  };
+
+  regionalCache.set(cacheKey, result);
+  return result;
+}
