@@ -11,8 +11,6 @@ import {
 } from 'lucide-react';
 import XboxLogo from './XboxLogo.jsx';
 import SmartSearch from './SmartSearch.jsx';
-import CountryFlag from './CountryFlag.jsx';
-import { getBrasiliaAndNzClocks } from '../lib/portal.js';
 import { gamePath, navigate, sectionPath } from '../lib/router.js';
 
 export const PORTAL_NAV_ITEMS = [
@@ -36,16 +34,8 @@ export default function PortalHeader({
   isGamePage = false,
   overlayHero = false,
 }) {
-  const [clocks, setClocks] = useState(() => getBrasiliaAndNzClocks());
   const [scrolled, setScrolled] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setClocks(getBrasiliaAndNzClocks());
-    }, 30000);
-    return () => clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -131,7 +121,7 @@ export default function PortalHeader({
             })}
           </nav>
 
-          {/* Ações à Direita: Busca + Relógio BRT/NZ */}
+          {/* Ações à Direita: Busca */}
           <div className={`flex min-w-0 items-center gap-2 ${showSearch ? 'flex-1 justify-end' : ''}`}>
             {showSearch ? (
               <div className="w-full min-w-0 max-w-xs sm:max-w-sm lg:max-w-[260px] xl:max-w-[300px]">
@@ -153,29 +143,6 @@ export default function PortalHeader({
                 </kbd>
               </button>
             )}
-
-            {/* Relógio ao vivo Brasília vs Nova Zelândia */}
-            <button
-              type="button"
-              onClick={() => navigate(sectionPath('ferramentas'))}
-              title="Horário ao vivo: Brasília vs Nova Zelândia (Truque da NZ)"
-              className="hidden shrink-0 items-center gap-2.5 rounded-full border border-white/[0.1] bg-[#131915]/75 px-3.5 py-1.5 text-left backdrop-blur-md transition hover:border-xbox-neon/40 hover:bg-[#19221c] md:flex"
-            >
-              <span className="flex items-center gap-1.5 font-mono text-[11px] text-neutral-200">
-                <CountryFlag code="BR" className="h-2.5 w-3.5" />
-                <span className="text-neutral-400">BRT</span>
-                <strong className="font-bold text-white">{clocks.brTime}</strong>
-              </span>
-              <span className="h-3 w-px bg-white/15" />
-              <span className="flex items-center gap-1.5 font-mono text-[11px] text-neutral-200">
-                <CountryFlag code="NZ" className="h-2.5 w-3.5" />
-                <span className="text-neutral-400">NZ</span>
-                <strong className="font-bold text-white">{clocks.nzTime}</strong>
-                <span className="rounded-full bg-xbox-neon/15 px-1.5 py-0.5 font-sans text-[10px] font-bold text-xbox-neon">
-                  +{clocks.diffHours}h
-                </span>
-              </span>
-            </button>
           </div>
         </div>
 

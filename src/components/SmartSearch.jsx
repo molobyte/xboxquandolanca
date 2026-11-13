@@ -143,20 +143,27 @@ export default function SmartSearch({
     }
   };
 
-  const big = size === 'lg';
+  const big = size === 'lg' || size === 'hero';
+  const isHero = size === 'hero';
   const showPanel = open && query.trim().length >= 2 && (directId || loading || items.length > 0 || error);
 
   return (
-    <div ref={wrapRef} className="relative w-full">
+    <div ref={wrapRef} className="relative w-full text-left">
       <div
-        className={`group flex items-center gap-3 border bg-[#0e1310]/90 backdrop-blur-xl transition-all
-          border-white/[0.11] focus-within:border-xbox-neon/65 focus-within:bg-[#131a15] focus-within:shadow-glow
-          ${big ? 'h-14 rounded-2xl px-4 sm:h-[60px] sm:px-5' : 'h-10 rounded-full px-4'}`}
+        className={`group flex items-center gap-3 border backdrop-blur-xl transition-all
+          focus-within:border-xbox-neon/70 focus-within:bg-[#131a15] focus-within:shadow-glow
+          ${
+            isHero
+              ? 'h-16 rounded-2xl border-white/[0.16] bg-[#0d120f]/90 px-5 shadow-[0_24px_60px_-15px_rgba(0,0,0,0.9)] sm:h-[70px] sm:px-6'
+              : big
+              ? 'h-14 rounded-2xl border-white/[0.11] bg-[#0e1310]/90 px-4 sm:h-[60px] sm:px-5'
+              : 'h-10 rounded-full border-white/[0.11] bg-[#0e1310]/90 px-4'
+          }`}
       >
         {directId ? (
-          <Link2 className={`shrink-0 text-xbox-neon ${big ? 'h-5 w-5 sm:h-5 sm:w-5' : 'h-4 w-4'}`} />
+          <Link2 className={`shrink-0 text-xbox-neon ${isHero ? 'h-5 w-5 sm:h-6 sm:w-6' : big ? 'h-5 w-5' : 'h-4 w-4'}`} />
         ) : (
-          <Search className={`shrink-0 text-neutral-400 transition group-focus-within:text-xbox-neon ${big ? 'h-5 w-5' : 'h-4 w-4'}`} />
+          <Search className={`shrink-0 text-neutral-400 transition group-focus-within:text-xbox-neon ${isHero ? 'h-5 w-5 sm:h-6 sm:w-6' : big ? 'h-5 w-5' : 'h-4 w-4'}`} />
         )}
         <input
           ref={inputRef}
@@ -173,7 +180,9 @@ export default function SmartSearch({
             placeholder ||
             (big ? 'Busque qualquer jogo Xbox ou cole o link da Microsoft Store…' : 'Buscar jogo ou colar URL…')
           }
-          className={`w-full min-w-0 bg-transparent font-sans text-white outline-none placeholder:text-neutral-400/75 ${big ? 'text-sm sm:text-base' : 'text-xs sm:text-sm'}`}
+          className={`w-full min-w-0 bg-transparent text-left font-sans text-white outline-none placeholder:text-neutral-400/75 ${
+            isHero ? 'text-base sm:text-lg' : big ? 'text-sm sm:text-base' : 'text-xs sm:text-sm'
+          }`}
           role="combobox"
           aria-expanded={!!showPanel}
           aria-controls={listId}

@@ -5,7 +5,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
-  ExternalLink,
   Flame,
   Gamepad2,
   History,
@@ -13,6 +12,7 @@ import {
   Sparkles,
   Tag,
 } from 'lucide-react';
+import XboxLogo from '../components/XboxLogo.jsx';
 import SmartSearch from '../components/SmartSearch.jsx';
 import PortalHeader from '../components/PortalHeader.jsx';
 import PortalFooter from '../components/PortalFooter.jsx';
@@ -23,11 +23,9 @@ import {
   StoreLookupGuideWidget,
 } from '../components/PortalSidebarTools.jsx';
 import {
-  getBrasiliaAndNzClocks,
   getPortalData,
   getRecentGames,
 } from '../lib/portal.js';
-import { formatPrice } from '../lib/priceHistory.js';
 import { gamePath, navigate, sectionPath } from '../lib/router.js';
 
 const QUICK_PICKS = [
@@ -38,21 +36,11 @@ const QUICK_PICKS = [
   { id: '9N4PT8HGCDHQ', label: 'Gears of War: E-Day' },
 ];
 
-const spotlightDateFmt = new Intl.DateTimeFormat('pt-BR', {
-  day: '2-digit',
-  month: 'long',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-});
-
-const pad = (n) => String(n).padStart(2, '0');
-
 export default function HomePage({ section = 'geral' }) {
   const [portal, setPortal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [nowMs, setNowMs] = useState(() => Date.now());
-  const [spotlightIdx, setSpotlightIdx] = useState(0);
+  const [bgIndex, setBgIndex] = useState(0);
   const [recentGames, setRecentGames] = useState(() => getRecentGames());
 
   // Sub-filtros das seções
@@ -72,7 +60,7 @@ export default function HomePage({ section = 'geral' }) {
   }, [section]);
 
   useEffect(() => {
-    const t = setInterval(() => setNowMs(Date.now()), 1000);
+    const t = setInterval(() => setNowMs(Date.now()), 30000);
     return () => clearInterval(t);
   }, []);
 
@@ -82,7 +70,7 @@ export default function HomePage({ section = 'geral' }) {
     getPortalData(controller.signal)
       .then((data) => {
         setPortal(data);
-        setSpotlightIdx(0);
+        setBgIndex(0);
       })
       .catch((err) => {
         if (err?.name !== 'AbortError') {
@@ -103,29 +91,36 @@ export default function HomePage({ section = 'geral' }) {
     return () => controller.abort();
   }, []);
 
-  const clocks = useMemo(() => getBrasiliaAndNzClocks(nowMs), [Math.floor(nowMs / 30000)]);
-
-  const spotlightPool = useMemo(() => {
+  const heroBgPool = useMemo(() => {
     if (!portal) return [];
     const combined = [
       ...(portal.datedUpcoming || []),
       ...(portal.trending || []),
       ...(portal.comingSoonGp || []),
+      ...(portal.upcoming || []),
     ];
     const seen = new Set();
     const out = [];
     for (const g of combined) {
-      if (!g?.id || seen.has(g.id)) continue;
+      if (!g?.id || seen.has(g.id) || !g.hero) continue;
       seen.add(g.id);
       out.push(g);
-      if (out.length >= 5) break;
+      if (out.length >= 8) break;
     }
     return out;
   }, [portal]);
 
-  const activeIndex = spotlightPool.length ? spotlightIdx % spotlightPool.length : 0;
-  const activeSpotlight = spotlightPool[activeIndex] || null;
   const isOverview = section === 'geral';
+
+  useEffect(() => {
+    if (!isOverview || heroBgPool.length <= 1) return;
+    const t = setInterval(() => {
+      setBgIndex((i) => (i + 1) % heroBgPool.length);
+    }, 7000);
+    return () => clearInterval(t);
+  }, [isOverview, heroBgPool.length]);
+
+  const activeBgIndex = heroBgPool.length ? bgIndex % heroBgPool.length : 0;
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-clip bg-xbox-bg text-neutral-100">
@@ -141,103 +136,14 @@ export default function HomePage({ section = 'geral' }) {
 
       {isOverview ? (
         <>
-          {/* HERO CINEMATOGRÁFICO COM CARROSSEL DE PÔSTERES */}
-          <HeroShowcase
-            pool={spotlightPool}
-            activeGame={activeSpotlight}
-            activeIndex={activeIndex}
-            loading={loading}
-            nowMs={nowMs}
-            onSelect={(idx) => setSpotlightIdx(idx)}
-            onPrev={() =>
-              setSpotlightIdx((i) => (i - 1 + spotlightPool.length) % Math.max(1, spotlightPool.length))
-            }
-            onNext={() => setSpotlightIdx((i) => (i + 1) % Math.max(1, spotlightPool.length))}
+          {/* HERO CENTRAL DE BUSCA COM BACKGROUNDS EM MOVIMENTO E CROSSFADE */}
+          <HeroSearchSection
+            bgSlides={heroBgPool}
+            activeBgIndex={activeBgIndex}
+            recentGames={recentGames}
           />
 
-          <main className="relative z-20 mx-auto w-full min-w-0 max-w-[1540px] flex-1 px-4 sm:px-6 lg:px-10">
-            {/* BARRA FLUTUANTE DE BUSCA + KPIs RÁPIDOS */}
-            <section className="-mt-8 rounded-3xl border border-white/[0.1] bg-[#121814]/90 p-4 shadow-[0_24px_64px_-20px_rgba(2,8,4,0.95)] backdrop-blur-2xl sm:p-6">
-              <div className="grid grid-cols-1 gap-5 lg:grid-cols-12 lg:items-center">
-                <div className="min-w-0 lg:col-span-7">
-                  <SmartSearch size="lg" slashShortcut />
-
-                  <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
-                    <span className="mr-1 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
-                      Populares:
-                    </span>
-                    {QUICK_PICKS.map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => navigate(gamePath(item.id))}
-                        className="rounded-full border border-white/[0.09] bg-white/[0.04] px-3 py-1 text-xs font-medium text-neutral-200 transition hover:border-xbox-neon/45 hover:bg-xbox-green/20 hover:text-white"
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {recentGames.length > 0 && (
-                    <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-white/[0.07] pt-3">
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
-                        <History className="h-3 w-3 text-xbox-neon" />
-                        Recentes:
-                      </span>
-                      {recentGames.slice(0, 5).map((rg) => (
-                        <button
-                          key={rg.id}
-                          type="button"
-                          onClick={() => navigate(gamePath(rg.id))}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-[#0d120f] px-2.5 py-1 text-xs text-neutral-200 transition hover:border-xbox-neon/45 hover:text-white"
-                        >
-                          <span className="max-w-[140px] truncate">{rg.title}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* 4 KPIs interativos no estilo glass */}
-                <div className="grid min-w-0 grid-cols-2 gap-2.5 lg:col-span-5">
-                  <PortalMetricTile
-                    label="Com data futura"
-                    value={loading ? '—' : String(portal?.datedUpcoming?.length || 0)}
-                    hint="Ver calendário"
-                    onClick={() => navigate(sectionPath('lancamentos'))}
-                  />
-                  <PortalMetricTile
-                    label="Radar Game Pass"
-                    value={
-                      loading
-                        ? '—'
-                        : String((portal?.comingSoonGp?.length || 0) + (portal?.recentGp?.length || 0))
-                    }
-                    hint="Em breve & novos"
-                    accent="neon"
-                    onClick={() => navigate(sectionPath('gamepass'))}
-                  />
-                  <PortalMetricTile
-                    label="Ofertas Loja BR"
-                    value={loading ? '—' : String(portal?.deals?.length || 0)}
-                    hint="Descontos ativos"
-                    accent="amber"
-                    onClick={() => {
-                      setOffersFilter('deals');
-                      navigate(sectionPath('ofertas'));
-                    }}
-                  />
-                  <PortalMetricTile
-                    label="Fuso Nova Zelândia"
-                    value={`+${clocks.diffHours}h`}
-                    hint={`Agora ${clocks.nzTime} lá`}
-                    accent="mint"
-                    onClick={() => navigate(sectionPath('ferramentas'))}
-                  />
-                </div>
-              </div>
-            </section>
-
+          <main className="relative z-20 mx-auto w-full min-w-0 max-w-[1540px] flex-1 px-4 pt-4 sm:px-6 lg:px-10">
             <OverviewSection
               portal={portal}
               loading={loading}
@@ -317,313 +223,100 @@ export default function HomePage({ section = 'geral' }) {
   );
 }
 
-function HeroShowcase({
-  pool,
-  activeGame,
-  activeIndex,
-  loading,
-  nowMs,
-  onSelect,
-  onPrev,
-  onNext,
-}) {
-  if (loading && !activeGame) {
-    return (
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#132216] via-[#0e1510] to-[#0a0d0b] pb-20 pt-28 sm:pt-32 lg:min-h-[640px]">
-        <div className="mx-auto grid max-w-[1540px] animate-pulse grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:items-end lg:px-10">
-          <div className="space-y-4 lg:col-span-6">
-            <div className="h-6 w-36 rounded-full bg-white/10" />
-            <div className="h-14 w-4/5 rounded-2xl bg-white/10" />
-            <div className="h-5 w-2/3 rounded-xl bg-white/5" />
-            <div className="flex gap-3 pt-2">
-              <div className="h-11 w-44 rounded-full bg-xbox-green/40" />
-              <div className="h-11 w-36 rounded-full bg-white/10" />
+function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
+  return (
+    <section className="relative flex min-h-[76vh] flex-col items-center justify-center px-4 pb-16 pt-32 sm:px-6 sm:pt-36 lg:min-h-[78vh] lg:px-10 lg:pt-28">
+      {/* Camada de backgrounds em movimento lento e crossfade suave */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden bg-[#0a0d0b]">
+        <div className="absolute left-1/2 top-1/2 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-xbox-green/20 blur-[160px]" />
+
+        {bgSlides.map((slide, idx) => {
+          const isActive = idx === activeBgIndex;
+          return (
+            <div
+              key={slide.id}
+              aria-hidden="true"
+              className={`animate-fade-in absolute inset-0 transition-opacity duration-[1800ms] ease-in-out ${
+                isActive ? 'opacity-65' : 'opacity-0'
+              }`}
+            >
+              <img
+                src={slide.hero}
+                alt=""
+                className="hero-bg-drift h-full w-full object-cover object-center will-change-transform"
+                style={{ animationDirection: idx % 2 === 0 ? 'normal' : 'reverse' }}
+              />
             </div>
-          </div>
-          <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 lg:col-span-6">
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <div key={idx} className="aspect-[3/4] rounded-2xl bg-white/[0.06]" />
+          );
+        })}
+
+        {/* Scrim radial e vertical em tons Xbox para leitura nítida da busca */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(8,11,9,0.5)_0%,rgba(8,11,9,0.82)_72%,rgba(10,13,11,0.96)_100%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#070908]/80 via-[#080b09]/30 to-[#0a0d0b]" />
+      </div>
+
+      {/* Conteúdo central focado na busca */}
+      <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center text-center">
+        <span className="inline-flex items-center gap-2 rounded-full border border-xbox-neon/35 bg-[#0e1510]/80 px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.18em] text-xbox-neon backdrop-blur-md">
+          <XboxLogo className="h-3.5 w-3.5 text-xbox-neon" />
+          Portal Xbox Brasil
+        </span>
+
+        <h1 className="mt-5 font-display text-4xl font-extrabold tracking-tight text-white drop-shadow-[0_6px_24px_rgba(0,0,0,0.65)] sm:text-5xl lg:text-6xl">
+          Quando lança<span className="text-xbox-neon">?</span>
+        </h1>
+
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-neutral-200/85 sm:text-base">
+          Consulte datas de lançamento, horários oficiais, contagem regressiva e histórico de preços de qualquer jogo na Xbox Store Brasil.
+        </p>
+
+        <div className="mt-7 w-full">
+          <SmartSearch
+            size="hero"
+            autoFocus
+            slashShortcut
+            placeholder="Digite o nome do jogo ou cole o link da Microsoft Store..."
+          />
+        </div>
+
+        <div className="mt-5 flex w-full flex-col items-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs">
+            <span className="mr-1 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+              Populares:
+            </span>
+            {QUICK_PICKS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => navigate(gamePath(item.id))}
+                className="rounded-full border border-white/[0.12] bg-[#0e1410]/80 px-3 py-1.5 text-xs font-medium text-neutral-200 backdrop-blur-md transition hover:border-xbox-neon/50 hover:bg-xbox-green/25 hover:text-white"
+              >
+                {item.label}
+              </button>
             ))}
           </div>
-        </div>
-      </section>
-    );
-  }
 
-  if (!activeGame) {
-    return (
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#142417] via-[#0e1510] to-[#0a0d0b] pb-20 pt-32">
-        <div className="mx-auto max-w-[1540px] px-4 sm:px-6 lg:px-10">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-xbox-neon/40 bg-xbox-green px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white">
-            <Sparkles className="h-3.5 w-3.5" />
-            Portal Xbox Brasil
-          </span>
-          <h1 className="mt-4 max-w-3xl font-display text-4xl font-extrabold uppercase tracking-tight text-white sm:text-6xl">
-            Quando lança<span className="text-xbox-neon">?</span>
-          </h1>
-          <p className="mt-3 max-w-2xl text-base text-neutral-300">
-            Consulte contagens regressivas oficiais para Xbox Series X|S, Xbox One e PC, verifique o Truque da Nova Zelândia e analise o histórico de preços em reais.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() => navigate(sectionPath('ferramentas'))}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#107C10] to-[#16a34a] px-6 py-3 text-sm font-bold text-white shadow-xbox-cta transition hover:brightness-110"
-            >
-              <span>Explorar ferramentas</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  const hasDate = activeGame.releaseDate && !activeGame.releaseTba;
-  const diff = hasDate ? activeGame.releaseDate.getTime() - nowMs : 0;
-  const isFuture = hasDate && diff > 0;
-  const totalSeconds = Math.max(0, Math.floor(diff / 1000));
-  const days = Math.floor(totalSeconds / 86400);
-  const hours = Math.floor((totalSeconds % 86400) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  const hasPrice = activeGame.price && typeof activeGame.price.list === 'number';
-  const isFree = hasPrice && activeGame.price.list === 0;
-  const hasDiscount =
-    hasPrice && activeGame.price.msrp > activeGame.price.list && activeGame.price.list > 0;
-  const discountPct = hasDiscount
-    ? Math.round((1 - activeGame.price.list / activeGame.price.msrp) * 100)
-    : null;
-
-  const backdropSrc = activeGame.hero || activeGame.cardHero || activeGame.cover;
-  const total = pool.length || 1;
-  const progressPct = ((activeIndex + 1) / total) * 100;
-
-  return (
-    <section className="relative flex min-h-[580px] flex-col justify-end overflow-hidden pb-16 pt-32 sm:pt-36 lg:min-h-[650px] lg:pb-20 lg:pt-28">
-      {/* Arte de fundo em tela cheia */}
-      {backdropSrc ? (
-        <img
-          key={activeGame.id}
-          src={backdropSrc}
-          alt=""
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center opacity-80 transition-opacity duration-500 animate-fade-in"
-        />
-      ) : (
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#142a18] via-[#101812] to-[#0a0d0b]" />
-      )}
-
-      {/* Camadas de scrim cinematográfico */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#080b09] via-[#080b09]/75 via-45% to-[#080b09]/30" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0d0b] via-[#0a0d0b]/55 via-30% to-transparent" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#070908]/75 via-transparent to-transparent" />
-
-      <div className="relative z-10 mx-auto grid w-full max-w-[1540px] grid-cols-1 gap-8 px-4 sm:px-6 lg:grid-cols-12 lg:items-end lg:px-10">
-        {/* Coluna Esquerda: Conteúdo Editorial & CTAs */}
-        <div className="min-w-0 lg:col-span-6">
-          <div className="flex flex-wrap items-center gap-2">
-            {discountPct ? (
-              <span className="rounded-full bg-amber-400 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-[#090d0a] shadow-lg">
-                Oferta -{discountPct}%
+          {recentGames.length > 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs">
+              <span className="mr-1 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                <History className="h-3 w-3 text-xbox-neon" />
+                Recentes:
               </span>
-            ) : isFuture ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-xbox-neon/40 bg-xbox-green px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white shadow-lg">
-                <Sparkles className="h-3 w-3" />
-                Próximo lançamento
-              </span>
-            ) : activeGame.inGamePass ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-xbox-lime px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-[#080b08] shadow-lg">
-                <Gamepad2 className="h-3.5 w-3.5" />
-                Game Pass
-              </span>
-            ) : (
-              <span className="rounded-full bg-xbox-green px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white shadow-lg">
-                Em destaque BR
-              </span>
-            )}
-
-            {hasDate && (
-              <span className="rounded-full border border-white/15 bg-[#0b100c]/70 px-3 py-1 text-[11px] font-semibold text-neutral-200 backdrop-blur-md">
-                {spotlightDateFmt.format(activeGame.releaseDate)}
-              </span>
-            )}
-          </div>
-
-          <h1 className="mt-4 line-clamp-2 font-display text-3xl font-extrabold uppercase tracking-tight text-white drop-shadow-sm sm:text-5xl xl:text-[54px] xl:leading-[1.05]">
-            {activeGame.title}
-          </h1>
-
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-neutral-200/85 sm:text-base">
-            {[activeGame.publisher, activeGame.category].filter(Boolean).join(' · ') ||
-              'Microsoft Store Brasil'}
-            {hasPrice
-              ? ` · ${
-                  isFree ? 'Gratuito para jogar' : `A partir de ${formatPrice(activeGame.price.list)}`
-                }`
-              : ''}
-          </p>
-
-          {/* Contagem regressiva ao vivo dentro do Hero */}
-          {isFuture && (
-            <div className="mt-5 inline-flex flex-wrap items-center gap-2 rounded-2xl border border-white/[0.12] bg-[#0b100c]/75 p-2 backdrop-blur-xl">
-              {[
-                [days, 'Dias'],
-                [hours, 'Horas'],
-                [minutes, 'Min'],
-                [seconds, 'Seg'],
-              ].map(([val, unit]) => (
-                <div
-                  key={unit}
-                  className="min-w-[58px] rounded-xl border border-white/[0.07] bg-white/[0.04] px-3 py-2 text-center"
+              {recentGames.slice(0, 5).map((rg) => (
+                <button
+                  key={rg.id}
+                  type="button"
+                  onClick={() => navigate(gamePath(rg.id))}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-[#0c110e]/80 px-3 py-1.5 text-xs text-neutral-200 backdrop-blur-md transition hover:border-xbox-neon/50 hover:bg-xbox-green/20 hover:text-white"
                 >
-                  <span className="block font-display text-xl font-bold tabular-nums leading-none text-white sm:text-2xl">
-                    {pad(val)}
-                  </span>
-                  <span className="mt-1 block text-[10px] font-bold uppercase tracking-wider text-xbox-neon">
-                    {unit}
-                  </span>
-                </div>
+                  <span className="max-w-[160px] truncate">{rg.title}</span>
+                </button>
               ))}
-            </div>
-          )}
-
-          {/* Botões de Ação Estilo Xbox Portal */}
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={() => navigate(gamePath(activeGame.id))}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#107C10] to-[#16a34a] px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-xbox-cta transition hover:brightness-110 sm:text-sm"
-            >
-              <span>Abrir painel do jogo</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
-
-            <a
-              href={activeGame.storeUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/[0.08] px-6 py-3 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md transition hover:border-white/45 hover:bg-white/[0.16] sm:text-sm"
-            >
-              <span>Loja Xbox BR</span>
-              <ExternalLink className="h-3.5 w-3.5" />
-            </a>
-          </div>
-        </div>
-
-        {/* Coluna Direita: Tira de Pôsteres + Paginação < > ─── 01 */}
-        <div className="min-w-0 lg:col-span-6">
-          <div className="mb-3 hidden items-center justify-end gap-2 lg:flex">
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/60">
-              Destaques em cartaz
-            </span>
-          </div>
-
-          {/* Tira de cards verticais */}
-          <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5 sm:gap-3">
-            {pool.map((g, idx) => {
-              const isSelected = idx === activeIndex;
-              const thumb = g.cover || g.cardHero;
-              return (
-                <button
-                  key={g.id}
-                  type="button"
-                  onClick={() => onSelect(idx)}
-                  className={`group relative aspect-[3/4] overflow-hidden rounded-2xl border text-left transition-all duration-300 ${
-                    idx >= 3 ? 'hidden sm:block' : ''
-                  } ${
-                    isSelected
-                      ? '-translate-y-1.5 border-xbox-neon/80 shadow-[0_18px_36px_-10px_rgba(16,124,16,0.7)] ring-2 ring-xbox-neon/45'
-                      : 'border-white/15 opacity-75 hover:-translate-y-1 hover:border-white/35 hover:opacity-100'
-                  }`}
-                >
-                  {thumb ? (
-                    <img
-                      src={thumb}
-                      alt={g.title}
-                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-[#141a16]" />
-                  )}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070908] via-[#070908]/35 to-transparent" />
-                  <div className="absolute inset-x-2.5 bottom-2.5">
-                    <span className="line-clamp-2 font-display text-[10px] font-extrabold uppercase leading-tight tracking-wide text-white sm:text-[11px]">
-                      {g.title}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Controles < > ────── 01 */}
-          {total > 1 && (
-            <div className="mt-4 flex items-center gap-4">
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={onPrev}
-                  aria-label="Destaque anterior"
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-[#121814]/85 text-white/80 backdrop-blur-md transition hover:border-xbox-neon/60 hover:bg-xbox-green/30 hover:text-white"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={onNext}
-                  aria-label="Próximo destaque"
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-[#121814]/85 text-white/80 backdrop-blur-md transition hover:border-xbox-neon/60 hover:bg-xbox-green/30 hover:text-white"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              </div>
-
-              <div className="h-[2px] flex-1 overflow-hidden rounded-full bg-white/15">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-xbox-green to-xbox-neon transition-all duration-300"
-                  style={{ width: `${progressPct}%` }}
-                />
-              </div>
-
-              <span className="font-display text-xl font-bold tabular-nums text-white sm:text-3xl">
-                {pad(activeIndex + 1)}
-              </span>
             </div>
           )}
         </div>
       </div>
     </section>
-  );
-}
-
-function PortalMetricTile({ label, value, hint, onClick, accent = 'default' }) {
-  const valueColor =
-    accent === 'neon'
-      ? 'text-xbox-neon'
-      : accent === 'amber'
-      ? 'text-amber-300'
-      : accent === 'mint'
-      ? 'text-xbox-mint'
-      : 'text-white';
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group rounded-2xl border border-white/[0.08] bg-[#0e1410]/85 p-3.5 text-left transition hover:-translate-y-0.5 hover:border-xbox-neon/45 hover:bg-[#151e18]"
-    >
-      <span className="block text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-        {label}
-      </span>
-      <span className={`mt-1 block font-display text-2xl font-bold leading-none ${valueColor}`}>
-        {value}
-      </span>
-      <span className="mt-1.5 flex items-center justify-between text-[11px] text-neutral-400 group-hover:text-neutral-200">
-        <span className="truncate">{hint}</span>
-        <span className="text-xbox-neon">&rarr;</span>
-      </span>
-    </button>
   );
 }
 
@@ -663,7 +356,7 @@ function OverviewSection({
   };
 
   return (
-    <div className="mt-12 space-y-14">
+    <div className="mt-4 space-y-14">
       {/* BLOCO 1: POPULARES & OFERTAS (Cards Poster estilo "Popular Games") */}
       <section>
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -845,7 +538,6 @@ function OverviewSection({
 
         {/* Barra Lateral de Ferramentas */}
         <aside className="min-w-0 space-y-5 xl:col-span-4">
-          <NzTimezoneWidget />
           <RewardsCalculatorWidget />
           <StoreLookupGuideWidget />
         </aside>

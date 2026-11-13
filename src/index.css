@@ -142,6 +142,24 @@
     display: none;
   }
 
+  /* Movimento lento contínuo (Ken Burns) para os fundos da landing page */
+  @keyframes hero-bg-drift {
+    0% {
+      transform: scale(1.03) translate3d(-1.2%, -0.8%, 0);
+    }
+    50% {
+      transform: scale(1.1) translate3d(1.2%, 0.6%, 0);
+    }
+    100% {
+      transform: scale(1.05) translate3d(-0.6%, 1.1%, 0);
+    }
+  }
+
+  .hero-bg-drift {
+    animation: hero-bg-drift 22s ease-in-out infinite alternate;
+    will-change: transform, opacity;
+  }
+
   /* ==========================================================================
      3D Parallax Hover & Holographic Collectible Card Effect
      ========================================================================== */
@@ -245,6 +263,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .hero-bg-drift {
+      animation: none !important;
+      transform: scale(1.02) !important;
+    }
     .holo-tilt-card,
     .holo-tilt-image {
       transform: none !important;
