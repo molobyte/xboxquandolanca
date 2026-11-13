@@ -216,12 +216,14 @@ export function mapProduct(p) {
     developer: loc.DeveloperName?.trim() || null,
     publisher: loc.PublisherName?.trim() || null,
     description: loc.ProductDescription || loc.ShortDescription || '',
+    shortDescription: loc.ShortDescription || '',
     category: translateCategory(p.Properties?.Category),
     releaseDate: date,
     releaseTba: tba,
     cover: cover ? imageUrl(cover.Uri, { w: 600 }) : null,
     coverIsSquare: cover ? cover.Width === cover.Height : false,
     hero: hero ? imageUrl(hero.Uri, { w: 1920 }) : null,
+    cardHero: hero ? imageUrl(hero.Uri, { w: 640 }) : cover ? imageUrl(cover.Uri, { w: 600 }) : null,
     screenshots: images
       .filter((i) => i.ImagePurpose === 'Screenshot')
       .slice(0, 8)
@@ -285,6 +287,38 @@ export async function getGame(id, signal) {
   }
 
   return game;
+}
+
+/** Busca vários jogos em lote (até 20 BigIds por requisição) na Microsoft Store. */
+export async function getGamesByIds(ids, signal) {
+  const unique = [...new Set((ids || []).map((id) => id?.toUpperCase()).filter(Boolean))];
+  if (!unique.length) return [];
+
+  const chunks = [];
+  for (let i = 0; i < unique.length; i += 20) {
+    chunks.push(unique.slice(i, i + 20));
+  }
+
+  const responses = await Promise.allSettled(
+    chunks.map(async (chunk) => {
+      const url = `${CATALOG}/products?bigIds=${encodeURIComponent(chunk.join(','))}&market=${MARKET}&languages=${LANG}`;
+      const res = await fetch(url, { signal });
+      if (!res.ok) return [];
+      const data = await res.json();
+      return (data.Products || []).map(mapProduct);
+    })
+  );
+
+  const byId = new Map();
+  for (const r of responses) {
+    if (r.status === 'fulfilled') {
+      for (const g of r.value) {
+        if (g?.id) byId.set(g.id.toUpperCase(), g);
+      }
+    }
+  }
+
+  return unique.map((id) => byId.get(id)).filter(Boolean);
 }
 
 export const REGIONAL_MARKETS = [

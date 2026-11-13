@@ -190,7 +190,7 @@ export default function HoloTiltCover({
   if (!src || failed) {
     return (
       <div
-        className={`flex ${aspectClass} w-full items-center justify-center rounded-2xl border border-white/10 bg-white/5 ${className}`}
+        className={`flex ${aspectClass} w-full items-center justify-center rounded-[2px] border border-white/15 bg-[#0e1319] ${className}`}
       >
         <ImageOff className="h-10 w-10 text-white/20" />
       </div>
@@ -211,7 +211,7 @@ export default function HoloTiltCover({
     >
       <div
         ref={cardRef}
-        className="holo-tilt-card relative h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5"
+        className="holo-tilt-card relative h-full w-full overflow-hidden rounded-[2px] border border-white/15 bg-[#0e1319]"
       >
         {/* Camada 1: Imagem da capa com contra-parallax interno suave */}
         <img
@@ -227,13 +227,13 @@ export default function HoloTiltCover({
         {loaded && !reducedMotion && (
           <>
             {/* Camada 2: Acabamento Foil Holográfico discreto concentrado apenas próximo ao reflexo */}
-            <div className="holo-tilt-foil pointer-events-none absolute inset-0 rounded-2xl" />
+            <div className="holo-tilt-foil pointer-events-none absolute inset-0 rounded-[2px]" />
 
             {/* Camada 3: Reflexo de luz especular suave que acompanha o cursor */}
-            <div className="holo-tilt-glare pointer-events-none absolute inset-0 rounded-2xl" />
+            <div className="holo-tilt-glare pointer-events-none absolute inset-0 rounded-[2px]" />
 
             {/* Camada 4: Borda chanfrada 3D com iluminação direcional */}
-            <div className="holo-tilt-rim pointer-events-none absolute inset-0 rounded-2xl" />
+            <div className="holo-tilt-rim pointer-events-none absolute inset-0 rounded-[2px]" />
           </>
         )}
       </div>

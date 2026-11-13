@@ -9,6 +9,9 @@ export default {
           bright: '#13a10e',
           neon: '#52d627',
           bg: '#07090d',
+          surface: '#0d1117',
+          panel: '#121820',
+          border: '#232a35',
         },
       },
       fontFamily: {
@@ -20,7 +23,8 @@ export default {
         mono: ['"JetBrains Mono"', 'ui-monospace', 'Consolas', 'monospace'],
       },
       boxShadow: {
-        glow: '0 0 0 4px rgba(82, 214, 39, 0.12), 0 0 40px -10px rgba(82, 214, 39, 0.5)',
+        glow: '0 0 0 2px rgba(82, 214, 39, 0.16), 0 0 32px -8px rgba(82, 214, 39, 0.45)',
+        'xbox-glow': '0 0 0 1px rgba(82, 214, 39, 0.35), 0 10px 30px -10px rgba(16, 124, 16, 0.55)',
       },
       keyframes: {
         'fade-in': {

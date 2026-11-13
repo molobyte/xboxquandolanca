@@ -213,7 +213,7 @@ export default function PriceHistoryChart({ data }) {
   return (
     <div
       ref={containerRef}
-      className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 backdrop-blur-md shadow-xl"
+      className="rounded-[2px] border border-white/12 bg-[#0c1118]/90 p-4 sm:p-5 backdrop-blur-md shadow-xl"
     >
       {/* Topo do gráfico: título, fonte e botões de filtro */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
@@ -228,7 +228,7 @@ export default function PriceHistoryChart({ data }) {
         </div>
 
         {/* Filtros de período */}
-        <div className="flex items-center gap-1.5 rounded-lg bg-black/40 p-1 border border-white/10">
+        <div className="flex items-center gap-1 rounded-[2px] bg-[#080b0f] p-1 border border-white/10">
           {[
             { id: 'all', label: 'Tudo' },
             { id: '1y', label: '1 Ano' },
@@ -237,7 +237,7 @@ export default function PriceHistoryChart({ data }) {
             <button
               key={btn.id}
               onClick={() => setRange(btn.id)}
-              className={`rounded px-2.5 py-1 font-action text-xs font-semibold transition ${
+              className={`rounded-[2px] px-2.5 py-1 font-action text-xs font-semibold transition ${
                 range === btn.id
                   ? 'bg-xbox-green text-white shadow-sm'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
@@ -273,7 +273,7 @@ export default function PriceHistoryChart({ data }) {
       </div>
 
       {/* Canvas do Gráfico */}
-      <div className="relative mt-2 h-56 sm:h-64 w-full overflow-hidden rounded-xl bg-black/30 border border-white/5">
+      <div className="relative mt-2 h-56 sm:h-64 w-full overflow-hidden rounded-[2px] bg-[#070a0e] border border-white/10">
         <canvas
           ref={canvasRef}
           onMouseMove={handleMouseMove}
@@ -284,7 +284,7 @@ export default function PriceHistoryChart({ data }) {
         {/* Tooltip flutuante */}
         {hoveredPoint && (
           <div
-            className="pointer-events-none absolute -translate-x-1/2 -translate-y-full transform rounded-lg border border-xbox-green/60 bg-black/90 px-2.5 py-1.5 text-center text-xs shadow-2xl backdrop-blur-sm z-10 transition-all duration-75"
+            className="pointer-events-none absolute -translate-x-1/2 -translate-y-full transform rounded-[2px] border border-xbox-green/70 bg-black/95 px-2.5 py-1.5 text-center text-xs shadow-2xl backdrop-blur-sm z-10 transition-all duration-75"
             style={{
               left: `${hoveredPoint.x}px`,
               top: `${Math.max(30, hoveredPoint.y - 12)}px`,
@@ -301,7 +301,7 @@ export default function PriceHistoryChart({ data }) {
         {data.recentChanges && data.recentChanges.length > 0 && (
           <button
             onClick={() => setShowTable((v) => !v)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-white/70 transition hover:bg-white/10 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-[2px] border border-white/12 bg-white/[0.04] px-2.5 py-1.5 text-white/75 transition hover:bg-white/10 hover:text-white"
           >
             {showTable ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             <span>Tabela de alterações ({data.recentChanges.length})</span>
@@ -323,7 +323,7 @@ export default function PriceHistoryChart({ data }) {
 
       {/* Tabela de alterações recentes */}
       {showTable && data.recentChanges && data.recentChanges.length > 0 && (
-        <div className="mt-3 overflow-hidden rounded-xl border border-white/10 bg-black/40">
+        <div className="mt-3 overflow-hidden rounded-[2px] border border-white/12 bg-[#080b0f]">
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-white/10 text-white/50 bg-white/[0.02]">

@@ -72,13 +72,13 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
 
   if (loading) {
     return (
-      <div className="w-full rounded-2xl border border-white/10 bg-black/40 p-5 shadow-2xl backdrop-blur-xl sm:w-auto sm:min-w-[20rem] animate-pulse">
+      <div className="w-full rounded-[2px] border border-white/12 bg-[#0c1118]/90 p-5 shadow-2xl backdrop-blur-xl animate-pulse">
         <div className="flex items-center gap-2">
-          <div className="h-4 w-4 rounded-full bg-white/20" />
-          <div className="h-3 w-32 rounded bg-white/20" />
+          <div className="h-4 w-4 rounded-[2px] bg-white/20" />
+          <div className="h-3 w-32 rounded-[2px] bg-white/20" />
         </div>
-        <div className="mt-3 h-5 w-48 rounded bg-white/20" />
-        <div className="mt-2 h-3 w-40 rounded bg-white/10" />
+        <div className="mt-3 h-5 w-48 rounded-[2px] bg-white/20" />
+        <div className="mt-2 h-3 w-40 rounded-[2px] bg-white/10" />
       </div>
     );
   }
@@ -98,12 +98,12 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
   const minutesNZ = Math.floor((totalSecondsNZ % 3600) / 60);
 
   return (
-    <div className="w-full rounded-2xl border border-white/10 bg-black/40 p-5 shadow-2xl backdrop-blur-xl sm:w-auto sm:min-w-[20rem] transition-all">
+    <div className="w-full rounded-[2px] border border-white/12 bg-[#0c1118]/90 p-5 shadow-2xl backdrop-blur-xl transition-all">
       {/* Cenário 1: Permite o Truque da Nova Zelândia */}
       {canUseNewZealandTrick && (
         <>
           <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-xbox-neon/30 bg-xbox-neon/10 px-2.5 py-0.5 font-action text-[11px] font-bold tracking-wider text-xbox-neon uppercase">
+            <span className="inline-flex items-center gap-1.5 rounded-[2px] border border-xbox-neon/35 bg-xbox-neon/10 px-2 py-0.5 font-action text-[11px] font-bold tracking-wider text-xbox-neon uppercase">
               <Zap className="h-3.5 w-3.5" />
               Truque da Nova Zelândia
             </span>
@@ -114,7 +114,7 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
 
           {/* Destaque principal */}
           {isAvailableNowInNZ ? (
-            <div className="mt-3.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-emerald-300">
+            <div className="mt-3.5 rounded-[2px] border border-emerald-500/40 bg-emerald-500/10 p-3 text-emerald-300">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" />
                 <p className="font-action text-sm font-bold uppercase tracking-wide">
@@ -140,7 +140,7 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
 
               {/* Mini contagem regressiva para a NZ */}
               {diffNZ > 0 && (
-                <div className="mt-3 flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-xs text-white/80">
+                <div className="mt-3 flex items-center gap-2 rounded-[2px] border border-white/10 bg-[#121821] p-2.5 text-xs text-white/80">
                   <Clock className="h-4 w-4 text-xbox-neon shrink-0" />
                   <span className="font-action uppercase tracking-wider text-[11px] text-white/50">Libera na NZ em:</span>
                   <span className="ml-auto font-display text-sm font-bold text-xbox-neon tabular-nums">
@@ -166,7 +166,7 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
             </button>
 
             {showHowTo && (
-              <div className="mt-2.5 rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs text-white/80 space-y-2 animate-fade-in">
+              <div className="mt-2.5 rounded-[2px] border border-white/10 bg-white/[0.03] p-3 text-xs text-white/80 space-y-2 animate-fade-in">
                 <ol className="list-decimal list-inside space-y-1 text-white/70">
                   <li>No Xbox, vá em <strong className="text-white">Configurações &gt; Sistema &gt; Idioma e Localidade</strong>.</li>
                   <li>Altere a <strong className="text-white">Localidade</strong> para <strong className="text-white">Nova Zelândia</strong>.</li>
@@ -185,7 +185,7 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
       {isSimultaneous && (
         <div>
           <div className="flex items-center gap-1.5">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-400/30 bg-sky-400/10 px-2.5 py-0.5 font-action text-[11px] font-bold tracking-wider text-sky-400 uppercase">
+            <span className="inline-flex items-center gap-1.5 rounded-[2px] border border-sky-400/35 bg-sky-400/10 px-2 py-0.5 font-action text-[11px] font-bold tracking-wider text-sky-400 uppercase">
               <Globe className="h-3.5 w-3.5" />
               Lançamento Global Simultâneo
             </span>
@@ -206,7 +206,7 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
         <div className="mt-3.5 border-t border-white/10 pt-3">
           <button
             onClick={() => setShowAllRegions((v) => !v)}
-            className="flex w-full items-center justify-between text-left font-action text-[11px] font-bold uppercase tracking-wider text-white/40 hover:text-white/80 transition"
+            className="flex w-full items-center justify-between text-left font-action text-[11px] font-bold uppercase tracking-wider text-white/45 hover:text-white/85 transition"
           >
             <span className="flex items-center gap-1.5">
               <Globe className="h-3.5 w-3.5" />
@@ -216,7 +216,7 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
           </button>
 
           {showAllRegions && (
-            <div className="mt-3 flex flex-col gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5 text-xs animate-fade-in">
+            <div className="mt-3 flex flex-col gap-2 rounded-[2px] border border-white/10 bg-[#10161e] p-2.5 text-xs animate-fade-in">
               {/* Brasil como base */}
               <div className="flex items-center justify-between py-1.5 border-b border-white/5">
                 <span className="flex items-center gap-2 text-white/90 font-medium">

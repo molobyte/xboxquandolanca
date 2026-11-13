@@ -124,10 +124,18 @@
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.18);
-    border-radius: 9999px;
+    border-radius: 2px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(82, 214, 39, 0.5);
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 
   /* ==========================================================================

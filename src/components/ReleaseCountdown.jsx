@@ -72,11 +72,11 @@ export default function ReleaseCountdown({ date, tba }) {
   return (
     <Card>
       <Label icon={Clock}>Disponível em</Label>
-      <div className="mt-4 grid grid-cols-3 gap-2.5 text-center">
+      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
         {columns.map(([value, unit]) => (
           <div
             key={unit}
-            className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] px-2 py-3 shadow-inner transition"
+            className="flex flex-col items-center justify-center rounded-[2px] border border-white/10 bg-[#121821] px-2 py-3 shadow-inner transition"
           >
             <span className="font-display text-3xl font-bold tabular-nums tracking-tight text-white sm:text-4xl">
               {pad(value)}
@@ -88,8 +88,8 @@ export default function ReleaseCountdown({ date, tba }) {
         ))}
       </div>
       <div className="my-4 h-px bg-white/10" />
-      <p className="font-action text-[11px] uppercase tracking-wider text-white/40">Data de lançamento</p>
-      <p className="font-sans text-sm font-medium text-white/90">{dateTimeFmt.format(date)}</p>
+      <p className="font-action text-[11px] uppercase tracking-wider text-white/45">Data de lançamento</p>
+      <p className="mt-0.5 font-sans text-sm font-medium text-white/95">{dateTimeFmt.format(date)}</p>
     </Card>
   );
 }
@@ -97,8 +97,10 @@ export default function ReleaseCountdown({ date, tba }) {
 function Card({ children, released = false }) {
   return (
     <div
-      className={`w-full rounded-2xl border p-5 shadow-2xl backdrop-blur-xl sm:w-auto sm:min-w-[20rem] ${
-        released ? 'border-xbox-neon/40 bg-xbox-green/15' : 'border-white/10 bg-black/50'
+      className={`w-full rounded-[2px] border border-t-2 p-5 shadow-2xl backdrop-blur-xl ${
+        released
+          ? 'border-xbox-neon/35 border-t-xbox-neon bg-xbox-green/15'
+          : 'border-white/12 border-t-xbox-green bg-[#0c1118]/90'
       }`}
     >
       {children}
