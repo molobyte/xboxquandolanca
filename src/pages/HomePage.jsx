@@ -588,6 +588,11 @@ function ReleasesSection({ portal, loading, nowMs, filter, setFilter, sort, setS
         </div>
 
         <div className="flex items-center gap-2 text-xs">
+          {!loading && (
+            <span className="liquid-glass-subtle rounded-full px-3 py-1.5 font-mono text-xs text-white/60">
+              {items.length} títulos
+            </span>
+          )}
           <span className="text-[11px] font-medium text-white/45">
             Ordenar:
           </span>

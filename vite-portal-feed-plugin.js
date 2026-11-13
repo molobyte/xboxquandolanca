@@ -17,12 +17,21 @@ const REQUEST_HEADERS = {
   Accept: 'application/json',
 };
 
-async function fetchJsonWithTimeout(url, headers = {}) {
+const UPCOMING_FILTERS_B64 = Buffer.from(
+  JSON.stringify({
+    orderby: { id: 'orderby', choices: [{ id: 'ReleaseDate desc' }] },
+  })
+).toString('base64');
+
+async function fetchJsonWithTimeout(url, headers = {}, options = {}) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 7000);
+  const timeoutMs = options.timeoutMs ?? 7000;
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const res = await fetch(url, {
+      method: options.method || 'GET',
       headers: { ...REQUEST_HEADERS, ...headers },
+      ...(options.body ? { body: options.body } : {}),
       signal: controller.signal,
     });
     if (!res.ok) return null;
@@ -59,17 +68,80 @@ async function fetchTrendingStoreIds(limit = 32) {
     .slice(0, limit);
 }
 
+async function fetchUpcomingStoreIds(maxPages = 8) {
+  const seen = new Set();
+  const ids = [];
+  let encodedCT;
+  const nowMs = Date.now();
+  const cutoffMs = nowMs - 24 * 60 * 60 * 1000;
+
+  for (let page = 0; page < maxPages; page++) {
+    const body = JSON.stringify({
+      Filters: UPCOMING_FILTERS_B64,
+      ReturnFilters: false,
+      ChannelKeyToBeUsedInResponse: 'BROWSE_CHANNELID=_FILTERS=ORDERBY=RELEASEDATE DESC',
+      ChannelId: '',
+      ...(encodedCT ? { EncodedCT: encodedCT } : {}),
+    });
+
+    const data = await fetchJsonWithTimeout(
+      'https://emerald.xboxservices.com/xboxcomfd/browse?locale=pt-BR',
+      {
+        'x-ms-api-version': '1.1',
+        'ms-cv': 'portal.1',
+        'Content-Type': 'application/json',
+      },
+      { method: 'POST', body, timeoutMs: 5000 }
+    );
+
+    if (!data) break;
+
+    const channel = Object.values(data.channels || {})[0];
+    const products = channel?.products || [];
+    for (const p of products) {
+      const id = p?.productId;
+      if (typeof id === 'string' && /^[A-Z0-9]{12}$/i.test(id) && !seen.has(id)) {
+        seen.add(id);
+        ids.push(id);
+      }
+    }
+
+    const summaries = Array.isArray(data.productSummaries)
+      ? data.productSummaries
+      : Object.values(data.productSummaries || {});
+
+    let futureCount = 0;
+    let oldestValidTs = null;
+    for (const s of summaries) {
+      if (!s?.releaseDate) continue;
+      const d = new Date(s.releaseDate);
+      const ts = d.getTime();
+      if (Number.isNaN(ts) || d.getUTCFullYear() < 1900 || d.getUTCFullYear() >= 2099) continue;
+      if (ts > nowMs) futureCount++;
+      if (oldestValidTs === null || ts < oldestValidTs) oldestValidTs = ts;
+    }
+
+    encodedCT = channel?.encodedCT;
+    if (!encodedCT || (futureCount === 0 && oldestValidTs !== null && oldestValidTs < cutoffMs)) {
+      break;
+    }
+  }
+
+  return ids;
+}
+
 export async function fetchPortalFeed() {
   const now = Date.now();
   if (cachedFeed && now - cachedAt < CACHE_TTL_MS) {
     return cachedFeed;
   }
 
-  const [comingSoonGp, recentGp, leavingSoonGp, trending] = await Promise.all([
-    fetchSiglIds(SIGLS.comingSoonGp, 12),
+  const [comingSoonGp, recentGp, leavingSoonGp, trending, upcomingStore] = await Promise.all([
+    fetchSiglIds(SIGLS.comingSoonGp, 16),
     fetchSiglIds(SIGLS.recentGp, 16),
     fetchSiglIds(SIGLS.leavingSoonGp, 12),
     fetchTrendingStoreIds(36),
+    fetchUpcomingStoreIds(8),
   ]);
 
   const payload = {
@@ -77,10 +149,11 @@ export async function fetchPortalFeed() {
     recentGp,
     leavingSoonGp,
     trending,
+    upcomingStore,
     fetchedAt: new Date().toISOString(),
   };
 
-  if (comingSoonGp.length || recentGp.length || trending.length) {
+  if (comingSoonGp.length || recentGp.length || trending.length || upcomingStore.length) {
     cachedFeed = payload;
     cachedAt = now;
   }

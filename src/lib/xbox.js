@@ -238,6 +238,11 @@ export function mapProduct(p) {
     .map((a) => FEATURE_LABELS[a.Name])
     .filter(Boolean);
 
+  const bundleIds = (market.RelatedProducts || [])
+    .filter((r) => r.RelationshipType === 'Bundle' && r.RelatedProductId)
+    .map((r) => r.RelatedProductId.toUpperCase())
+    .slice(0, 8);
+
   return {
     id: p.ProductId,
     title: loc.ProductTitle || 'Jogo sem título',
@@ -258,9 +263,36 @@ export function mapProduct(p) {
     price: extractPrice(p),
     platforms: extractPlatforms(p),
     features: [...new Set(features)],
+    bundleIds,
     slug: slugify(loc.ProductTitle) || null,
     storeUrl: `https://www.xbox.com/pt-BR/games/store/${slugify(loc.ProductTitle) || 'jogo'}/${p.ProductId}`,
   };
+}
+
+function applyBundleInfo(game, bundles) {
+  if (!bundles?.length) return game;
+  const next = { ...game };
+
+  if (next.releaseTba || !next.releaseDate) {
+    const validDates = bundles
+      .filter((b) => b.releaseDate && !b.releaseTba)
+      .map((b) => b.releaseDate);
+
+    if (validDates.length > 0) {
+      validDates.sort((a, b) => a.getTime() - b.getTime());
+      next.releaseDate = validDates[0];
+      next.releaseTba = false;
+    }
+  }
+
+  if (!next.price) {
+    const priced = bundles
+      .filter((b) => b.price && !/\bupgrade\b/i.test(b.title))
+      .sort((a, b) => a.price.list - b.price.list)[0];
+    if (priced) next.price = priced.price;
+  }
+
+  return next;
 }
 
 export async function getGame(id, signal) {
@@ -273,45 +305,41 @@ export async function getGame(id, signal) {
   const game = mapProduct(product);
 
   // Se o jogo não tem data definida ou não tem preço (caso de hubs/jogos base), consulta as edições relacionadas
-  if (game.releaseTba || !game.price) {
-    const relatedIds = (product.MarketProperties?.[0]?.RelatedProducts || [])
-      .filter((r) => r.RelationshipType === 'Bundle')
-      .map((r) => r.RelatedProductId)
-      .slice(0, 8);
-
-    if (relatedIds.length > 0) {
-      try {
-        const bundleUrl = `${CATALOG}/products?bigIds=${encodeURIComponent(relatedIds.join(','))}&market=${MARKET}&languages=${LANG}`;
-        const bRes = await fetch(bundleUrl, { signal });
-        if (bRes.ok) {
-          const bData = await bRes.json();
-          const bundles = (bData.Products || []).map(mapProduct);
-
-          if (game.releaseTba) {
-            const validDates = bundles
-              .filter((b) => b.releaseDate && !b.releaseTba)
-              .map((b) => b.releaseDate);
-
-            if (validDates.length > 0) {
-              // Usa a data da versão Standard (ou a mais próxima)
-              validDates.sort((a, b) => a.getTime() - b.getTime());
-              game.releaseDate = validDates[0];
-              game.releaseTba = false;
-            }
-          }
-
-          if (!game.price) {
-            const priced = bundles.find((b) => b.price);
-            if (priced) game.price = priced.price;
-          }
-        }
-      } catch {
-        // Em caso de falha de rede secundária, mantém os dados originais
-      }
+  if ((game.releaseTba || !game.price) && game.bundleIds?.length > 0) {
+    try {
+      const bundles = await getGamesByIds(game.bundleIds, signal);
+      return applyBundleInfo(game, bundles);
+    } catch (err) {
+      if (err?.name === 'AbortError') throw err;
+      // Em caso de falha de rede secundária, mantém os dados originais
     }
   }
 
   return game;
+}
+
+/** Resolve datas de lançamento (e preços) de hubs/jogos sem data usando seus bundles relacionados em lote. */
+export async function resolveMissingReleaseDates(games, signal) {
+  const pending = (games || []).filter(
+    (g) => (g.releaseTba || !g.releaseDate) && g.bundleIds?.length > 0
+  );
+  if (!pending.length) return games;
+
+  const bundleIds = [...new Set(pending.flatMap((g) => g.bundleIds))].slice(0, 40);
+  if (!bundleIds.length) return games;
+
+  try {
+    const bundles = await getGamesByIds(bundleIds, signal);
+    const byId = new Map(bundles.map((b) => [b.id.toUpperCase(), b]));
+    return games.map((g) => {
+      if ((!g.releaseTba && g.releaseDate) || !g.bundleIds?.length) return g;
+      const related = g.bundleIds.map((bid) => byId.get(bid)).filter(Boolean);
+      return applyBundleInfo(g, related);
+    });
+  } catch (err) {
+    if (err?.name === 'AbortError') throw err;
+    return games;
+  }
 }
 
 /** Busca vários jogos em lote (até 20 BigIds por requisição) na Microsoft Store. */
