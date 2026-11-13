@@ -75,7 +75,7 @@ export default function GamePage({ id }) {
         </div>
       )}
 
-      <PortalHeader showSearch isGamePage />
+      <PortalHeader isGamePage />
 
       <div className="relative z-10 mx-auto w-full min-w-0 max-w-[1480px] flex-1 px-4 pb-20 pt-5 sm:px-6 lg:px-10">
         {state.status === 'loading' && <Skeleton />}

@@ -202,7 +202,7 @@ export default function SmartSearch({
         <div
           id={listId}
           role="listbox"
-          className="liquid-glass absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl bg-[#0e1210]/95 animate-fade-in"
+          className="liquid-glass-menu absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl animate-fade-in"
         >
           {directId ? (
             <button

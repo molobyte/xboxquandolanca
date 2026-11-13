@@ -53,6 +53,20 @@ export default function PortalHeader({
     return () => window.removeEventListener('keydown', onKey);
   }, [searchModalOpen]);
 
+  // Na página do jogo (sem barra de busca no corpo), '/' abre o mesmo modal de busca rápida.
+  useEffect(() => {
+    if (showSearch || !isGamePage) return;
+    const onKey = (e) => {
+      if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
+      e.preventDefault();
+      setSearchModalOpen(true);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showSearch, isGamePage]);
+
   const positionClass = overlayHero ? 'fixed inset-x-0 top-0 z-40' : 'sticky top-0 z-40';
   const surfaceClass =
     overlayHero && !scrolled
@@ -178,7 +192,7 @@ export default function PortalHeader({
           onClick={() => setSearchModalOpen(false)}
         >
           <div
-            className="liquid-glass w-full max-w-2xl rounded-3xl p-5 sm:p-6"
+            className="liquid-glass-modal w-full max-w-2xl rounded-3xl p-5 sm:p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-center justify-between">
