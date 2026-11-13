@@ -160,6 +160,34 @@ function pickImage(images, purposes) {
   return null;
 }
 
+/** Extrai screenshots únicos da Microsoft Store (a API costuma duplicar entradas Desktop/N e Xbox/N). */
+function extractScreenshots(images = [], limit = 8) {
+  const seenHashes = new Set();
+  const seenUris = new Set();
+  const out = [];
+
+  for (const img of images) {
+    if (img?.ImagePurpose !== 'Screenshot' || !img.Uri) continue;
+
+    const hash = img.UnscaledImageSHA256Hash || null;
+    const normUri = img.Uri.replace(/^https?:/i, '').trim().toLowerCase();
+
+    if ((hash && seenHashes.has(hash)) || seenUris.has(normUri)) continue;
+
+    if (hash) seenHashes.add(hash);
+    seenUris.add(normUri);
+
+    out.push({
+      thumb: imageUrl(img.Uri, { w: 640 }),
+      full: imageUrl(img.Uri, { w: 1920 }),
+    });
+
+    if (out.length >= limit) break;
+  }
+
+  return out;
+}
+
 const CATEGORY_PT = {
   'Action & adventure': 'Ação e aventura',
   'Card & board': 'Cartas e tabuleiro',
@@ -224,10 +252,7 @@ export function mapProduct(p) {
     coverIsSquare: cover ? cover.Width === cover.Height : false,
     hero: hero ? imageUrl(hero.Uri, { w: 1920 }) : null,
     cardHero: hero ? imageUrl(hero.Uri, { w: 640 }) : cover ? imageUrl(cover.Uri, { w: 600 }) : null,
-    screenshots: images
-      .filter((i) => i.ImagePurpose === 'Screenshot')
-      .slice(0, 8)
-      .map((i) => ({ thumb: imageUrl(i.Uri, { w: 640 }), full: imageUrl(i.Uri, { w: 1920 }) })),
+    screenshots: extractScreenshots(images, 8),
     rating: allTime && allTime.RatingCount > 0 ? { average: allTime.AverageRating, count: allTime.RatingCount } : null,
     ageRating: classInd?.RatingId?.split(':')[1] || null,
     price: extractPrice(p),
