@@ -56,18 +56,18 @@ export default function GamePage({ id }) {
   const { game } = state;
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-portal-bg text-slate-100">
+    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-xbox-bg text-neutral-100">
       {/* Atmosfera sutil + Arte de fundo */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute -left-24 top-0 h-[34rem] w-[34rem] rounded-full bg-portal-blue/12 blur-[180px]" />
-        <div className="absolute right-0 top-1/3 h-[28rem] w-[28rem] rounded-full bg-indigo-500/10 blur-[180px]" />
+        <div className="absolute -left-24 top-0 h-[34rem] w-[34rem] rounded-full bg-xbox-green/20 blur-[180px]" />
+        <div className="absolute right-0 top-1/3 h-[28rem] w-[28rem] rounded-full bg-xbox-bright/10 blur-[180px]" />
       </div>
 
       {game?.hero && (
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[72vh] overflow-hidden">
           <img src={game.hero} alt="" className="h-full w-full object-cover opacity-40 animate-fade-in" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0b0f1d]/40 via-[#0b0f1d]/80 to-[#0b0f1d]" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0b0f1d] via-transparent to-[#0b0f1d]/75" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0d0b]/40 via-[#0a0d0b]/80 to-[#0a0d0b]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0d0b] via-transparent to-[#0a0d0b]/75" />
         </div>
       )}
 
@@ -144,32 +144,32 @@ function GameDetails({ game }) {
     <>
       {/* Barra de Breadcrumb & Ações rápidas do Portal */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4 text-xs">
-        <nav className="flex min-w-0 items-center gap-1.5 text-slate-400" aria-label="Breadcrumb">
+        <nav className="flex min-w-0 items-center gap-1.5 text-neutral-400" aria-label="Breadcrumb">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="font-medium transition hover:text-portal-cyan"
+            className="font-medium transition hover:text-xbox-neon"
           >
             Portal Xbox
           </button>
-          <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-600" />
+          <ChevronRight className="h-3.5 w-3.5 shrink-0 text-neutral-600" />
           {game.category && (
             <>
               <span className="truncate">{game.category}</span>
-              <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-600" />
+              <ChevronRight className="h-3.5 w-3.5 shrink-0 text-neutral-600" />
             </>
           )}
           <span className="truncate font-semibold text-white">{game.title}</span>
         </nav>
 
         <div className="flex items-center gap-2">
-          <span className="hidden rounded-full border border-white/[0.09] bg-[#151c33]/90 px-3 py-1 font-mono text-[11px] text-slate-300 sm:inline-block">
+          <span className="hidden rounded-full border border-white/[0.09] bg-[#141a16]/90 px-3 py-1 font-mono text-[11px] text-neutral-300 sm:inline-block">
             ID {game.id}
           </span>
           <button
             type="button"
             onClick={copyShareLink}
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-[#151c33]/90 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-200 transition hover:border-portal-blue/50 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-[#141a16]/90 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-neutral-200 transition hover:border-xbox-neon/45 hover:text-white"
           >
             {copied ? (
               <>
@@ -207,15 +207,15 @@ function GameDetails({ game }) {
             />
 
             {game.rating && (
-              <div className="mt-3.5 flex items-center justify-between rounded-2xl border border-white/[0.09] bg-[#151c33]/90 px-4 py-3 text-sm text-white shadow-portal-card">
+              <div className="mt-3.5 flex items-center justify-between rounded-2xl border border-white/[0.09] bg-[#141a16]/90 px-4 py-3 text-sm text-white shadow-portal-card">
                 <div className="flex items-center gap-2">
                   <Star className="h-4 w-4 shrink-0 fill-amber-400 text-amber-400" />
                   <strong className="font-display text-base font-bold text-white">
                     {game.rating.average.toFixed(1)}
                   </strong>
-                  <span className="text-xs text-slate-400">/ 5.0</span>
+                  <span className="text-xs text-neutral-400">/ 5.0</span>
                 </div>
-                <span className="font-mono text-[11px] text-slate-400">
+                <span className="font-mono text-[11px] text-neutral-400">
                   {new Intl.NumberFormat('pt-BR').format(game.rating.count)} avaliações
                 </span>
               </div>
@@ -223,14 +223,14 @@ function GameDetails({ game }) {
           </div>
 
           {meta.length > 0 && (
-            <div className="rounded-2xl border border-white/[0.09] bg-[#151c33]/90 p-5 shadow-portal-card backdrop-blur-xl">
-              <h3 className="mb-3.5 border-b border-white/[0.08] pb-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+            <div className="rounded-2xl border border-white/[0.09] bg-[#141a16]/90 p-5 shadow-portal-card backdrop-blur-xl">
+              <h3 className="mb-3.5 border-b border-white/[0.08] pb-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-400">
                 Ficha Técnica
               </h3>
               <dl className="flex flex-col gap-3">
                 {meta.map(([k, v]) => (
-                  <div key={k} className="border-l-2 border-portal-blue/70 pl-3">
-                    <dt className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <div key={k} className="border-l-2 border-xbox-neon/70 pl-3">
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       {k}
                     </dt>
                     <dd className="mt-0.5 text-sm font-semibold text-white">{v}</dd>
@@ -246,14 +246,14 @@ function GameDetails({ game }) {
           {/* Tags de categoria e plataforma */}
           <div className="flex flex-wrap items-center gap-2">
             {game.category && (
-              <span className="rounded-full border border-portal-cyan/35 bg-portal-cyan/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-portal-cyan">
+              <span className="rounded-full border border-xbox-neon/35 bg-xbox-neon/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-xbox-neon">
                 {game.category}
               </span>
             )}
             {game.platforms.map((pl) => (
               <span
                 key={pl}
-                className="rounded-full border border-white/[0.1] bg-[#151c33] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-200"
+                className="rounded-full border border-white/[0.1] bg-[#141a16] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-200"
               >
                 {pl}
               </span>
@@ -264,7 +264,7 @@ function GameDetails({ game }) {
             {game.title}
           </h1>
           {game.publisher && (
-            <p className="mt-1.5 text-base font-medium text-slate-300/80 sm:text-lg">{game.publisher}</p>
+            <p className="mt-1.5 text-base font-medium text-neutral-300/80 sm:text-lg">{game.publisher}</p>
           )}
 
           {/* Matriz de Preços & Histórico */}
@@ -280,7 +280,7 @@ function GameDetails({ game }) {
 
           {/* Barra de opções de visualização de informações */}
           {tabs.length > 1 && (
-            <div className="mt-7 inline-flex flex-wrap gap-1 rounded-full border border-white/[0.08] bg-[#13192e] p-1">
+            <div className="mt-7 inline-flex flex-wrap gap-1 rounded-full border border-white/[0.08] bg-[#121814] p-1">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -291,11 +291,11 @@ function GameDetails({ game }) {
                     onClick={() => setActiveTab(tab.id)}
                     className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                       isActive
-                        ? 'bg-portal-blue text-white shadow-sm'
-                        : 'text-slate-300/75 hover:bg-white/[0.04] hover:text-white'
+                        ? 'bg-xbox-green text-white shadow-sm'
+                        : 'text-neutral-300/75 hover:bg-white/[0.04] hover:text-white'
                     }`}
                   >
-                    <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                    <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-white' : 'text-neutral-400'}`} />
                     <span>{tab.label}</span>
                   </button>
                 );
@@ -314,12 +314,12 @@ function GameDetails({ game }) {
           {(activeTab === 'all' || activeTab === 'details') && (
             <>
               {game.description && (
-                <div className="mt-6 rounded-2xl border border-white/[0.08] bg-[#151c33]/85 p-5 shadow-portal-card backdrop-blur-xl">
-                  <h2 className="border-b border-white/[0.08] pb-2.5 text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
+                <div className="mt-6 rounded-2xl border border-white/[0.08] bg-[#141a16]/85 p-5 shadow-portal-card backdrop-blur-xl">
+                  <h2 className="border-b border-white/[0.08] pb-2.5 text-xs font-bold uppercase tracking-[0.16em] text-neutral-400">
                     Sobre o jogo
                   </h2>
                   <p
-                    className={`mt-3.5 whitespace-pre-line text-sm leading-relaxed text-slate-200/85 sm:text-base ${
+                    className={`mt-3.5 whitespace-pre-line text-sm leading-relaxed text-neutral-200/85 sm:text-base ${
                       expanded ? '' : 'line-clamp-6'
                     }`}
                   >
@@ -329,7 +329,7 @@ function GameDetails({ game }) {
                     <button
                       type="button"
                       onClick={() => setExpanded((v) => !v)}
-                      className="mt-3 text-xs font-bold uppercase tracking-wider text-portal-cyan hover:underline"
+                      className="mt-3 text-xs font-bold uppercase tracking-wider text-xbox-neon hover:underline"
                     >
                       {expanded ? 'Mostrar menos' : 'Ler descrição completa'}
                     </button>
@@ -338,15 +338,15 @@ function GameDetails({ game }) {
               )}
 
               {game.features.length > 0 && (
-                <div className="mt-5 rounded-2xl border border-white/[0.08] bg-[#151c33]/85 p-5 shadow-portal-card backdrop-blur-xl">
-                  <h2 className="border-b border-white/[0.08] pb-2.5 text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
+                <div className="mt-5 rounded-2xl border border-white/[0.08] bg-[#141a16]/85 p-5 shadow-portal-card backdrop-blur-xl">
+                  <h2 className="border-b border-white/[0.08] pb-2.5 text-xs font-bold uppercase tracking-[0.16em] text-neutral-400">
                     Capacidades e Recursos Xbox
                   </h2>
                   <div className="mt-3.5 flex flex-wrap gap-2">
                     {game.features.map((f) => (
                       <span
                         key={f}
-                        className="rounded-full border border-white/[0.09] bg-[#0e1324] px-3 py-1 text-xs font-medium text-slate-200"
+                        className="rounded-full border border-white/[0.09] bg-[#0d120f] px-3 py-1 text-xs font-medium text-neutral-200"
                       >
                         {f}
                       </span>
@@ -370,22 +370,22 @@ function GameDetails({ game }) {
           <ReleaseCountdown date={game.releaseDate} tba={game.releaseTba} />
           <NewZealandTrickCard gameId={game.id} brazilDate={game.releaseDate} tba={game.releaseTba} />
 
-          <div className="rounded-2xl border border-white/[0.08] bg-[#151c33]/90 p-4 shadow-portal-card">
-            <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#141a16]/90 p-4 shadow-portal-card">
+            <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-400">
               Explorar no Portal
             </span>
             <div className="mt-2.5 grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => navigate(sectionPath('lancamentos'))}
-                className="rounded-xl border border-white/[0.08] bg-[#0e1324] px-3 py-2.5 text-left text-xs font-semibold text-slate-200 transition hover:border-portal-blue/50 hover:text-white"
+                className="rounded-xl border border-white/[0.08] bg-[#0d120f] px-3 py-2.5 text-left text-xs font-semibold text-neutral-200 transition hover:border-xbox-neon/45 hover:text-white"
               >
                 Lançamentos &rarr;
               </button>
               <button
                 type="button"
                 onClick={() => navigate(sectionPath('gamepass'))}
-                className="rounded-xl border border-white/[0.08] bg-[#0e1324] px-3 py-2.5 text-left text-xs font-semibold text-slate-200 transition hover:border-xbox-neon/45 hover:text-xbox-neon"
+                className="rounded-xl border border-white/[0.08] bg-[#0d120f] px-3 py-2.5 text-left text-xs font-semibold text-neutral-200 transition hover:border-xbox-neon/45 hover:text-xbox-neon"
               >
                 Game Pass &rarr;
               </button>
@@ -413,10 +413,10 @@ function Screenshots({ shots, columns = 4 }) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
+        <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-neutral-400">
           Galeria de Imagens ({shots.length})
         </h2>
-        <span className="font-mono text-[11px] text-slate-500">Clique para ampliar em HD</span>
+        <span className="font-mono text-[11px] text-neutral-500">Clique para ampliar em HD</span>
       </div>
       <div className={gridCls}>
         {shots.map((s, i) => (
@@ -425,7 +425,7 @@ function Screenshots({ shots, columns = 4 }) {
             href={s.full}
             target="_blank"
             rel="noreferrer"
-            className="group relative overflow-hidden rounded-2xl border border-white/[0.09] bg-[#151c33] shadow-portal-card transition hover:-translate-y-0.5 hover:border-portal-blue/50"
+            className="group relative overflow-hidden rounded-2xl border border-white/[0.09] bg-[#141a16] shadow-portal-card transition hover:-translate-y-0.5 hover:border-xbox-neon/45"
           >
             <img
               src={s.thumb}
@@ -433,7 +433,7 @@ function Screenshots({ shots, columns = 4 }) {
               loading="lazy"
               className="aspect-video w-full object-cover transition duration-500 group-hover:scale-105"
             />
-            <span className="absolute bottom-2.5 right-2.5 rounded-full border border-white/15 bg-[#0a0e1b]/80 px-2.5 py-0.5 font-mono text-[10px] text-slate-200 backdrop-blur-md">
+            <span className="absolute bottom-2.5 right-2.5 rounded-full border border-white/15 bg-[#090d0a]/80 px-2.5 py-0.5 font-mono text-[10px] text-neutral-200 backdrop-blur-md">
               {String(i + 1).padStart(2, '0')}
             </span>
           </a>
@@ -468,7 +468,7 @@ function PriceCardsGrid({ game, priceHistory, loadingHistory }) {
         href={game.storeUrl}
         target="_blank"
         rel="noreferrer"
-        className="group flex min-h-[104px] flex-col justify-between rounded-2xl border border-portal-blue/60 bg-gradient-to-br from-[#2563eb] to-[#3b82f6] p-4 text-white shadow-portal-blue transition hover:brightness-110"
+        className="group flex min-h-[104px] flex-col justify-between rounded-2xl border border-xbox-neon/45 bg-gradient-to-br from-[#107C10] to-[#16a34a] p-4 text-white shadow-xbox-cta transition hover:brightness-110"
         title="Abrir página oficial na loja Xbox"
       >
         <div className="flex items-center justify-between gap-1">
@@ -488,7 +488,7 @@ function PriceCardsGrid({ game, priceHistory, loadingHistory }) {
             {displayPrice}
           </span>
           {discountPercent && (
-            <span className="rounded-lg bg-portal-coral px-2 py-0.5 text-[10px] font-extrabold text-white shadow">
+            <span className="rounded-lg bg-amber-400 px-2 py-0.5 text-[10px] font-extrabold text-[#090d0a] shadow">
               -{discountPercent}%
             </span>
           )}
@@ -547,11 +547,11 @@ function PriceCardsGrid({ game, priceHistory, loadingHistory }) {
         onClick={() => {
           document.getElementById('price-chart-section')?.scrollIntoView({ behavior: 'smooth' });
         }}
-        className="flex min-h-[104px] flex-col justify-between rounded-2xl border border-white/[0.09] bg-[#151c33]/90 p-4 text-left text-white shadow-portal-card transition hover:border-white/25 hover:bg-[#1a223e]"
+        className="flex min-h-[104px] flex-col justify-between rounded-2xl border border-white/[0.09] bg-[#141a16]/90 p-4 text-left text-white shadow-portal-card transition hover:border-white/25 hover:bg-[#1a221d]"
         title="Ver no gráfico de histórico de preços"
       >
         <div className="flex items-center justify-between gap-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
             Maior Registrado
           </span>
         </div>
@@ -568,7 +568,7 @@ function PriceCardsGrid({ game, priceHistory, loadingHistory }) {
           </span>
         </div>
 
-        <div className="truncate text-[11px] font-medium text-slate-400">
+        <div className="truncate text-[11px] font-medium text-neutral-400">
           {priceHistory?.highestPrice != null
             ? 'Pico histórico no Xbox'
             : loadingHistory
@@ -627,22 +627,22 @@ function Skeleton() {
   return (
     <div className="mt-8 grid animate-pulse grid-cols-1 gap-6 lg:grid-cols-12">
       <div className="space-y-4 lg:col-span-3">
-        <div className="aspect-[2/3] w-full rounded-2xl bg-[#151c33]" />
-        <div className="h-48 w-full rounded-2xl bg-[#151c33]" />
+        <div className="aspect-[2/3] w-full rounded-2xl bg-[#141a16]" />
+        <div className="h-48 w-full rounded-2xl bg-[#141a16]" />
       </div>
       <div className="space-y-4 lg:col-span-6">
-        <div className="h-6 w-28 rounded-full bg-[#151c33]" />
-        <div className="h-12 w-3/4 rounded-2xl bg-[#151c33]" />
+        <div className="h-6 w-28 rounded-full bg-[#141a16]" />
+        <div className="h-12 w-3/4 rounded-2xl bg-[#141a16]" />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="h-24 rounded-2xl bg-[#151c33]" />
-          <div className="h-24 rounded-2xl bg-[#151c33]" />
-          <div className="h-24 rounded-2xl bg-[#151c33]" />
+          <div className="h-24 rounded-2xl bg-[#141a16]" />
+          <div className="h-24 rounded-2xl bg-[#141a16]" />
+          <div className="h-24 rounded-2xl bg-[#141a16]" />
         </div>
-        <div className="h-64 rounded-2xl bg-[#151c33]" />
+        <div className="h-64 rounded-2xl bg-[#141a16]" />
       </div>
       <div className="space-y-4 lg:col-span-3">
-        <div className="h-48 w-full rounded-2xl bg-[#151c33]" />
-        <div className="h-40 w-full rounded-2xl bg-[#151c33]" />
+        <div className="h-48 w-full rounded-2xl bg-[#141a16]" />
+        <div className="h-40 w-full rounded-2xl bg-[#141a16]" />
       </div>
     </div>
   );
@@ -650,22 +650,22 @@ function Skeleton() {
 
 function ErrorState({ message, onRetry }) {
   return (
-    <div className="mx-auto mt-20 max-w-lg rounded-3xl border border-white/[0.09] bg-[#151c33]/90 p-8 text-center shadow-portal-card">
+    <div className="mx-auto mt-20 max-w-lg rounded-3xl border border-white/[0.09] bg-[#141a16]/90 p-8 text-center shadow-portal-card">
       <AlertTriangle className="mx-auto h-10 w-10 text-amber-400" />
       <h2 className="mt-4 font-display text-2xl font-bold text-white">Não foi possível carregar o jogo</h2>
-      <p className="mt-2 text-sm text-slate-300/80">{message}</p>
+      <p className="mt-2 text-sm text-neutral-300/80">{message}</p>
       <div className="mt-6 flex justify-center gap-3">
         <button
           type="button"
           onClick={onRetry}
-          className="flex items-center gap-2 rounded-full bg-portal-blue px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-portal-blue transition hover:brightness-110"
+          className="flex items-center gap-2 rounded-full bg-xbox-green px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-xbox-cta transition hover:brightness-110"
         >
           <RotateCw className="h-4 w-4" /> Tentar novamente
         </button>
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="rounded-full border border-white/15 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-200 transition hover:bg-white/5"
+          className="rounded-full border border-white/15 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-neutral-200 transition hover:bg-white/5"
         >
           Voltar ao Portal
         </button>

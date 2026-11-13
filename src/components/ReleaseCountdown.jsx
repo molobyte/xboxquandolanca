@@ -76,19 +76,19 @@ export default function ReleaseCountdown({ date, tba }) {
         {columns.map(([value, unit]) => (
           <div
             key={unit}
-            className="flex flex-col items-center justify-center rounded-xl border border-white/[0.08] bg-[#0d1223] px-2 py-3 shadow-inner transition"
+            className="flex flex-col items-center justify-center rounded-xl border border-white/[0.08] bg-[#0d120f] px-2 py-3 shadow-inner transition"
           >
             <span className="font-display text-3xl font-bold tabular-nums tracking-tight text-white sm:text-4xl">
               {pad(value)}
             </span>
-            <span className="mt-1 text-[11px] font-bold tracking-wider text-portal-cyan">
+            <span className="mt-1 text-[11px] font-bold tracking-wider text-xbox-neon">
               {unit}
             </span>
           </div>
         ))}
       </div>
       <div className="my-4 h-px bg-white/[0.08]" />
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Data de lançamento</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">Data de lançamento</p>
       <p className="mt-0.5 text-sm font-semibold text-white">{dateTimeFmt.format(date)}</p>
     </Card>
   );
@@ -100,7 +100,7 @@ function Card({ children, released = false }) {
       className={`w-full rounded-2xl border p-5 shadow-portal-card backdrop-blur-xl ${
         released
           ? 'border-xbox-neon/35 bg-xbox-green/15'
-          : 'border-white/[0.09] bg-[#151c33]/90'
+          : 'border-white/[0.09] bg-[#141a16]/90'
       }`}
     >
       {children}
@@ -108,10 +108,10 @@ function Card({ children, released = false }) {
   );
 }
 
-function Label({ icon: Icon, children, className = 'text-slate-300' }) {
+function Label({ icon: Icon, children, className = 'text-neutral-300' }) {
   return (
     <p className={`flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] ${className}`}>
-      <Icon className="h-4 w-4 text-portal-cyan" />
+      <Icon className="h-4 w-4 text-xbox-neon" />
       {children}
     </p>
   );

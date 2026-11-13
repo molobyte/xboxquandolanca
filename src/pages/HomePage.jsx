@@ -128,11 +128,11 @@ export default function HomePage({ section = 'geral' }) {
   const isOverview = section === 'geral';
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-portal-bg text-slate-100">
-      {/* Atmosfera de fundo estilo Game Portal Midnight */}
+    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-xbox-bg text-neutral-100">
+      {/* Atmosfera de fundo em tons Xbox */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute -left-32 top-0 h-[38rem] w-[38rem] rounded-full bg-portal-blue/15 blur-[180px]" />
-        <div className="absolute -right-24 top-1/4 h-[34rem] w-[34rem] rounded-full bg-indigo-500/12 blur-[190px]" />
+        <div className="absolute -left-32 top-0 h-[38rem] w-[38rem] rounded-full bg-xbox-green/20 blur-[180px]" />
+        <div className="absolute -right-24 top-1/4 h-[34rem] w-[34rem] rounded-full bg-xbox-bright/12 blur-[190px]" />
         <div className="absolute bottom-0 left-1/3 h-[26rem] w-[26rem] rounded-full bg-xbox-neon/[0.06] blur-[180px]" />
         <div className="absolute inset-0 bg-grid opacity-[0.04]" />
       </div>
@@ -157,13 +157,13 @@ export default function HomePage({ section = 'geral' }) {
 
           <main className="relative z-20 mx-auto w-full min-w-0 max-w-[1540px] flex-1 px-4 sm:px-6 lg:px-10">
             {/* BARRA FLUTUANTE DE BUSCA + KPIs RÁPIDOS */}
-            <section className="-mt-8 rounded-3xl border border-white/[0.1] bg-[#13192f]/90 p-4 shadow-[0_24px_64px_-20px_rgba(3,6,18,0.95)] backdrop-blur-2xl sm:p-6">
+            <section className="-mt-8 rounded-3xl border border-white/[0.1] bg-[#121814]/90 p-4 shadow-[0_24px_64px_-20px_rgba(2,8,4,0.95)] backdrop-blur-2xl sm:p-6">
               <div className="grid grid-cols-1 gap-5 lg:grid-cols-12 lg:items-center">
                 <div className="min-w-0 lg:col-span-7">
                   <SmartSearch size="lg" slashShortcut />
 
                   <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
-                    <span className="mr-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <span className="mr-1 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
                       Populares:
                     </span>
                     {QUICK_PICKS.map((item) => (
@@ -171,7 +171,7 @@ export default function HomePage({ section = 'geral' }) {
                         key={item.id}
                         type="button"
                         onClick={() => navigate(gamePath(item.id))}
-                        className="rounded-full border border-white/[0.09] bg-white/[0.04] px-3 py-1 text-xs font-medium text-slate-200 transition hover:border-portal-blue/50 hover:bg-portal-blue/15 hover:text-white"
+                        className="rounded-full border border-white/[0.09] bg-white/[0.04] px-3 py-1 text-xs font-medium text-neutral-200 transition hover:border-xbox-neon/45 hover:bg-xbox-green/20 hover:text-white"
                       >
                         {item.label}
                       </button>
@@ -180,8 +180,8 @@ export default function HomePage({ section = 'geral' }) {
 
                   {recentGames.length > 0 && (
                     <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-white/[0.07] pt-3">
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                        <History className="h-3 w-3 text-portal-cyan" />
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                        <History className="h-3 w-3 text-xbox-neon" />
                         Recentes:
                       </span>
                       {recentGames.slice(0, 5).map((rg) => (
@@ -189,7 +189,7 @@ export default function HomePage({ section = 'geral' }) {
                           key={rg.id}
                           type="button"
                           onClick={() => navigate(gamePath(rg.id))}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-[#0d1223] px-2.5 py-1 text-xs text-slate-200 transition hover:border-portal-cyan/40 hover:text-white"
+                          className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-[#0d120f] px-2.5 py-1 text-xs text-neutral-200 transition hover:border-xbox-neon/45 hover:text-white"
                         >
                           <span className="max-w-[140px] truncate">{rg.title}</span>
                         </button>
@@ -231,7 +231,7 @@ export default function HomePage({ section = 'geral' }) {
                     label="Fuso Nova Zelândia"
                     value={`+${clocks.diffHours}h`}
                     hint={`Agora ${clocks.nzTime} lá`}
-                    accent="cyan"
+                    accent="mint"
                     onClick={() => navigate(sectionPath('ferramentas'))}
                   />
                 </div>
@@ -256,11 +256,11 @@ export default function HomePage({ section = 'geral' }) {
       ) : (
         <main className="relative z-10 mx-auto w-full min-w-0 max-w-[1540px] flex-1 px-4 pt-6 sm:px-6 lg:px-10">
           {/* Banner compacto atmosférico nas sub-seções */}
-          <section className="relative overflow-hidden rounded-3xl border border-white/[0.09] bg-gradient-to-br from-[#171f3a] via-[#13192e] to-[#0e1324] p-6 shadow-portal-card sm:p-8">
-            <div className="pointer-events-none absolute -right-16 -top-16 h-60 w-60 rounded-full bg-portal-blue/20 blur-[90px]" />
+          <section className="relative overflow-hidden rounded-3xl border border-white/[0.09] bg-gradient-to-br from-[#152418] via-[#131915] to-[#0d120f] p-6 shadow-portal-card sm:p-8">
+            <div className="pointer-events-none absolute -right-16 -top-16 h-60 w-60 rounded-full bg-xbox-green/25 blur-[90px]" />
             <div className="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-portal-cyan/30 bg-portal-cyan/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-portal-cyan">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-xbox-neon/35 bg-xbox-neon/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-xbox-neon">
                   Portal Xbox Brasil
                 </span>
                 <h1 className="mt-2.5 font-display text-2xl font-bold tracking-tight text-white sm:text-4xl">
@@ -329,14 +329,14 @@ function HeroShowcase({
 }) {
   if (loading && !activeGame) {
     return (
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#191d38] via-[#11162b] to-[#0b0f1d] pb-20 pt-28 sm:pt-32 lg:min-h-[640px]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#132216] via-[#0e1510] to-[#0a0d0b] pb-20 pt-28 sm:pt-32 lg:min-h-[640px]">
         <div className="mx-auto grid max-w-[1540px] animate-pulse grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:items-end lg:px-10">
           <div className="space-y-4 lg:col-span-6">
             <div className="h-6 w-36 rounded-full bg-white/10" />
             <div className="h-14 w-4/5 rounded-2xl bg-white/10" />
             <div className="h-5 w-2/3 rounded-xl bg-white/5" />
             <div className="flex gap-3 pt-2">
-              <div className="h-11 w-44 rounded-full bg-portal-blue/30" />
+              <div className="h-11 w-44 rounded-full bg-xbox-green/40" />
               <div className="h-11 w-36 rounded-full bg-white/10" />
             </div>
           </div>
@@ -352,23 +352,23 @@ function HeroShowcase({
 
   if (!activeGame) {
     return (
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#1a2040] via-[#11162b] to-[#0b0f1d] pb-20 pt-32">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#142417] via-[#0e1510] to-[#0a0d0b] pb-20 pt-32">
         <div className="mx-auto max-w-[1540px] px-4 sm:px-6 lg:px-10">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-portal-coral px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-xbox-neon/40 bg-xbox-green px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white">
             <Sparkles className="h-3.5 w-3.5" />
             Portal Xbox Brasil
           </span>
           <h1 className="mt-4 max-w-3xl font-display text-4xl font-extrabold uppercase tracking-tight text-white sm:text-6xl">
             Quando lança<span className="text-xbox-neon">?</span>
           </h1>
-          <p className="mt-3 max-w-2xl text-base text-slate-300">
+          <p className="mt-3 max-w-2xl text-base text-neutral-300">
             Consulte contagens regressivas oficiais para Xbox Series X|S, Xbox One e PC, verifique o Truque da Nova Zelândia e analise o histórico de preços em reais.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               type="button"
               onClick={() => navigate(sectionPath('ferramentas'))}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#2563eb] to-[#3b82f6] px-6 py-3 text-sm font-bold text-white shadow-portal-blue transition hover:brightness-110"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#107C10] to-[#16a34a] px-6 py-3 text-sm font-bold text-white shadow-xbox-cta transition hover:brightness-110"
             >
               <span>Explorar ferramentas</span>
               <ArrowRight className="h-4 w-4" />
@@ -411,40 +411,40 @@ function HeroShowcase({
           className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center opacity-80 transition-opacity duration-500 animate-fade-in"
         />
       ) : (
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#231d47] via-[#141933] to-[#0b0f1d]" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#142a18] via-[#101812] to-[#0a0d0b]" />
       )}
 
       {/* Camadas de scrim cinematográfico */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#090d1b] via-[#090d1b]/75 via-45% to-[#090d1b]/30" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0b0f1d] via-[#0b0f1d]/55 via-30% to-transparent" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#080b16]/75 via-transparent to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#080b09] via-[#080b09]/75 via-45% to-[#080b09]/30" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0d0b] via-[#0a0d0b]/55 via-30% to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#070908]/75 via-transparent to-transparent" />
 
       <div className="relative z-10 mx-auto grid w-full max-w-[1540px] grid-cols-1 gap-8 px-4 sm:px-6 lg:grid-cols-12 lg:items-end lg:px-10">
         {/* Coluna Esquerda: Conteúdo Editorial & CTAs */}
         <div className="min-w-0 lg:col-span-6">
           <div className="flex flex-wrap items-center gap-2">
             {discountPct ? (
-              <span className="rounded-full bg-portal-coral px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white shadow-lg">
+              <span className="rounded-full bg-amber-400 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-[#090d0a] shadow-lg">
                 Oferta -{discountPct}%
               </span>
             ) : isFuture ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-portal-coral px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white shadow-lg">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-xbox-neon/40 bg-xbox-green px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white shadow-lg">
                 <Sparkles className="h-3 w-3" />
                 Próximo lançamento
               </span>
             ) : activeGame.inGamePass ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-portal-lime px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-[#090d1a] shadow-lg">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-xbox-lime px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-[#080b08] shadow-lg">
                 <Gamepad2 className="h-3.5 w-3.5" />
                 Game Pass
               </span>
             ) : (
-              <span className="rounded-full bg-portal-blue px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white shadow-lg">
+              <span className="rounded-full bg-xbox-green px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white shadow-lg">
                 Em destaque BR
               </span>
             )}
 
             {hasDate && (
-              <span className="rounded-full border border-white/15 bg-[#0c1124]/70 px-3 py-1 text-[11px] font-semibold text-slate-200 backdrop-blur-md">
+              <span className="rounded-full border border-white/15 bg-[#0b100c]/70 px-3 py-1 text-[11px] font-semibold text-neutral-200 backdrop-blur-md">
                 {spotlightDateFmt.format(activeGame.releaseDate)}
               </span>
             )}
@@ -454,7 +454,7 @@ function HeroShowcase({
             {activeGame.title}
           </h1>
 
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-200/85 sm:text-base">
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-neutral-200/85 sm:text-base">
             {[activeGame.publisher, activeGame.category].filter(Boolean).join(' · ') ||
               'Microsoft Store Brasil'}
             {hasPrice
@@ -466,7 +466,7 @@ function HeroShowcase({
 
           {/* Contagem regressiva ao vivo dentro do Hero */}
           {isFuture && (
-            <div className="mt-5 inline-flex flex-wrap items-center gap-2 rounded-2xl border border-white/[0.12] bg-[#0b1022]/75 p-2 backdrop-blur-xl">
+            <div className="mt-5 inline-flex flex-wrap items-center gap-2 rounded-2xl border border-white/[0.12] bg-[#0b100c]/75 p-2 backdrop-blur-xl">
               {[
                 [days, 'Dias'],
                 [hours, 'Horas'],
@@ -480,7 +480,7 @@ function HeroShowcase({
                   <span className="block font-display text-xl font-bold tabular-nums leading-none text-white sm:text-2xl">
                     {pad(val)}
                   </span>
-                  <span className="mt-1 block text-[10px] font-bold uppercase tracking-wider text-portal-cyan">
+                  <span className="mt-1 block text-[10px] font-bold uppercase tracking-wider text-xbox-neon">
                     {unit}
                   </span>
                 </div>
@@ -488,12 +488,12 @@ function HeroShowcase({
             </div>
           )}
 
-          {/* Botões de Ação Estilo Game Portal */}
+          {/* Botões de Ação Estilo Xbox Portal */}
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={() => navigate(gamePath(activeGame.id))}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#2563eb] to-[#3b82f6] px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-portal-blue transition hover:brightness-110 sm:text-sm"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#107C10] to-[#16a34a] px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-xbox-cta transition hover:brightness-110 sm:text-sm"
             >
               <span>Abrir painel do jogo</span>
               <ArrowRight className="h-4 w-4" />
@@ -533,7 +533,7 @@ function HeroShowcase({
                     idx >= 3 ? 'hidden sm:block' : ''
                   } ${
                     isSelected
-                      ? '-translate-y-1.5 border-portal-cyan/80 shadow-[0_18px_36px_-10px_rgba(37,99,235,0.65)] ring-2 ring-portal-blue/50'
+                      ? '-translate-y-1.5 border-xbox-neon/80 shadow-[0_18px_36px_-10px_rgba(16,124,16,0.7)] ring-2 ring-xbox-neon/45'
                       : 'border-white/15 opacity-75 hover:-translate-y-1 hover:border-white/35 hover:opacity-100'
                   }`}
                 >
@@ -544,9 +544,9 @@ function HeroShowcase({
                       className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="h-full w-full bg-[#151c33]" />
+                    <div className="h-full w-full bg-[#141a16]" />
                   )}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070a15] via-[#070a15]/35 to-transparent" />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070908] via-[#070908]/35 to-transparent" />
                   <div className="absolute inset-x-2.5 bottom-2.5">
                     <span className="line-clamp-2 font-display text-[10px] font-extrabold uppercase leading-tight tracking-wide text-white sm:text-[11px]">
                       {g.title}
@@ -565,7 +565,7 @@ function HeroShowcase({
                   type="button"
                   onClick={onPrev}
                   aria-label="Destaque anterior"
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-[#12182d]/85 text-white/80 backdrop-blur-md transition hover:border-portal-blue hover:bg-portal-blue/25 hover:text-white"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-[#121814]/85 text-white/80 backdrop-blur-md transition hover:border-xbox-neon/60 hover:bg-xbox-green/30 hover:text-white"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
@@ -573,7 +573,7 @@ function HeroShowcase({
                   type="button"
                   onClick={onNext}
                   aria-label="Próximo destaque"
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-[#12182d]/85 text-white/80 backdrop-blur-md transition hover:border-portal-blue hover:bg-portal-blue/25 hover:text-white"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-[#121814]/85 text-white/80 backdrop-blur-md transition hover:border-xbox-neon/60 hover:bg-xbox-green/30 hover:text-white"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </button>
@@ -581,7 +581,7 @@ function HeroShowcase({
 
               <div className="h-[2px] flex-1 overflow-hidden rounded-full bg-white/15">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-portal-blue to-portal-cyan transition-all duration-300"
+                  className="h-full rounded-full bg-gradient-to-r from-xbox-green to-xbox-neon transition-all duration-300"
                   style={{ width: `${progressPct}%` }}
                 />
               </div>
@@ -603,25 +603,25 @@ function PortalMetricTile({ label, value, hint, onClick, accent = 'default' }) {
       ? 'text-xbox-neon'
       : accent === 'amber'
       ? 'text-amber-300'
-      : accent === 'cyan'
-      ? 'text-portal-cyan'
+      : accent === 'mint'
+      ? 'text-xbox-mint'
       : 'text-white';
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group rounded-2xl border border-white/[0.08] bg-[#0e1427]/85 p-3.5 text-left transition hover:-translate-y-0.5 hover:border-portal-blue/45 hover:bg-[#141c35]"
+      className="group rounded-2xl border border-white/[0.08] bg-[#0e1410]/85 p-3.5 text-left transition hover:-translate-y-0.5 hover:border-xbox-neon/45 hover:bg-[#151e18]"
     >
-      <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+      <span className="block text-[10px] font-bold uppercase tracking-wider text-neutral-400">
         {label}
       </span>
       <span className={`mt-1 block font-display text-2xl font-bold leading-none ${valueColor}`}>
         {value}
       </span>
-      <span className="mt-1.5 flex items-center justify-between text-[11px] text-slate-400 group-hover:text-slate-200">
+      <span className="mt-1.5 flex items-center justify-between text-[11px] text-neutral-400 group-hover:text-neutral-200">
         <span className="truncate">{hint}</span>
-        <span className="text-portal-cyan">&rarr;</span>
+        <span className="text-xbox-neon">&rarr;</span>
       </span>
     </button>
   );
@@ -668,7 +668,7 @@ function OverviewSection({
       <section>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-portal-cyan">
+            <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-xbox-neon">
               <Flame className="h-3.5 w-3.5" />
               Microsoft Store Brasil
             </span>
@@ -678,7 +678,7 @@ function OverviewSection({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex flex-wrap items-center gap-1 rounded-full border border-white/[0.08] bg-[#13192f] p-1">
+            <div className="flex flex-wrap items-center gap-1 rounded-full border border-white/[0.08] bg-[#121814] p-1">
               {[
                 { id: 'trending', label: 'Em Alta' },
                 { id: 'deals', label: 'Ofertas' },
@@ -690,8 +690,8 @@ function OverviewSection({
                   onClick={() => setPopularTab(tab.id)}
                   className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                     popularTab === tab.id
-                      ? 'bg-portal-blue text-white shadow-sm'
-                      : 'text-slate-300/75 hover:text-white'
+                      ? 'bg-xbox-green text-white shadow-sm'
+                      : 'text-neutral-300/75 hover:text-white'
                   }`}
                 >
                   {tab.label}
@@ -704,7 +704,7 @@ function OverviewSection({
                 type="button"
                 onClick={() => scrollPopular(-1)}
                 aria-label="Rolar populares para a esquerda"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.1] bg-[#151c33] text-slate-300 transition hover:border-portal-blue/50 hover:text-white"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.1] bg-[#141a16] text-neutral-300 transition hover:border-xbox-neon/45 hover:text-white"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
@@ -712,7 +712,7 @@ function OverviewSection({
                 type="button"
                 onClick={() => scrollPopular(1)}
                 aria-label="Rolar populares para a direita"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.1] bg-[#151c33] text-slate-300 transition hover:border-portal-blue/50 hover:text-white"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.1] bg-[#141a16] text-neutral-300 transition hover:border-xbox-neon/45 hover:text-white"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -721,10 +721,10 @@ function OverviewSection({
             <button
               type="button"
               onClick={() => onSeeAllOffers(popularTab)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-white/[0.04] px-3.5 py-2 text-xs font-semibold text-slate-200 transition hover:border-portal-blue/50 hover:text-white"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-white/[0.04] px-3.5 py-2 text-xs font-semibold text-neutral-200 transition hover:border-xbox-neon/45 hover:text-white"
             >
               <span>Ver todos</span>
-              <ArrowRight className="h-3.5 w-3.5 text-portal-cyan" />
+              <ArrowRight className="h-3.5 w-3.5 text-xbox-neon" />
             </button>
           </div>
         </div>
@@ -788,7 +788,7 @@ function OverviewSection({
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <div className="flex flex-wrap gap-1 rounded-full border border-white/[0.08] bg-[#13192f] p-1">
+              <div className="flex flex-wrap gap-1 rounded-full border border-white/[0.08] bg-[#121814] p-1">
                 {[
                   { id: 'comingSoonGp', label: 'Chegando' },
                   { id: 'recentGp', label: 'Novos' },
@@ -801,7 +801,7 @@ function OverviewSection({
                     className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                       gpOverviewTab === tab.id
                         ? 'bg-xbox-green text-white shadow-sm'
-                        : 'text-slate-300/75 hover:text-white'
+                        : 'text-neutral-300/75 hover:text-white'
                     }`}
                   >
                     {tab.label}
@@ -812,7 +812,7 @@ function OverviewSection({
               <button
                 type="button"
                 onClick={() => navigate(sectionPath('gamepass'))}
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-white/[0.04] px-3.5 py-2 text-xs font-semibold text-slate-200 transition hover:border-xbox-neon/45 hover:text-white"
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-white/[0.04] px-3.5 py-2 text-xs font-semibold text-neutral-200 transition hover:border-xbox-neon/45 hover:text-white"
               >
                 <span>Ver catálogo</span>
                 <ArrowRight className="h-3.5 w-3.5 text-xbox-neon" />
@@ -886,8 +886,8 @@ function ReleasesSection({ portal, loading, nowMs, filter, setFilter, sort, setS
               onClick={() => setFilter(btn.id)}
               className={`rounded-full border px-4 py-1.5 text-xs font-semibold transition ${
                 filter === btn.id
-                  ? 'border-portal-blue/60 bg-portal-blue text-white shadow-sm'
-                  : 'border-white/[0.09] bg-[#151c33] text-slate-300 hover:border-white/25 hover:text-white'
+                  ? 'border-xbox-neon/45 bg-xbox-green text-white shadow-sm'
+                  : 'border-white/[0.09] bg-[#141a16] text-neutral-300 hover:border-white/25 hover:text-white'
               }`}
             >
               {btn.label}
@@ -896,13 +896,13 @@ function ReleasesSection({ portal, loading, nowMs, filter, setFilter, sort, setS
         </div>
 
         <div className="flex items-center gap-2 text-xs">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
             Ordenar:
           </span>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="rounded-full border border-white/[0.12] bg-[#151c33] px-3.5 py-1.5 text-xs font-medium text-white outline-none focus:border-portal-blue"
+            className="rounded-full border border-white/[0.12] bg-[#141a16] px-3.5 py-1.5 text-xs font-medium text-white outline-none focus:border-xbox-neon"
           >
             <option value="soonest">Mais próximos primeiro</option>
             <option value="alpha">Ordem alfabética (A-Z)</option>
@@ -952,8 +952,8 @@ function OffersSection({ portal, loading, nowMs, filter, setFilter }) {
                 onClick={() => setFilter(btn.id)}
                 className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-semibold transition ${
                   filter === btn.id
-                    ? 'border-portal-blue/60 bg-portal-blue text-white shadow-sm'
-                    : 'border-white/[0.09] bg-[#151c33] text-slate-300 hover:border-white/25 hover:text-white'
+                    ? 'border-xbox-neon/45 bg-xbox-green text-white shadow-sm'
+                    : 'border-white/[0.09] bg-[#141a16] text-neutral-300 hover:border-white/25 hover:text-white'
                 }`}
               >
                 <Icon className="h-3.5 w-3.5" />
@@ -962,7 +962,7 @@ function OffersSection({ portal, loading, nowMs, filter, setFilter }) {
             );
           })}
         </div>
-        <span className="rounded-full bg-white/[0.05] px-3 py-1 font-mono text-xs text-slate-300">
+        <span className="rounded-full bg-white/[0.05] px-3 py-1 font-mono text-xs text-neutral-300">
           {items.length} títulos
         </span>
       </div>
@@ -1006,7 +1006,7 @@ function GamePassSection({ portal, loading, nowMs, filter, setFilter }) {
               className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-semibold transition ${
                 filter === btn.id
                   ? 'border-xbox-neon/50 bg-xbox-green text-white shadow-sm'
-                  : 'border-white/[0.09] bg-[#151c33] text-slate-300 hover:border-white/25 hover:text-white'
+                  : 'border-white/[0.09] bg-[#141a16] text-neutral-300 hover:border-white/25 hover:text-white'
               }`}
             >
               <Gamepad2 className="h-3.5 w-3.5" />
@@ -1014,7 +1014,7 @@ function GamePassSection({ portal, loading, nowMs, filter, setFilter }) {
             </button>
           ))}
         </div>
-        <span className="rounded-full bg-white/[0.05] px-3 py-1 font-mono text-xs text-slate-300">
+        <span className="rounded-full bg-white/[0.05] px-3 py-1 font-mono text-xs text-neutral-300">
           {items.length} títulos
         </span>
       </div>
@@ -1052,23 +1052,23 @@ function ToolsSection() {
         <RewardsCalculatorWidget expanded />
         <div className="space-y-6">
           <StoreLookupGuideWidget />
-          <div className="rounded-2xl border border-white/[0.08] bg-[#151c33]/90 p-5 shadow-portal-card backdrop-blur-xl">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-200">
-              <Info className="h-3.5 w-3.5 text-portal-cyan" />
+          <div className="rounded-2xl border border-white/[0.08] bg-[#141a16]/90 p-5 shadow-portal-card backdrop-blur-xl">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-neutral-200">
+              <Info className="h-3.5 w-3.5 text-xbox-neon" />
               Tipos de Lançamento no Xbox
             </div>
-            <div className="mt-3.5 space-y-3 text-xs leading-relaxed text-slate-300/80">
-              <div className="rounded-xl border border-white/[0.07] bg-[#0d1223] p-3">
+            <div className="mt-3.5 space-y-3 text-xs leading-relaxed text-neutral-300/80">
+              <div className="rounded-xl border border-white/[0.07] bg-[#0d120f] p-3">
                 <strong className="block text-xbox-neon">
                   1. Lançamento Local (Meia-noite regional)
                 </strong>
                 Cada país libera às 00:00 do seu próprio fuso horário. É quando o Truque da Nova Zelândia funciona melhor, antecipando o jogo em até 15h–16h no Brasil.
               </div>
-              <div className="rounded-xl border border-white/[0.07] bg-[#0d1223] p-3">
-                <strong className="block text-portal-cyan">2. Lançamento Global Simultâneo</strong>
+              <div className="rounded-xl border border-white/[0.07] bg-[#0d120f] p-3">
+                <strong className="block text-xbox-mint">2. Lançamento Global Simultâneo</strong>
                 Todos os países recebem o acesso exatamente no mesmo minuto (geralmente 01:00 UTC ou 14:00 BRT). O site detecta isso automaticamente na ficha de cada jogo.
               </div>
-              <div className="rounded-xl border border-white/[0.07] bg-[#0d1223] p-3">
+              <div className="rounded-xl border border-white/[0.07] bg-[#0d120f] p-3">
                 <strong className="block text-amber-300">
                   3. Acesso Antecipado (Edições Deluxe/Premium)
                 </strong>
@@ -1086,7 +1086,7 @@ function SectionHeader({ icon: Icon, eyebrow, title, actionLabel, onAction }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-portal-cyan">
+        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-xbox-neon">
           <Icon className="h-3.5 w-3.5" />
           {eyebrow}
         </span>
@@ -1098,10 +1098,10 @@ function SectionHeader({ icon: Icon, eyebrow, title, actionLabel, onAction }) {
         <button
           type="button"
           onClick={onAction}
-          className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-white/[0.04] px-4 py-2 text-xs font-semibold text-slate-200 transition hover:border-portal-blue/50 hover:text-white"
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-white/[0.04] px-4 py-2 text-xs font-semibold text-neutral-200 transition hover:border-xbox-neon/45 hover:text-white"
         >
           <span>{actionLabel}</span>
-          <ArrowRight className="h-3.5 w-3.5 text-portal-cyan" />
+          <ArrowRight className="h-3.5 w-3.5 text-xbox-neon" />
         </button>
       )}
     </div>
@@ -1114,7 +1114,7 @@ function PosterRailSkeleton({ count = 6 }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="aspect-[3/4] w-[175px] shrink-0 animate-pulse rounded-2xl border border-white/[0.07] bg-[#151c33] sm:w-[205px] lg:w-[225px]"
+          className="aspect-[3/4] w-[175px] shrink-0 animate-pulse rounded-2xl border border-white/[0.07] bg-[#141a16] sm:w-[205px] lg:w-[225px]"
         />
       ))}
     </div>
@@ -1127,7 +1127,7 @@ function PosterGridSkeleton({ count = 10 }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="aspect-[3/4] animate-pulse rounded-2xl border border-white/[0.07] bg-[#151c33]"
+          className="aspect-[3/4] animate-pulse rounded-2xl border border-white/[0.07] bg-[#141a16]"
         />
       ))}
     </div>
@@ -1144,7 +1144,7 @@ function EditorialSkeleton({ count = 6, columns = 2 }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="flex h-36 animate-pulse gap-3.5 rounded-2xl border border-white/[0.07] bg-[#151c33] p-3.5"
+          className="flex h-36 animate-pulse gap-3.5 rounded-2xl border border-white/[0.07] bg-[#141a16] p-3.5"
         >
           <div className="h-full w-24 shrink-0 rounded-xl bg-white/[0.06]" />
           <div className="flex-1 space-y-2.5 py-2">
@@ -1164,7 +1164,7 @@ function CardsSkeleton({ count = 8 }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="aspect-[16/10] animate-pulse rounded-2xl border border-white/[0.07] bg-[#151c33]"
+          className="aspect-[16/10] animate-pulse rounded-2xl border border-white/[0.07] bg-[#141a16]"
         />
       ))}
     </div>
@@ -1173,8 +1173,8 @@ function CardsSkeleton({ count = 8 }) {
 
 function EmptyStrip({ text }) {
   return (
-    <div className="mt-5 flex items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-[#151c33]/80 p-5 text-sm text-slate-300/75">
-      <Clock className="h-4 w-4 shrink-0 text-slate-400" />
+    <div className="mt-5 flex items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-[#141a16]/80 p-5 text-sm text-neutral-300/75">
+      <Clock className="h-4 w-4 shrink-0 text-neutral-400" />
       <span>{text}</span>
     </div>
   );

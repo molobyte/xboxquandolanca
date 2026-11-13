@@ -66,8 +66,8 @@ export default function PortalHeader({
   const positionClass = overlayHero ? 'fixed inset-x-0 top-0 z-40' : 'sticky top-0 z-40';
   const surfaceClass =
     overlayHero && !scrolled
-      ? 'border-b border-transparent bg-gradient-to-b from-[#080b16]/85 via-[#080b16]/45 to-transparent'
-      : 'border-b border-white/[0.08] bg-[#0b0f1d]/88 shadow-[0_12px_36px_-16px_rgba(3,6,18,0.9)] backdrop-blur-xl';
+      ? 'border-b border-transparent bg-gradient-to-b from-[#070908]/85 via-[#070908]/45 to-transparent'
+      : 'border-b border-white/[0.08] bg-[#0a0d0b]/88 shadow-[0_12px_36px_-16px_rgba(2,8,4,0.9)] backdrop-blur-xl';
 
   return (
     <>
@@ -81,7 +81,7 @@ export default function PortalHeader({
             aria-label="Ir para a página inicial do portal"
           >
             {isGamePage && (
-              <ArrowLeft className="h-4 w-4 text-slate-400 transition group-hover:-translate-x-0.5 group-hover:text-portal-cyan" />
+              <ArrowLeft className="h-4 w-4 text-neutral-400 transition group-hover:-translate-x-0.5 group-hover:text-xbox-neon" />
             )}
             <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/[0.12] bg-white/[0.06] shadow-inner backdrop-blur-md">
               <XboxLogo className="h-4 w-4 text-xbox-neon drop-shadow-[0_0_10px_rgba(82,214,39,0.55)]" />
@@ -91,7 +91,7 @@ export default function PortalHeader({
                 Quando lança<span className="text-xbox-neon">?</span>
               </span>
               {!showSearch && (
-                <span className="hidden rounded-full border border-white/[0.12] bg-white/[0.06] px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-[0.14em] text-slate-300 xl:inline-block">
+                <span className="hidden rounded-full border border-white/[0.12] bg-white/[0.06] px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-300 xl:inline-block">
                   Xbox BR
                 </span>
               )}
@@ -100,7 +100,7 @@ export default function PortalHeader({
 
           {/* Navegação Centralizada (Desktop) */}
           <nav
-            className="hidden shrink-0 items-center gap-0.5 rounded-full border border-white/[0.08] bg-[#12182d]/65 p-1 backdrop-blur-md lg:flex"
+            className="hidden shrink-0 items-center gap-0.5 rounded-full border border-white/[0.08] bg-[#121814]/70 p-1 backdrop-blur-md lg:flex"
             aria-label="Seções do portal"
           >
             {PORTAL_NAV_ITEMS.map((item) => {
@@ -116,11 +116,11 @@ export default function PortalHeader({
                   } ${
                     active
                       ? 'bg-white/[0.12] text-white shadow-sm'
-                      : 'text-slate-300/75 hover:bg-white/[0.05] hover:text-white'
+                      : 'text-neutral-300/75 hover:bg-white/[0.05] hover:text-white'
                   }`}
                 >
                   <Icon
-                    className={`h-3.5 w-3.5 shrink-0 ${active ? 'text-portal-cyan' : 'text-slate-400/80'}`}
+                    className={`h-3.5 w-3.5 shrink-0 ${active ? 'text-xbox-neon' : 'text-neutral-400/80'}`}
                   />
                   <span>{item.label}</span>
                   {active && (
@@ -142,13 +142,13 @@ export default function PortalHeader({
                 type="button"
                 onClick={() => setSearchModalOpen(true)}
                 aria-label="Abrir busca rápida de jogos"
-                className="flex h-9 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-white/[0.12] bg-[#131a30]/75 px-3 text-slate-200 backdrop-blur-md transition hover:border-portal-blue/50 hover:bg-[#192240] hover:text-white"
+                className="flex h-9 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-white/[0.12] bg-[#131915]/75 px-3 text-neutral-200 backdrop-blur-md transition hover:border-xbox-neon/45 hover:bg-[#19221c] hover:text-white"
               >
-                <Search className="h-4 w-4 shrink-0 text-portal-cyan" />
-                <span className="hidden text-xs font-medium text-slate-300 xl:inline">
+                <Search className="h-4 w-4 shrink-0 text-xbox-neon" />
+                <span className="hidden text-xs font-medium text-neutral-300 xl:inline">
                   Buscar jogo
                 </span>
-                <kbd className="hidden rounded-md border border-white/15 bg-white/[0.06] px-1.5 py-0.5 font-mono text-[10px] text-slate-400 xl:inline">
+                <kbd className="hidden rounded-md border border-white/15 bg-white/[0.06] px-1.5 py-0.5 font-mono text-[10px] text-neutral-400 xl:inline">
                   /
                 </kbd>
               </button>
@@ -159,17 +159,17 @@ export default function PortalHeader({
               type="button"
               onClick={() => navigate(sectionPath('ferramentas'))}
               title="Horário ao vivo: Brasília vs Nova Zelândia (Truque da NZ)"
-              className="hidden shrink-0 items-center gap-2.5 rounded-full border border-white/[0.1] bg-[#131a30]/75 px-3.5 py-1.5 text-left backdrop-blur-md transition hover:border-xbox-neon/40 hover:bg-[#192240] md:flex"
+              className="hidden shrink-0 items-center gap-2.5 rounded-full border border-white/[0.1] bg-[#131915]/75 px-3.5 py-1.5 text-left backdrop-blur-md transition hover:border-xbox-neon/40 hover:bg-[#19221c] md:flex"
             >
-              <span className="flex items-center gap-1.5 font-mono text-[11px] text-slate-200">
+              <span className="flex items-center gap-1.5 font-mono text-[11px] text-neutral-200">
                 <CountryFlag code="BR" className="h-2.5 w-3.5" />
-                <span className="text-slate-400">BRT</span>
+                <span className="text-neutral-400">BRT</span>
                 <strong className="font-bold text-white">{clocks.brTime}</strong>
               </span>
               <span className="h-3 w-px bg-white/15" />
-              <span className="flex items-center gap-1.5 font-mono text-[11px] text-slate-200">
+              <span className="flex items-center gap-1.5 font-mono text-[11px] text-neutral-200">
                 <CountryFlag code="NZ" className="h-2.5 w-3.5" />
-                <span className="text-slate-400">NZ</span>
+                <span className="text-neutral-400">NZ</span>
                 <strong className="font-bold text-white">{clocks.nzTime}</strong>
                 <span className="rounded-full bg-xbox-neon/15 px-1.5 py-0.5 font-sans text-[10px] font-bold text-xbox-neon">
                   +{clocks.diffHours}h
@@ -182,7 +182,7 @@ export default function PortalHeader({
         {/* Navegação secundária em telas menores */}
         <div
           className={`border-t border-white/[0.06] lg:hidden ${
-            overlayHero && !scrolled ? 'bg-[#080b16]/60 backdrop-blur-md' : 'bg-[#090d1a]/80'
+            overlayHero && !scrolled ? 'bg-[#070908]/60 backdrop-blur-md' : 'bg-[#0a0d0b]/85'
           }`}
         >
           <div className="no-scrollbar mx-auto flex max-w-[1540px] items-center gap-1.5 overflow-x-auto px-4 py-2 sm:px-6">
@@ -196,11 +196,11 @@ export default function PortalHeader({
                   onClick={() => navigate(sectionPath(item.id))}
                   className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 font-sans text-[11px] font-semibold uppercase tracking-[0.08em] transition ${
                     active
-                      ? 'border border-portal-blue/50 bg-portal-blue/20 text-white'
-                      : 'text-slate-300/75 hover:bg-white/[0.06] hover:text-white'
+                      ? 'border border-xbox-neon/45 bg-xbox-green/25 text-white'
+                      : 'text-neutral-300/75 hover:bg-white/[0.06] hover:text-white'
                   }`}
                 >
-                  <Icon className={`h-3 w-3 ${active ? 'text-portal-cyan' : ''}`} />
+                  <Icon className={`h-3 w-3 ${active ? 'text-xbox-neon' : ''}`} />
                   <span>{item.label}</span>
                 </button>
               );
@@ -212,16 +212,16 @@ export default function PortalHeader({
       {/* Modal de Busca Rápida (ativado pelo ícone de lupa no topo) */}
       {searchModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-[#060913]/80 px-4 pt-20 backdrop-blur-md animate-fade-in sm:pt-28"
+          className="fixed inset-0 z-50 flex items-start justify-center bg-[#060807]/80 px-4 pt-20 backdrop-blur-md animate-fade-in sm:pt-28"
           onClick={() => setSearchModalOpen(false)}
         >
           <div
-            className="w-full max-w-2xl rounded-3xl border border-white/[0.12] bg-[#13192e]/95 p-5 shadow-[0_28px_80px_-15px_rgba(0,0,0,0.85)] backdrop-blur-2xl sm:p-6"
+            className="w-full max-w-2xl rounded-3xl border border-white/[0.12] bg-[#131915]/95 p-5 shadow-[0_28px_80px_-15px_rgba(0,0,0,0.85)] backdrop-blur-2xl sm:p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <span className="font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-portal-cyan">
+                <span className="font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-xbox-neon">
                   Busca Rápida Microsoft Store BR
                 </span>
                 <h2 className="mt-0.5 font-display text-xl font-bold text-white">
@@ -232,7 +232,7 @@ export default function PortalHeader({
                 type="button"
                 onClick={() => setSearchModalOpen(false)}
                 aria-label="Fechar busca"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-slate-300 transition hover:bg-white/10 hover:text-white"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-neutral-300 transition hover:bg-white/10 hover:text-white"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -245,7 +245,7 @@ export default function PortalHeader({
             />
 
             <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-white/[0.07] pt-3.5">
-              <span className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              <span className="font-sans text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
                 Em destaque:
               </span>
               {MODAL_QUICK_PICKS.map((item) => (
@@ -256,7 +256,7 @@ export default function PortalHeader({
                     setSearchModalOpen(false);
                     navigate(gamePath(item.id));
                   }}
-                  className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-slate-200 transition hover:border-portal-blue/50 hover:bg-portal-blue/15 hover:text-white"
+                  className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-neutral-200 transition hover:border-xbox-neon/45 hover:bg-xbox-green/20 hover:text-white"
                 >
                   {item.label}
                 </button>

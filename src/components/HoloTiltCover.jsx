@@ -190,7 +190,7 @@ export default function HoloTiltCover({
   if (!src || failed) {
     return (
       <div
-        className={`flex ${aspectClass} w-full items-center justify-center rounded-2xl border border-white/[0.08] bg-[#141a2f] ${className}`}
+        className={`flex ${aspectClass} w-full items-center justify-center rounded-2xl border border-white/[0.08] bg-[#141a16] ${className}`}
       >
         <ImageOff className="h-10 w-10 text-white/20" />
       </div>
@@ -211,7 +211,7 @@ export default function HoloTiltCover({
     >
       <div
         ref={cardRef}
-        className="holo-tilt-card relative h-full w-full overflow-hidden rounded-2xl border border-white/[0.12] bg-[#141a2f]"
+        className="holo-tilt-card relative h-full w-full overflow-hidden rounded-2xl border border-white/[0.12] bg-[#141a16]"
       >
         {/* Camada 1: Imagem da capa com contra-parallax interno suave */}
         <img
