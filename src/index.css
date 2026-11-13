@@ -92,29 +92,33 @@
     color-scheme: dark;
   }
   body {
-    @apply bg-xbox-bg font-sans text-slate-100 antialiased;
+    @apply bg-portal-bg font-sans text-slate-100 antialiased;
   }
   ::selection {
-    @apply bg-xbox-green text-white;
+    @apply bg-portal-blue text-white;
   }
 }
 
 @layer utilities {
   .bg-grid {
     background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(circle at center, black 0%, transparent 70%);
+      linear-gradient(to right, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(circle at center, black 0%, transparent 72%);
   }
   .capitalize-first::first-letter {
     text-transform: uppercase;
   }
 
+  .portal-glass {
+    @apply border border-white/[0.08] bg-[#141a2f]/80 backdrop-blur-xl;
+  }
+
   /* Barra de rolagem estilizada para listas e dropdowns */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
   }
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
@@ -123,11 +127,11 @@
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.18);
-    border-radius: 2px;
+    background: rgba(148, 163, 184, 0.22);
+    border-radius: 9999px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(82, 214, 39, 0.5);
+    background: rgba(59, 130, 246, 0.55);
   }
 
   .no-scrollbar {

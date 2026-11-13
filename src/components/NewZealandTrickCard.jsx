@@ -72,13 +72,13 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
 
   if (loading) {
     return (
-      <div className="w-full rounded-[2px] border border-white/12 bg-[#0c1118]/90 p-5 shadow-2xl backdrop-blur-xl animate-pulse">
+      <div className="w-full animate-pulse rounded-2xl border border-white/[0.08] bg-[#151c33]/90 p-5 shadow-portal-card backdrop-blur-xl">
         <div className="flex items-center gap-2">
-          <div className="h-4 w-4 rounded-[2px] bg-white/20" />
-          <div className="h-3 w-32 rounded-[2px] bg-white/20" />
+          <div className="h-4 w-4 rounded-md bg-white/20" />
+          <div className="h-3 w-32 rounded-md bg-white/20" />
         </div>
-        <div className="mt-3 h-5 w-48 rounded-[2px] bg-white/20" />
-        <div className="mt-2 h-3 w-40 rounded-[2px] bg-white/10" />
+        <div className="mt-3 h-5 w-48 rounded-md bg-white/20" />
+        <div className="mt-2 h-3 w-40 rounded-md bg-white/10" />
       </div>
     );
   }
@@ -98,52 +98,52 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
   const minutesNZ = Math.floor((totalSecondsNZ % 3600) / 60);
 
   return (
-    <div className="w-full rounded-[2px] border border-white/12 bg-[#0c1118]/90 p-5 shadow-2xl backdrop-blur-xl transition-all">
+    <div className="w-full rounded-2xl border border-white/[0.09] bg-[#151c33]/90 p-5 shadow-portal-card backdrop-blur-xl transition-all">
       {/* Cenário 1: Permite o Truque da Nova Zelândia */}
       {canUseNewZealandTrick && (
         <>
           <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-[2px] border border-xbox-neon/35 bg-xbox-neon/10 px-2 py-0.5 font-action text-[11px] font-bold tracking-wider text-xbox-neon uppercase">
-              <Zap className="h-3.5 w-3.5" />
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-xbox-neon/35 bg-xbox-neon/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-xbox-neon uppercase">
+              <Zap className="h-3 w-3" />
               Truque da Nova Zelândia
             </span>
-            <span className="font-action text-xs font-bold text-amber-300">
+            <span className="rounded-full bg-amber-400/15 px-2 py-0.5 text-[11px] font-bold text-amber-300">
               +{hoursAheadOfBrazil}h antes
             </span>
           </div>
 
           {/* Destaque principal */}
           {isAvailableNowInNZ ? (
-            <div className="mt-3.5 rounded-[2px] border border-emerald-500/40 bg-emerald-500/10 p-3 text-emerald-300">
+            <div className="mt-3.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3.5 text-emerald-300">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" />
-                <p className="font-action text-sm font-bold uppercase tracking-wide">
+                <p className="text-sm font-bold uppercase tracking-wide">
                   Já disponível na Nova Zelândia!
                 </p>
               </div>
-              <p className="mt-1 font-sans text-xs text-emerald-200/80">
+              <p className="mt-1 text-xs text-emerald-200/80">
                 O jogo já liberou por lá. Mude a localidade do seu console para jogar agora mesmo!
               </p>
             </div>
           ) : (
-            <div className="mt-3">
-              <h4 className="font-title text-xl font-light text-white">
-                Jogue <strong className="font-action text-xbox-neon font-bold">{hoursAheadOfBrazil}h antes</strong> no Xbox
+            <div className="mt-3.5">
+              <h4 className="font-display text-xl font-semibold text-white">
+                Jogue <strong className="font-bold text-xbox-neon">{hoursAheadOfBrazil}h antes</strong> no Xbox
               </h4>
-              <p className="mt-1 flex items-center gap-1.5 font-sans text-xs text-white/60">
+              <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
                 <CountryFlag code="NZ" className="w-3.5 h-2.5" />
                 Disponível na loja da Nova Zelândia em:
               </p>
-              <p className="mt-0.5 font-sans text-sm font-semibold text-white/90">
-                {brDateTimeFmt.format(nzRelease)} <span className="text-white/50 text-xs font-normal">(horário de Brasília)</span>
+              <p className="mt-0.5 text-sm font-semibold text-white">
+                {brDateTimeFmt.format(nzRelease)} <span className="text-xs font-normal text-slate-400">(horário de Brasília)</span>
               </p>
 
               {/* Mini contagem regressiva para a NZ */}
               {diffNZ > 0 && (
-                <div className="mt-3 flex items-center gap-2 rounded-[2px] border border-white/10 bg-[#121821] p-2.5 text-xs text-white/80">
-                  <Clock className="h-4 w-4 text-xbox-neon shrink-0" />
-                  <span className="font-action uppercase tracking-wider text-[11px] text-white/50">Libera na NZ em:</span>
-                  <span className="ml-auto font-display text-sm font-bold text-xbox-neon tabular-nums">
+                <div className="mt-3 flex items-center gap-2 rounded-xl border border-white/[0.08] bg-[#0d1223] p-3 text-xs text-slate-200">
+                  <Clock className="h-4 w-4 shrink-0 text-portal-cyan" />
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Libera na NZ em:</span>
+                  <span className="ml-auto font-display text-sm font-bold tabular-nums text-xbox-neon">
                     {daysNZ > 0 && `${pad(daysNZ)}d `}
                     {pad(hoursNZ)}h {pad(minutesNZ)}m
                   </span>
@@ -153,10 +153,10 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
           )}
 
           {/* Como fazer o truque no Xbox (Passo a passo expansível) */}
-          <div className="mt-3.5 border-t border-white/10 pt-3">
+          <div className="mt-4 border-t border-white/[0.08] pt-3">
             <button
               onClick={() => setShowHowTo((v) => !v)}
-              className="flex w-full items-center justify-between text-left font-action text-xs font-bold text-white/70 hover:text-white transition"
+              className="flex w-full items-center justify-between text-left text-xs font-semibold text-slate-300 transition hover:text-white"
             >
               <span className="flex items-center gap-1.5">
                 <HelpCircle className="h-3.5 w-3.5 text-amber-400" />
@@ -166,13 +166,13 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
             </button>
 
             {showHowTo && (
-              <div className="mt-2.5 rounded-[2px] border border-white/10 bg-white/[0.03] p-3 text-xs text-white/80 space-y-2 animate-fade-in">
-                <ol className="list-decimal list-inside space-y-1 text-white/70">
+              <div className="mt-2.5 space-y-2 rounded-xl border border-white/[0.08] bg-[#0d1223] p-3.5 text-xs text-slate-200 animate-fade-in">
+                <ol className="list-inside list-decimal space-y-1 text-slate-300">
                   <li>No Xbox, vá em <strong className="text-white">Configurações &gt; Sistema &gt; Idioma e Localidade</strong>.</li>
                   <li>Altere a <strong className="text-white">Localidade</strong> para <strong className="text-white">Nova Zelândia</strong>.</li>
                   <li>Selecione <strong className="text-white">Reiniciar agora</strong> e aproveite o jogo!</li>
                 </ol>
-                <p className="text-[11px] text-white/40 pt-1 border-t border-white/5">
+                <p className="border-t border-white/[0.06] pt-1.5 text-[11px] text-slate-400">
                   ✓ Não altera cobranças nem sua conta. Você pode voltar para o Brasil a qualquer momento.
                 </p>
               </div>
@@ -185,28 +185,28 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
       {isSimultaneous && (
         <div>
           <div className="flex items-center gap-1.5">
-            <span className="inline-flex items-center gap-1.5 rounded-[2px] border border-sky-400/35 bg-sky-400/10 px-2 py-0.5 font-action text-[11px] font-bold tracking-wider text-sky-400 uppercase">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-portal-cyan/35 bg-portal-cyan/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-portal-cyan uppercase">
               <Globe className="h-3.5 w-3.5" />
               Lançamento Global Simultâneo
             </span>
           </div>
 
-          <p className="mt-3 font-title text-base font-light text-white">
+          <p className="mt-3 font-display text-base font-semibold text-white">
             Mesmo horário no mundo todo
           </p>
-          <p className="mt-1 font-sans text-xs leading-relaxed text-white/60">
+          <p className="mt-1 text-xs leading-relaxed text-slate-300/75">
             Este jogo será liberado exatamente no mesmo momento em todas as regiões (às{' '}
-            <strong className="text-white font-medium">{shortBrDateTimeFmt.format(brazilDate)}</strong> no horário de Brasília). Mudar a região do Xbox para a Nova Zelândia não antecipará o acesso.
+            <strong className="font-medium text-white">{shortBrDateTimeFmt.format(brazilDate)}</strong> no horário de Brasília). Mudar a região do Xbox para a Nova Zelândia não antecipará o acesso.
           </p>
         </div>
       )}
 
       {/* Tabela de outros países (Retrátil) */}
       {regions && regions.length > 0 && (
-        <div className="mt-3.5 border-t border-white/10 pt-3">
+        <div className="mt-3.5 border-t border-white/[0.08] pt-3">
           <button
             onClick={() => setShowAllRegions((v) => !v)}
-            className="flex w-full items-center justify-between text-left font-action text-[11px] font-bold uppercase tracking-wider text-white/45 hover:text-white/85 transition"
+            className="flex w-full items-center justify-between text-left text-[11px] font-bold uppercase tracking-wider text-slate-400 transition hover:text-white"
           >
             <span className="flex items-center gap-1.5">
               <Globe className="h-3.5 w-3.5" />
@@ -216,14 +216,14 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
           </button>
 
           {showAllRegions && (
-            <div className="mt-3 flex flex-col gap-2 rounded-[2px] border border-white/10 bg-[#10161e] p-2.5 text-xs animate-fade-in">
+            <div className="mt-3 flex flex-col gap-2 rounded-xl border border-white/[0.08] bg-[#0d1223] p-3 text-xs animate-fade-in">
               {/* Brasil como base */}
-              <div className="flex items-center justify-between py-1.5 border-b border-white/5">
-                <span className="flex items-center gap-2 text-white/90 font-medium">
+              <div className="flex items-center justify-between border-b border-white/[0.06] py-1.5">
+                <span className="flex items-center gap-2 font-medium text-white">
                   <CountryFlag code="BR" className="w-4 h-3" />
                   Brasil (Sua região)
                 </span>
-                <span className="text-white/90 font-mono text-[11px]">
+                <span className="font-mono text-[11px] text-white">
                   {shortBrDateTimeFmt.format(brazilDate)}
                 </span>
               </div>
@@ -234,27 +234,27 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
                   if (!r.date) return null;
                   const diffHours = Math.round((brazilDate.getTime() - r.date.getTime()) / (1000 * 60 * 60));
                   return (
-                    <div key={r.code} className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
-                      <span className="flex items-center gap-2 text-white/70">
+                    <div key={r.code} className="flex items-center justify-between border-b border-white/[0.06] py-1.5 last:border-0">
+                      <span className="flex items-center gap-2 text-slate-300">
                         <CountryFlag code={r.code} className="w-4 h-3" />
                         {r.name}
                       </span>
                       <div className="text-right">
-                        <span className="font-mono text-[11px] text-white/90 block">
+                        <span className="block font-mono text-[11px] text-white">
                           {shortBrDateTimeFmt.format(r.date)}
                         </span>
                         {diffHours > 0 && (
-                          <span className="text-[10px] text-xbox-neon font-action block">
+                          <span className="block text-[10px] font-semibold text-xbox-neon">
                             +{diffHours}h antes
                           </span>
                         )}
                         {diffHours < 0 && (
-                          <span className="text-[10px] text-white/40 font-action block">
+                          <span className="block text-[10px] text-slate-400">
                             {diffHours}h depois
                           </span>
                         )}
                         {diffHours === 0 && (
-                          <span className="text-[10px] text-sky-400 font-action block">
+                          <span className="block text-[10px] text-portal-cyan">
                             Mesmo horário
                           </span>
                         )}

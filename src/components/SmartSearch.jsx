@@ -8,7 +8,13 @@ import { gamePath, navigate } from '../lib/router.js';
  *  - digitar o nome mostra sugestões da Microsoft Store (autosuggest);
  *  - colar a URL (ou o ID) do jogo e apertar Enter abre direto.
  */
-export default function SmartSearch({ size = 'lg', autoFocus = false, slashShortcut = false }) {
+export default function SmartSearch({
+  size = 'lg',
+  autoFocus = false,
+  slashShortcut = false,
+  placeholder,
+  onAfterNavigate,
+}) {
   const [query, setQuery] = useState('');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -108,6 +114,7 @@ export default function SmartSearch({ size = 'lg', autoFocus = false, slashShort
     setOpen(false);
     setQuery('');
     setItems([]);
+    onAfterNavigate?.();
     navigate(gamePath(id));
   };
 
@@ -142,14 +149,14 @@ export default function SmartSearch({ size = 'lg', autoFocus = false, slashShort
   return (
     <div ref={wrapRef} className="relative w-full">
       <div
-        className={`group flex items-center gap-3 rounded-[2px] border bg-[#0d1218]/95 backdrop-blur-xl transition
-          border-white/15 focus-within:border-xbox-neon focus-within:bg-[#111720] focus-within:shadow-glow
-          ${big ? 'h-14 px-4 sm:h-16 sm:px-5' : 'h-10 px-3.5'}`}
+        className={`group flex items-center gap-3 border bg-[#0f1528]/90 backdrop-blur-xl transition-all
+          border-white/[0.11] focus-within:border-portal-blue/70 focus-within:bg-[#141c35] focus-within:shadow-glow
+          ${big ? 'h-14 rounded-2xl px-4 sm:h-[60px] sm:px-5' : 'h-10 rounded-full px-4'}`}
       >
         {directId ? (
-          <Link2 className={`shrink-0 text-xbox-neon ${big ? 'h-5 w-5 sm:h-6 sm:w-6' : 'h-4 w-4'}`} />
+          <Link2 className={`shrink-0 text-portal-cyan ${big ? 'h-5 w-5 sm:h-5 sm:w-5' : 'h-4 w-4'}`} />
         ) : (
-          <Search className={`shrink-0 text-white/45 group-focus-within:text-xbox-neon ${big ? 'h-5 w-5 sm:h-6 sm:w-6' : 'h-4 w-4'}`} />
+          <Search className={`shrink-0 text-slate-400 transition group-focus-within:text-portal-cyan ${big ? 'h-5 w-5' : 'h-4 w-4'}`} />
         )}
         <input
           ref={inputRef}
@@ -162,8 +169,11 @@ export default function SmartSearch({ size = 'lg', autoFocus = false, slashShort
           }}
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
-          placeholder={big ? 'Busque qualquer jogo Xbox ou cole o link da Microsoft Store…' : 'Buscar outro jogo ou colar URL…'}
-          className={`w-full min-w-0 bg-transparent font-sans outline-none placeholder:text-white/35 ${big ? 'text-base sm:text-lg' : 'text-sm'}`}
+          placeholder={
+            placeholder ||
+            (big ? 'Busque qualquer jogo Xbox ou cole o link da Microsoft Store…' : 'Buscar jogo ou colar URL…')
+          }
+          className={`w-full min-w-0 bg-transparent font-sans text-white outline-none placeholder:text-slate-400/75 ${big ? 'text-sm sm:text-base' : 'text-xs sm:text-sm'}`}
           role="combobox"
           aria-expanded={!!showPanel}
           aria-controls={listId}
@@ -171,9 +181,9 @@ export default function SmartSearch({ size = 'lg', autoFocus = false, slashShort
           spellCheck={false}
           autoComplete="off"
         />
-        {loading && <Loader2 className="h-5 w-5 shrink-0 animate-spin text-white/40" />}
+        {loading && <Loader2 className="h-4 w-4 shrink-0 animate-spin text-portal-cyan" />}
         {big && !loading && query && (
-          <kbd className="hidden shrink-0 items-center gap-1 rounded-[2px] border border-white/15 bg-white/[0.04] px-2 py-1 font-action text-[11px] font-bold text-white/50 sm:flex">
+          <kbd className="hidden shrink-0 items-center gap-1 rounded-lg border border-white/15 bg-white/[0.06] px-2.5 py-1 font-sans text-[11px] font-semibold text-slate-300 sm:flex">
             <CornerDownLeft className="h-3 w-3" /> Enter
           </kbd>
         )}
@@ -183,30 +193,30 @@ export default function SmartSearch({ size = 'lg', autoFocus = false, slashShort
         <div
           id={listId}
           role="listbox"
-          className="absolute left-0 right-0 top-full z-50 mt-1.5 overflow-hidden rounded-[2px] border border-white/15 bg-[#0e131a]/98 shadow-2xl backdrop-blur-xl animate-fade-in"
+          className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-white/[0.12] bg-[#13192f]/98 shadow-2xl backdrop-blur-xl animate-fade-in"
         >
           {directId ? (
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => go(directId)}
-              className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-white/5"
+              className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-white/[0.06]"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-[2px] border border-xbox-neon/30 bg-xbox-green/20">
-                <Link2 className="h-5 w-5 text-xbox-neon" />
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-portal-blue/40 bg-portal-blue/20">
+                <Link2 className="h-5 w-5 text-portal-cyan" />
               </span>
               <span>
-                <span className="block font-action text-xs font-bold uppercase tracking-wider text-white">Abrir jogo pelo link</span>
-                <span className="block font-mono text-xs text-white/50">ID {directId}</span>
+                <span className="block font-sans text-xs font-bold uppercase tracking-wider text-white">Abrir jogo pelo link</span>
+                <span className="block font-mono text-xs text-slate-400">ID {directId}</span>
               </span>
             </button>
           ) : error && items.length === 0 ? (
-            <p className="px-4 py-4 text-sm text-white/50">{error}</p>
+            <p className="px-4 py-4 text-sm text-slate-400">{error}</p>
           ) : loading && items.length === 0 ? (
-            <p className="px-4 py-4 text-sm text-white/50">Buscando na Microsoft Store…</p>
+            <p className="px-4 py-4 text-sm text-slate-400">Buscando na Microsoft Store…</p>
           ) : (
             <ul
-              className="custom-scrollbar overflow-y-auto py-1 overscroll-contain"
+              className="custom-scrollbar overflow-y-auto p-1.5 overscroll-contain"
               style={{ maxHeight: `${maxListHeight}px` }}
             >
               {items.map((item, i) => (
@@ -221,22 +231,22 @@ export default function SmartSearch({ size = 'lg', autoFocus = false, slashShort
                     onMouseDown={(e) => e.preventDefault()}
                     onMouseEnter={() => setActive(i)}
                     onClick={() => go(item.id)}
-                    className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition ${
-                      i === active ? 'border-l-2 border-l-xbox-neon bg-xbox-green/15' : 'border-l-2 border-l-transparent hover:bg-white/5'
+                    className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition ${
+                      i === active ? 'bg-portal-blue/20 ring-1 ring-portal-blue/40' : 'hover:bg-white/[0.05]'
                     }`}
                   >
                     {item.icon ? (
-                      <img src={item.icon} alt="" loading="lazy" className="h-11 w-11 shrink-0 rounded-[2px] border border-white/10 bg-white/5 object-cover" />
+                      <img src={item.icon} alt="" loading="lazy" className="h-11 w-11 shrink-0 rounded-xl border border-white/10 bg-white/5 object-cover" />
                     ) : (
-                      <span className="h-11 w-11 shrink-0 rounded-[2px] border border-white/10 bg-white/5" />
+                      <span className="h-11 w-11 shrink-0 rounded-xl border border-white/10 bg-white/5" />
                     )}
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium text-white">
+                      <span className="block truncate text-sm font-semibold text-white">
                         <Highlight text={item.title} query={query} />
                       </span>
-                      <span className="block font-mono text-[11px] text-white/35">{item.id}</span>
+                      <span className="block font-mono text-[11px] text-slate-400">{item.id}</span>
                     </span>
-                    {i === active && <CornerDownLeft className="h-4 w-4 shrink-0 text-xbox-neon" />}
+                    {i === active && <CornerDownLeft className="h-4 w-4 shrink-0 text-portal-cyan" />}
                   </button>
                 </li>
               ))}
@@ -256,7 +266,7 @@ function Highlight({ text, query }) {
   return (
     <>
       {text.slice(0, idx)}
-      <mark className="bg-transparent text-xbox-neon">{text.slice(idx, idx + q.length)}</mark>
+      <mark className="bg-transparent font-bold text-portal-cyan">{text.slice(idx, idx + q.length)}</mark>
       {text.slice(idx + q.length)}
     </>
   );

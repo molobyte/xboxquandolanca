@@ -72,24 +72,24 @@ export default function ReleaseCountdown({ date, tba }) {
   return (
     <Card>
       <Label icon={Clock}>Disponível em</Label>
-      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+      <div className="mt-4 grid grid-cols-3 gap-2.5 text-center">
         {columns.map(([value, unit]) => (
           <div
             key={unit}
-            className="flex flex-col items-center justify-center rounded-[2px] border border-white/10 bg-[#121821] px-2 py-3 shadow-inner transition"
+            className="flex flex-col items-center justify-center rounded-xl border border-white/[0.08] bg-[#0d1223] px-2 py-3 shadow-inner transition"
           >
             <span className="font-display text-3xl font-bold tabular-nums tracking-tight text-white sm:text-4xl">
               {pad(value)}
             </span>
-            <span className="mt-1 font-action text-xs font-bold tracking-wider text-xbox-neon">
+            <span className="mt-1 text-[11px] font-bold tracking-wider text-portal-cyan">
               {unit}
             </span>
           </div>
         ))}
       </div>
-      <div className="my-4 h-px bg-white/10" />
-      <p className="font-action text-[11px] uppercase tracking-wider text-white/45">Data de lançamento</p>
-      <p className="mt-0.5 font-sans text-sm font-medium text-white/95">{dateTimeFmt.format(date)}</p>
+      <div className="my-4 h-px bg-white/[0.08]" />
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Data de lançamento</p>
+      <p className="mt-0.5 text-sm font-semibold text-white">{dateTimeFmt.format(date)}</p>
     </Card>
   );
 }
@@ -97,10 +97,10 @@ export default function ReleaseCountdown({ date, tba }) {
 function Card({ children, released = false }) {
   return (
     <div
-      className={`w-full rounded-[2px] border border-t-2 p-5 shadow-2xl backdrop-blur-xl ${
+      className={`w-full rounded-2xl border p-5 shadow-portal-card backdrop-blur-xl ${
         released
-          ? 'border-xbox-neon/35 border-t-xbox-neon bg-xbox-green/15'
-          : 'border-white/12 border-t-xbox-green bg-[#0c1118]/90'
+          ? 'border-xbox-neon/35 bg-xbox-green/15'
+          : 'border-white/[0.09] bg-[#151c33]/90'
       }`}
     >
       {children}
@@ -108,10 +108,10 @@ function Card({ children, released = false }) {
   );
 }
 
-function Label({ icon: Icon, children, className = 'text-white/60' }) {
+function Label({ icon: Icon, children, className = 'text-slate-300' }) {
   return (
-    <p className={`flex items-center gap-2 font-action text-xs font-bold uppercase tracking-[0.2em] ${className}`}>
-      <Icon className="h-4 w-4" />
+    <p className={`flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] ${className}`}>
+      <Icon className="h-4 w-4 text-portal-cyan" />
       {children}
     </p>
   );

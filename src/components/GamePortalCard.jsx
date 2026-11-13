@@ -8,7 +8,7 @@ const shortDateFmt = new Intl.DateTimeFormat('pt-BR', {
   year: 'numeric',
 });
 
-function getReleaseBadge(game, nowMs) {
+export function getReleaseBadge(game, nowMs) {
   if (game.releaseTba || !game.releaseDate) {
     return { label: 'A anunciar', tone: 'neutral' };
   }
@@ -24,110 +24,310 @@ function getReleaseBadge(game, nowMs) {
   return { label: `Em ${days}d`, tone: 'upcoming' };
 }
 
-export default function GamePortalCard({ game, nowMs = Date.now(), badgeOverride = null }) {
-  const badge = badgeOverride || getReleaseBadge(game, nowMs);
+function getPriceInfo(game) {
   const hasPrice = game.price && typeof game.price.list === 'number';
   const isFree = hasPrice && game.price.list === 0;
   const hasDiscount = hasPrice && game.price.msrp > game.price.list && game.price.list > 0;
   const discountPct = hasDiscount
     ? Math.round((1 - game.price.list / game.price.msrp) * 100)
     : null;
+  return { hasPrice, isFree, hasDiscount, discountPct };
+}
 
-  const badgeStyle =
-    badge.tone === 'imminent'
-      ? 'border-amber-400/50 bg-amber-400/20 text-amber-300'
-      : badge.tone === 'upcoming'
-      ? 'border-xbox-neon/50 bg-[#07090d]/85 text-xbox-neon'
-      : badge.tone === 'released'
-      ? 'border-emerald-400/40 bg-emerald-950/85 text-emerald-300'
-      : 'border-white/20 bg-[#07090d]/85 text-white/70';
+function getToneClasses(tone) {
+  if (tone === 'imminent') {
+    return 'border-amber-400/50 bg-amber-400/20 text-amber-200';
+  }
+  if (tone === 'upcoming') {
+    return 'border-portal-cyan/40 bg-[#0b1124]/85 text-portal-cyan';
+  }
+  if (tone === 'released') {
+    return 'border-emerald-400/35 bg-emerald-500/20 text-emerald-200';
+  }
+  return 'border-white/15 bg-[#0b1124]/85 text-slate-300';
+}
 
+export default function GamePortalCard({
+  game,
+  nowMs = Date.now(),
+  badgeOverride = null,
+  variant = 'wide',
+  className = '',
+}) {
+  const badge = badgeOverride || getReleaseBadge(game, nowMs);
+  const { hasPrice, isFree, hasDiscount, discountPct } = getPriceInfo(game);
+  const dateLabel =
+    game.releaseTba || !game.releaseDate ? 'Data a anunciar' : shortDateFmt.format(game.releaseDate);
+
+  if (variant === 'poster') {
+    const posterImg = game.cover || game.cardHero;
+    return (
+      <button
+        type="button"
+        onClick={() => navigate(gamePath(game.id))}
+        className={`group relative flex aspect-[3/4] w-full min-w-0 flex-col justify-end overflow-hidden rounded-2xl border border-white/[0.09] bg-[#141a2f] text-left shadow-portal-card transition-all duration-300 hover:-translate-y-1 hover:border-portal-blue/50 hover:shadow-[0_20px_44px_-16px_rgba(37,99,235,0.45)] ${className}`}
+      >
+        {posterImg ? (
+          <img
+            src={posterImg}
+            alt={game.title}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-[#141a2f] text-white/15">
+            <ImageOff className="h-9 w-9" />
+          </div>
+        )}
+
+        {/* Scrim de profundidade no estilo Game Portal */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#080b16] via-[#080b16]/55 via-40% to-black/15" />
+
+        {/* Badge superior direito (Desconto / Novo / Game Pass / Lançamento) */}
+        <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
+          <div>
+            {game.inGamePass && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-[#090d1a]/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-xbox-neon backdrop-blur-md">
+                <Gamepad2 className="h-2.5 w-2.5" />
+                GP
+              </span>
+            )}
+          </div>
+
+          {discountPct ? (
+            <span className="rounded-lg bg-portal-coral px-2 py-0.5 text-[11px] font-extrabold tracking-wide text-white shadow-md">
+              -{discountPct}%
+            </span>
+          ) : badgeOverride ? (
+            <span
+              className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider backdrop-blur-md ${getToneClasses(
+                badge.tone
+              )}`}
+            >
+              {badge.label}
+            </span>
+          ) : badge.tone === 'upcoming' || badge.tone === 'imminent' ? (
+            <span
+              className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider backdrop-blur-md ${getToneClasses(
+                badge.tone
+              )}`}
+            >
+              <Clock className="h-2.5 w-2.5" />
+              {badge.label}
+            </span>
+          ) : isFree || game.inGamePass ? (
+            <span className="rounded-lg bg-portal-lime px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-[#0a0e1a] shadow-md">
+              {isFree ? 'Grátis' : 'Game Pass'}
+            </span>
+          ) : null}
+        </div>
+
+        {/* Rodapé sobre a arte */}
+        <div className="relative z-10 p-3.5 sm:p-4">
+          <div className="mb-1 flex items-baseline gap-1.5">
+            {hasDiscount && (
+              <span className="text-[11px] font-medium text-slate-400 line-through">
+                {formatPrice(game.price.msrp)}
+              </span>
+            )}
+            {hasPrice ? (
+              <span
+                className={`font-display text-sm font-bold ${
+                  isFree
+                    ? 'text-portal-lime'
+                    : hasDiscount
+                    ? 'text-amber-300'
+                    : 'text-white/95'
+                }`}
+              >
+                {isFree ? 'Gratuito' : formatPrice(game.price.list)}
+              </span>
+            ) : (
+              <span className="text-[11px] font-semibold text-portal-cyan">Ver ficha</span>
+            )}
+          </div>
+
+          <h3 className="line-clamp-1 font-display text-[15px] font-bold text-white transition group-hover:text-portal-cyan sm:text-base">
+            {game.title}
+          </h3>
+          <p className="mt-0.5 line-clamp-1 text-xs text-slate-300/75">
+            {badge.tone === 'upcoming' || badge.tone === 'imminent'
+              ? dateLabel
+              : game.publisher || game.category || 'Microsoft Store BR'}
+          </p>
+        </div>
+      </button>
+    );
+  }
+
+  if (variant === 'editorial') {
+    const thumbImg = game.cover || game.cardHero;
+    return (
+      <button
+        type="button"
+        onClick={() => navigate(gamePath(game.id))}
+        className={`group flex w-full min-w-0 items-stretch gap-3.5 rounded-2xl border border-white/[0.08] bg-[#151c33]/90 p-3.5 text-left shadow-portal-card transition-all duration-300 hover:-translate-y-0.5 hover:border-portal-blue/45 hover:bg-[#1a223e] ${className}`}
+      >
+        <div className="relative aspect-[4/5] w-24 shrink-0 overflow-hidden rounded-xl border border-white/[0.08] bg-[#0d1224] sm:w-28">
+          {thumbImg ? (
+            <img
+              src={thumbImg}
+              alt={game.title}
+              loading="lazy"
+              className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-white/15">
+              <ImageOff className="h-6 w-6" />
+            </div>
+          )}
+          {discountPct && (
+            <span className="absolute left-1.5 top-1.5 rounded-md bg-portal-coral px-1.5 py-0.5 text-[10px] font-extrabold text-white shadow">
+              -{discountPct}%
+            </span>
+          )}
+        </div>
+
+        <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
+          <div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="truncate text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                {game.inGamePass ? 'Game Pass' : game.category || 'Xbox Store'} · {dateLabel}
+              </span>
+              <span
+                className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${getToneClasses(
+                  badge.tone
+                )}`}
+              >
+                {badge.label}
+              </span>
+            </div>
+
+            <h3 className="mt-1.5 line-clamp-2 font-display text-[15px] font-bold leading-snug text-white transition group-hover:text-portal-cyan">
+              {game.title}
+            </h3>
+            <p className="mt-1 line-clamp-1 text-xs text-slate-400">
+              {game.publisher || game.category || 'Microsoft Store Brasil'}
+            </p>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between gap-2 border-t border-white/[0.07] pt-2">
+            <div className="flex items-baseline gap-1.5">
+              {hasDiscount && (
+                <span className="text-[10px] text-slate-400 line-through">
+                  {formatPrice(game.price.msrp)}
+                </span>
+              )}
+              <span
+                className={`font-display text-xs font-bold ${
+                  isFree
+                    ? 'text-portal-lime'
+                    : hasDiscount
+                    ? 'text-amber-300'
+                    : 'text-slate-200'
+                }`}
+              >
+                {hasPrice ? (isFree ? 'Gratuito' : formatPrice(game.price.list)) : 'Xbox Store'}
+              </span>
+            </div>
+
+            <span className="text-xs font-semibold text-slate-300 transition group-hover:text-white">
+              Abrir &rarr;
+            </span>
+          </div>
+        </div>
+      </button>
+    );
+  }
+
+  // Default: variant="wide" ("Latest Releases" atmospheric card)
   return (
     <button
       type="button"
       onClick={() => navigate(gamePath(game.id))}
-      className="group flex min-w-0 flex-col overflow-hidden rounded-[2px] border border-white/10 bg-[#0d1218] text-left transition hover:border-xbox-neon/60 hover:bg-[#121922]"
+      className={`group relative flex aspect-[16/10] w-full min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.09] bg-[#141a2f] p-3.5 text-left shadow-portal-card transition-all duration-300 hover:-translate-y-1 hover:border-portal-blue/50 hover:shadow-[0_20px_44px_-16px_rgba(37,99,235,0.45)] ${className}`}
     >
-      {/* Mídia 16:9 */}
-      <div className="relative aspect-video w-full overflow-hidden border-b border-white/10 bg-[#080b0f]">
-        {game.cardHero || game.cover ? (
-          <img
-            src={game.cardHero || game.cover}
-            alt={game.title}
-            loading="lazy"
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-white/15">
-            <ImageOff className="h-8 w-8" />
-          </div>
-        )}
-
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0d1218] via-transparent to-black/25 opacity-80" />
-
-        {/* Barra superior de tags */}
-        <div className="absolute inset-x-2 top-2 flex items-start justify-between gap-2">
-          <div className="flex flex-wrap gap-1">
-            {discountPct && (
-              <span className="rounded-[2px] bg-xbox-green px-1.5 py-0.5 font-action text-[10px] font-bold uppercase tracking-wider text-white shadow">
-                -{discountPct}%
-              </span>
-            )}
-            {game.inGamePass && (
-              <span className="inline-flex items-center gap-1 rounded-[2px] border border-white/20 bg-black/80 px-1.5 py-0.5 font-action text-[9px] font-bold uppercase tracking-wider text-white">
-                <Gamepad2 className="h-2.5 w-2.5 text-xbox-neon" /> Game Pass
-              </span>
-            )}
-          </div>
-
-          <span
-            className={`inline-flex items-center gap-1 rounded-[2px] border px-1.5 py-0.5 font-action text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm ${badgeStyle}`}
-          >
-            {badge.tone === 'upcoming' || badge.tone === 'imminent' ? (
-              <Clock className="h-2.5 w-2.5" />
-            ) : null}
-            {badge.label}
-          </span>
+      {game.cardHero || game.cover ? (
+        <img
+          src={game.cardHero || game.cover}
+          alt={game.title}
+          loading="lazy"
+          className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+        />
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center bg-[#141a2f] text-white/15">
+          <ImageOff className="h-8 w-8" />
         </div>
+      )}
+
+      {/* Gradiente atmosférico suave */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#080b18] via-[#080b18]/65 via-45% to-[#080b18]/25" />
+
+      {/* Topo: Badges */}
+      <div className="relative z-10 flex items-start justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {discountPct && (
+            <span className="rounded-lg bg-portal-coral px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white shadow">
+              -{discountPct}%
+            </span>
+          )}
+          {game.inGamePass && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-[#090d1a]/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-xbox-neon backdrop-blur-md">
+              <Gamepad2 className="h-2.5 w-2.5" />
+              Game Pass
+            </span>
+          )}
+        </div>
+
+        <span
+          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider backdrop-blur-md ${getToneClasses(
+            badge.tone
+          )}`}
+        >
+          {(badge.tone === 'upcoming' || badge.tone === 'imminent') && (
+            <Clock className="h-2.5 w-2.5" />
+          )}
+          {badge.label}
+        </span>
       </div>
 
-      {/* Corpo */}
-      <div className="flex flex-1 flex-col justify-between p-3.5">
-        <div>
-          <h3 className="line-clamp-1 font-title text-base font-normal text-white transition group-hover:text-xbox-neon">
+      {/* Base: Título, Data e Preço sobre o gradiente */}
+      <div className="relative z-10 mt-auto flex items-end justify-between gap-3 pt-4">
+        <div className="min-w-0">
+          <h3 className="line-clamp-1 font-display text-base font-bold text-white transition group-hover:text-portal-cyan">
             {game.title}
           </h3>
-          <p className="mt-0.5 truncate font-sans text-xs text-white/45">
-            {game.publisher || game.category || 'Xbox Store'}
-          </p>
+          <div className="mt-0.5 flex items-center gap-2 text-xs text-slate-300/80">
+            <span className="inline-flex items-center gap-1 truncate">
+              <Calendar className="h-3 w-3 shrink-0 text-slate-400" />
+              {dateLabel}
+            </span>
+            {game.publisher && (
+              <>
+                <span className="text-slate-500">·</span>
+                <span className="truncate text-slate-400">{game.publisher}</span>
+              </>
+            )}
+          </div>
         </div>
 
-        <div className="mt-3 flex items-center justify-between gap-2 border-t border-white/10 pt-2.5 text-xs">
-          <span className="flex items-center gap-1.5 truncate font-sans text-[11px] text-white/60">
-            <Calendar className="h-3 w-3 shrink-0 text-white/35" />
-            {game.releaseTba || !game.releaseDate
-              ? 'Data a anunciar'
-              : shortDateFmt.format(game.releaseDate)}
-          </span>
-
-          <div className="flex shrink-0 items-baseline gap-1.5">
-            {hasDiscount && (
-              <span className="font-sans text-[10px] text-white/35 line-through">
-                {formatPrice(game.price.msrp)}
-              </span>
-            )}
-            <span
-              className={`font-display text-xs font-bold ${
-                isFree
-                  ? 'text-xbox-neon'
-                  : hasDiscount
-                  ? 'text-amber-300'
-                  : 'text-white/90'
-              }`}
-            >
-              {hasPrice ? (isFree ? 'Gratuito' : formatPrice(game.price.list)) : 'Ver ficha'}
+        <div className="shrink-0 text-right">
+          {hasDiscount && (
+            <span className="block text-[10px] text-slate-400 line-through">
+              {formatPrice(game.price.msrp)}
             </span>
-          </div>
+          )}
+          <span
+            className={`font-display text-sm font-bold ${
+              isFree
+                ? 'text-portal-lime'
+                : hasDiscount
+                ? 'text-amber-300'
+                : 'text-white'
+            }`}
+          >
+            {hasPrice ? (isFree ? 'Gratuito' : formatPrice(game.price.list)) : 'Ver ficha'}
+          </span>
         </div>
       </div>
     </button>

@@ -56,19 +56,24 @@ export default function GamePage({ id }) {
   const { game } = state;
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-xbox-bg text-slate-100">
-      {/* Arte de fundo */}
+    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-portal-bg text-slate-100">
+      {/* Atmosfera sutil + Arte de fundo */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute -left-24 top-0 h-[34rem] w-[34rem] rounded-full bg-portal-blue/12 blur-[180px]" />
+        <div className="absolute right-0 top-1/3 h-[28rem] w-[28rem] rounded-full bg-indigo-500/10 blur-[180px]" />
+      </div>
+
       {game?.hero && (
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[72vh] overflow-hidden">
-          <img src={game.hero} alt="" className="h-full w-full object-cover opacity-35 animate-fade-in" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#07090d]/45 via-[#07090d]/85 to-[#07090d]" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#07090d] via-transparent to-[#07090d]/70" />
+          <img src={game.hero} alt="" className="h-full w-full object-cover opacity-40 animate-fade-in" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0b0f1d]/40 via-[#0b0f1d]/80 to-[#0b0f1d]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0b0f1d] via-transparent to-[#0b0f1d]/75" />
         </div>
       )}
 
       <PortalHeader showSearch isGamePage />
 
-      <div className="relative z-10 mx-auto w-full min-w-0 max-w-[1600px] flex-1 px-4 pb-16 pt-5 sm:px-6 lg:px-10">
+      <div className="relative z-10 mx-auto w-full min-w-0 max-w-[1540px] flex-1 px-4 pb-16 pt-6 sm:px-6 lg:px-10">
         {state.status === 'loading' && <Skeleton />}
         {state.status === 'error' && <ErrorState message={state.error} onRetry={() => load()} />}
         {state.status === 'ready' && <GameDetails game={game} />}
@@ -138,33 +143,33 @@ function GameDetails({ game }) {
   return (
     <>
       {/* Barra de Breadcrumb & Ações rápidas do Portal */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3.5 text-xs">
-        <nav className="flex min-w-0 items-center gap-1.5 font-sans text-white/50" aria-label="Breadcrumb">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4 text-xs">
+        <nav className="flex min-w-0 items-center gap-1.5 text-slate-400" aria-label="Breadcrumb">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="transition hover:text-xbox-neon"
+            className="font-medium transition hover:text-portal-cyan"
           >
             Portal Xbox
           </button>
-          <ChevronRight className="h-3.5 w-3.5 shrink-0 text-white/25" />
+          <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-600" />
           {game.category && (
             <>
               <span className="truncate">{game.category}</span>
-              <ChevronRight className="h-3.5 w-3.5 shrink-0 text-white/25" />
+              <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-600" />
             </>
           )}
-          <span className="truncate font-medium text-white/90">{game.title}</span>
+          <span className="truncate font-semibold text-white">{game.title}</span>
         </nav>
 
         <div className="flex items-center gap-2">
-          <span className="hidden rounded-[2px] border border-white/10 bg-[#0d1218] px-2 py-1 font-mono text-[11px] text-white/50 sm:inline-block">
+          <span className="hidden rounded-full border border-white/[0.09] bg-[#151c33]/90 px-3 py-1 font-mono text-[11px] text-slate-300 sm:inline-block">
             ID {game.id}
           </span>
           <button
             type="button"
             onClick={copyShareLink}
-            className="inline-flex items-center gap-1.5 rounded-[2px] border border-white/12 bg-[#0d1218] px-2.5 py-1 font-action text-[11px] font-bold uppercase tracking-wider text-white/75 transition hover:border-xbox-neon/50 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-[#151c33]/90 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-200 transition hover:border-portal-blue/50 hover:text-white"
           >
             {copied ? (
               <>
@@ -182,7 +187,7 @@ function GameDetails({ game }) {
             href={game.storeUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-[2px] border border-xbox-green/50 bg-xbox-green/20 px-2.5 py-1 font-action text-[11px] font-bold uppercase tracking-wider text-xbox-neon transition hover:bg-xbox-green hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-full border border-xbox-neon/40 bg-xbox-green/20 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-xbox-neon transition hover:bg-xbox-green hover:text-white"
           >
             <span>Microsoft Store</span>
             <ExternalLink className="h-3 w-3" />
@@ -191,7 +196,7 @@ function GameDetails({ game }) {
       </div>
 
       {/* Grid Largo 3-6-3 no Desktop */}
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start xl:gap-7">
+      <div className="mt-7 grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start xl:gap-7">
         {/* Coluna Esquerda (3 cols): Capa + Nota + Ficha Técnica */}
         <aside className="order-2 min-w-0 space-y-5 lg:order-1 lg:col-span-3">
           <div className="mx-auto max-w-[260px] lg:max-w-none">
@@ -202,15 +207,15 @@ function GameDetails({ game }) {
             />
 
             {game.rating && (
-              <div className="mt-3 flex items-center justify-between rounded-[2px] border border-white/12 bg-[#0d1218] px-3.5 py-2.5 text-sm text-white/90">
+              <div className="mt-3.5 flex items-center justify-between rounded-2xl border border-white/[0.09] bg-[#151c33]/90 px-4 py-3 text-sm text-white shadow-portal-card">
                 <div className="flex items-center gap-2">
-                  <Star className="h-4 w-4 shrink-0 fill-yellow-400 text-yellow-400" />
+                  <Star className="h-4 w-4 shrink-0 fill-amber-400 text-amber-400" />
                   <strong className="font-display text-base font-bold text-white">
                     {game.rating.average.toFixed(1)}
                   </strong>
-                  <span className="text-xs text-white/40">/ 5.0</span>
+                  <span className="text-xs text-slate-400">/ 5.0</span>
                 </div>
-                <span className="font-mono text-[11px] text-white/50">
+                <span className="font-mono text-[11px] text-slate-400">
                   {new Intl.NumberFormat('pt-BR').format(game.rating.count)} avaliações
                 </span>
               </div>
@@ -218,17 +223,17 @@ function GameDetails({ game }) {
           </div>
 
           {meta.length > 0 && (
-            <div className="rounded-[2px] border border-white/12 bg-[#0c1118]/90 p-4 sm:p-5">
-              <h3 className="mb-3.5 border-b border-white/10 pb-2.5 font-action text-[11px] font-bold uppercase tracking-[0.2em] text-white/50">
+            <div className="rounded-2xl border border-white/[0.09] bg-[#151c33]/90 p-5 shadow-portal-card backdrop-blur-xl">
+              <h3 className="mb-3.5 border-b border-white/[0.08] pb-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
                 Ficha Técnica
               </h3>
               <dl className="flex flex-col gap-3">
                 {meta.map(([k, v]) => (
-                  <div key={k} className="border-l-2 border-xbox-green/70 pl-3">
-                    <dt className="font-action text-[10px] font-bold uppercase tracking-wider text-white/40">
+                  <div key={k} className="border-l-2 border-portal-blue/70 pl-3">
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                       {k}
                     </dt>
-                    <dd className="mt-0.5 font-sans text-sm font-medium text-white/90">{v}</dd>
+                    <dd className="mt-0.5 text-sm font-semibold text-white">{v}</dd>
                   </div>
                 ))}
               </dl>
@@ -239,31 +244,31 @@ function GameDetails({ game }) {
         {/* Coluna Central Principal (6 cols): Título, Preços, Abas de Informação */}
         <section className="order-3 min-w-0 lg:order-2 lg:col-span-6">
           {/* Tags de categoria e plataforma */}
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-2">
             {game.category && (
-              <span className="rounded-[2px] border border-xbox-neon/40 bg-xbox-green/15 px-2.5 py-0.5 font-action text-[10px] font-bold uppercase tracking-wider text-xbox-neon">
+              <span className="rounded-full border border-portal-cyan/35 bg-portal-cyan/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-portal-cyan">
                 {game.category}
               </span>
             )}
             {game.platforms.map((pl) => (
               <span
                 key={pl}
-                className="rounded-[2px] border border-white/12 bg-[#0e131a] px-2.5 py-0.5 font-action text-[10px] font-bold uppercase tracking-wider text-white/75"
+                className="rounded-full border border-white/[0.1] bg-[#151c33] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-200"
               >
                 {pl}
               </span>
             ))}
           </div>
 
-          <h1 className="mt-3 font-title text-3xl font-light leading-tight tracking-tight text-white sm:text-5xl">
+          <h1 className="mt-3.5 font-display text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl">
             {game.title}
           </h1>
           {game.publisher && (
-            <p className="mt-1.5 font-sans text-base text-white/60 sm:text-lg">{game.publisher}</p>
+            <p className="mt-1.5 text-base font-medium text-slate-300/80 sm:text-lg">{game.publisher}</p>
           )}
 
           {/* Matriz de Preços & Histórico */}
-          <div className="mt-5 flex flex-col gap-3">
+          <div className="mt-6 flex flex-col gap-3">
             <PriceCardsGrid
               game={game}
               priceHistory={priceHistory}
@@ -275,7 +280,7 @@ function GameDetails({ game }) {
 
           {/* Barra de opções de visualização de informações */}
           {tabs.length > 1 && (
-            <div className="mt-7 flex flex-wrap gap-1.5 border-b border-white/10 pb-3">
+            <div className="mt-7 inline-flex flex-wrap gap-1 rounded-full border border-white/[0.08] bg-[#13192e] p-1">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -284,13 +289,13 @@ function GameDetails({ game }) {
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
-                    className={`inline-flex items-center gap-1.5 rounded-[2px] border px-3 py-1.5 font-action text-[11px] font-bold uppercase tracking-wider transition ${
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                       isActive
-                        ? 'border-xbox-neon/60 bg-xbox-green/25 text-white'
-                        : 'border-white/10 bg-[#0d1218] text-white/55 hover:border-white/25 hover:text-white'
+                        ? 'bg-portal-blue text-white shadow-sm'
+                        : 'text-slate-300/75 hover:bg-white/[0.04] hover:text-white'
                     }`}
                   >
-                    <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-xbox-neon' : 'text-white/40'}`} />
+                    <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                     <span>{tab.label}</span>
                   </button>
                 );
@@ -300,7 +305,7 @@ function GameDetails({ game }) {
 
           {/* Conteúdo: Gráfico de Preços */}
           {(activeTab === 'all' || activeTab === 'prices') && hasHistoryChart && (
-            <div id="price-chart-section" className="mt-5">
+            <div id="price-chart-section" className="mt-6">
               <PriceHistoryChart data={priceHistory} />
             </div>
           )}
@@ -309,12 +314,12 @@ function GameDetails({ game }) {
           {(activeTab === 'all' || activeTab === 'details') && (
             <>
               {game.description && (
-                <div className="mt-6 rounded-[2px] border border-white/10 bg-[#0c1118]/80 p-5">
-                  <h2 className="border-b border-white/10 pb-2.5 font-action text-xs font-bold uppercase tracking-[0.18em] text-white/60">
+                <div className="mt-6 rounded-2xl border border-white/[0.08] bg-[#151c33]/85 p-5 shadow-portal-card backdrop-blur-xl">
+                  <h2 className="border-b border-white/[0.08] pb-2.5 text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
                     Sobre o jogo
                   </h2>
                   <p
-                    className={`mt-3.5 whitespace-pre-line font-sans text-sm leading-relaxed text-white/75 sm:text-base ${
+                    className={`mt-3.5 whitespace-pre-line text-sm leading-relaxed text-slate-200/85 sm:text-base ${
                       expanded ? '' : 'line-clamp-6'
                     }`}
                   >
@@ -324,7 +329,7 @@ function GameDetails({ game }) {
                     <button
                       type="button"
                       onClick={() => setExpanded((v) => !v)}
-                      className="mt-3 font-action text-xs font-bold uppercase tracking-wider text-xbox-neon hover:underline"
+                      className="mt-3 text-xs font-bold uppercase tracking-wider text-portal-cyan hover:underline"
                     >
                       {expanded ? 'Mostrar menos' : 'Ler descrição completa'}
                     </button>
@@ -333,15 +338,15 @@ function GameDetails({ game }) {
               )}
 
               {game.features.length > 0 && (
-                <div className="mt-5 rounded-[2px] border border-white/10 bg-[#0c1118]/80 p-5">
-                  <h2 className="border-b border-white/10 pb-2.5 font-action text-xs font-bold uppercase tracking-[0.18em] text-white/60">
+                <div className="mt-5 rounded-2xl border border-white/[0.08] bg-[#151c33]/85 p-5 shadow-portal-card backdrop-blur-xl">
+                  <h2 className="border-b border-white/[0.08] pb-2.5 text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
                     Capacidades e Recursos Xbox
                   </h2>
                   <div className="mt-3.5 flex flex-wrap gap-2">
                     {game.features.map((f) => (
                       <span
                         key={f}
-                        className="rounded-[2px] border border-white/10 bg-[#121822] px-2.5 py-1 font-sans text-xs text-white/80"
+                        className="rounded-full border border-white/[0.09] bg-[#0e1324] px-3 py-1 text-xs font-medium text-slate-200"
                       >
                         {f}
                       </span>
@@ -354,7 +359,7 @@ function GameDetails({ game }) {
 
           {/* Quando aba 'gallery' selecionada, exibe galeria direto na área central também */}
           {activeTab === 'gallery' && hasScreenshots && (
-            <div className="mt-5">
+            <div className="mt-6">
               <Screenshots shots={game.screenshots} columns={2} />
             </div>
           )}
@@ -365,22 +370,22 @@ function GameDetails({ game }) {
           <ReleaseCountdown date={game.releaseDate} tba={game.releaseTba} />
           <NewZealandTrickCard gameId={game.id} brazilDate={game.releaseDate} tba={game.releaseTba} />
 
-          <div className="rounded-[2px] border border-white/10 bg-[#0c1118]/90 p-4">
-            <span className="block font-action text-[10px] font-bold uppercase tracking-[0.18em] text-white/45">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#151c33]/90 p-4 shadow-portal-card">
+            <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
               Explorar no Portal
             </span>
             <div className="mt-2.5 grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => navigate(sectionPath('lancamentos'))}
-                className="rounded-[2px] border border-white/10 bg-white/[0.03] px-2.5 py-2 text-left font-action text-[11px] font-bold uppercase tracking-wider text-white/75 transition hover:border-xbox-neon/40 hover:text-white"
+                className="rounded-xl border border-white/[0.08] bg-[#0e1324] px-3 py-2.5 text-left text-xs font-semibold text-slate-200 transition hover:border-portal-blue/50 hover:text-white"
               >
                 Lançamentos &rarr;
               </button>
               <button
                 type="button"
                 onClick={() => navigate(sectionPath('gamepass'))}
-                className="rounded-[2px] border border-white/10 bg-white/[0.03] px-2.5 py-2 text-left font-action text-[11px] font-bold uppercase tracking-wider text-white/75 transition hover:border-xbox-neon/40 hover:text-white"
+                className="rounded-xl border border-white/[0.08] bg-[#0e1324] px-3 py-2.5 text-left text-xs font-semibold text-slate-200 transition hover:border-xbox-neon/45 hover:text-xbox-neon"
               >
                 Game Pass &rarr;
               </button>
@@ -391,7 +396,7 @@ function GameDetails({ game }) {
 
       {/* Screenshots em largura total abaixo (quando em Visão Completa) */}
       {activeTab === 'all' && hasScreenshots && (
-        <section className="mt-12 border-t border-white/10 pt-8">
+        <section className="mt-14 border-t border-white/[0.08] pt-8">
           <Screenshots shots={game.screenshots} columns={4} />
         </section>
       )}
@@ -402,16 +407,16 @@ function GameDetails({ game }) {
 function Screenshots({ shots, columns = 4 }) {
   const gridCls =
     columns === 2
-      ? 'mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2'
-      : 'mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4';
+      ? 'mt-3.5 grid grid-cols-1 gap-3.5 sm:grid-cols-2'
+      : 'mt-3.5 grid grid-cols-2 gap-3.5 lg:grid-cols-4';
 
   return (
     <>
       <div className="flex items-center justify-between">
-        <h2 className="font-action text-xs font-bold uppercase tracking-[0.2em] text-white/60">
+        <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
           Galeria de Imagens ({shots.length})
         </h2>
-        <span className="font-mono text-[11px] text-white/35">Clique para ampliar em HD</span>
+        <span className="font-mono text-[11px] text-slate-500">Clique para ampliar em HD</span>
       </div>
       <div className={gridCls}>
         {shots.map((s, i) => (
@@ -420,15 +425,15 @@ function Screenshots({ shots, columns = 4 }) {
             href={s.full}
             target="_blank"
             rel="noreferrer"
-            className="group relative overflow-hidden rounded-[2px] border border-white/12 bg-[#0c1118] transition hover:border-xbox-neon/60"
+            className="group relative overflow-hidden rounded-2xl border border-white/[0.09] bg-[#151c33] shadow-portal-card transition hover:-translate-y-0.5 hover:border-portal-blue/50"
           >
             <img
               src={s.thumb}
               alt={`Imagem ${i + 1}`}
               loading="lazy"
-              className="aspect-video w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+              className="aspect-video w-full object-cover transition duration-500 group-hover:scale-105"
             />
-            <span className="absolute bottom-2 right-2 rounded-[2px] border border-white/15 bg-black/75 px-1.5 py-0.5 font-mono text-[10px] text-white/70">
+            <span className="absolute bottom-2.5 right-2.5 rounded-full border border-white/15 bg-[#0a0e1b]/80 px-2.5 py-0.5 font-mono text-[10px] text-slate-200 backdrop-blur-md">
               {String(i + 1).padStart(2, '0')}
             </span>
           </a>
@@ -463,33 +468,33 @@ function PriceCardsGrid({ game, priceHistory, loadingHistory }) {
         href={game.storeUrl}
         target="_blank"
         rel="noreferrer"
-        className="group flex min-h-[96px] flex-col justify-between rounded-[2px] border border-xbox-bright/50 bg-xbox-green p-3.5 text-white shadow-lg transition hover:bg-xbox-bright hover:shadow-xbox-glow sm:p-4"
+        className="group flex min-h-[104px] flex-col justify-between rounded-2xl border border-portal-blue/60 bg-gradient-to-br from-[#2563eb] to-[#3b82f6] p-4 text-white shadow-portal-blue transition hover:brightness-110"
         title="Abrir página oficial na loja Xbox"
       >
         <div className="flex items-center justify-between gap-1">
-          <span className="font-action text-[11px] font-bold uppercase tracking-wider text-white/90">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-white/90">
             Preço Atual
           </span>
-          <ExternalLink className="h-3.5 w-3.5 text-white/80 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          <ExternalLink className="h-3.5 w-3.5 text-white/85 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </div>
 
-        <div className="my-1 flex flex-wrap items-baseline gap-2">
+        <div className="my-1.5 flex flex-wrap items-baseline gap-2">
           {discounted && (
-            <span className="font-display text-xs text-white/70 line-through">
+            <span className="font-display text-xs text-white/75 line-through">
               {fmt.format(game.price.msrp)}
             </span>
           )}
-          <span className="font-display text-xl font-bold leading-tight tracking-tight text-white sm:text-2xl">
+          <span className="font-display text-xl font-extrabold leading-tight tracking-tight text-white sm:text-2xl">
             {displayPrice}
           </span>
           {discountPercent && (
-            <span className="rounded-[2px] bg-black/30 px-1.5 py-0.5 font-action text-[10px] font-bold text-white">
+            <span className="rounded-lg bg-portal-coral px-2 py-0.5 text-[10px] font-extrabold text-white shadow">
               -{discountPercent}%
             </span>
           )}
         </div>
 
-        <div className="flex items-center justify-between font-action text-[10px] font-bold uppercase tracking-[0.14em] text-white/90 group-hover:text-white">
+        <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.14em] text-white/90 group-hover:text-white">
           <span>Ver na loja Xbox</span>
           <span>&rarr;</span>
         </div>
@@ -501,24 +506,24 @@ function PriceCardsGrid({ game, priceHistory, loadingHistory }) {
         onClick={() => {
           document.getElementById('price-chart-section')?.scrollIntoView({ behavior: 'smooth' });
         }}
-        className="flex min-h-[96px] flex-col justify-between rounded-[2px] border border-yellow-500/35 border-t-2 border-t-yellow-400 bg-yellow-500/10 p-3.5 text-left text-yellow-300 transition hover:border-yellow-500/55 hover:bg-yellow-500/15 sm:p-4"
+        className="flex min-h-[104px] flex-col justify-between rounded-2xl border border-amber-400/25 bg-amber-500/[0.09] p-4 text-left text-amber-300 shadow-portal-card transition hover:border-amber-400/50 hover:bg-amber-500/[0.15]"
         title="Ver no gráfico de histórico de preços"
       >
         <div className="flex items-center justify-between gap-1">
-          <span className="font-action text-[11px] font-bold uppercase tracking-wider text-yellow-400">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300">
             ★ Menor Histórico
           </span>
           {isRecord && (
-            <span className="rounded-[2px] bg-yellow-400/20 px-1.5 py-0.5 font-action text-[9px] font-bold uppercase text-yellow-300">
+            <span className="rounded-full bg-amber-400/20 px-2 py-0.5 text-[9px] font-bold uppercase text-amber-200">
               Melhor Preço
             </span>
           )}
         </div>
 
-        <div className="my-1 flex items-baseline gap-2">
-          <span className="font-display text-xl font-bold leading-tight tracking-tight text-yellow-300 sm:text-2xl">
+        <div className="my-1.5 flex items-baseline gap-2">
+          <span className="font-display text-xl font-extrabold leading-tight tracking-tight text-amber-300 sm:text-2xl">
             {loadingHistory && !priceHistory ? (
-              <span className="inline-block h-6 w-24 animate-pulse rounded-[2px] bg-yellow-400/20" />
+              <span className="inline-block h-6 w-24 animate-pulse rounded-lg bg-amber-400/20" />
             ) : priceHistory?.lowestPrice != null ? (
               formatPrice(priceHistory.lowestPrice)
             ) : (
@@ -527,7 +532,7 @@ function PriceCardsGrid({ game, priceHistory, loadingHistory }) {
           </span>
         </div>
 
-        <div className="truncate font-action text-[10px] font-medium text-yellow-400/80">
+        <div className="truncate text-[11px] font-medium text-amber-300/80">
           {priceHistory?.lowestDate
             ? `Registrado em ${formatDateMonthYear(priceHistory.lowestDate)}`
             : loadingHistory
@@ -542,19 +547,19 @@ function PriceCardsGrid({ game, priceHistory, loadingHistory }) {
         onClick={() => {
           document.getElementById('price-chart-section')?.scrollIntoView({ behavior: 'smooth' });
         }}
-        className="flex min-h-[96px] flex-col justify-between rounded-[2px] border border-white/12 bg-[#0d1218] p-3.5 text-left text-white transition hover:border-white/25 hover:bg-[#121821] sm:p-4"
+        className="flex min-h-[104px] flex-col justify-between rounded-2xl border border-white/[0.09] bg-[#151c33]/90 p-4 text-left text-white shadow-portal-card transition hover:border-white/25 hover:bg-[#1a223e]"
         title="Ver no gráfico de histórico de preços"
       >
         <div className="flex items-center justify-between gap-1">
-          <span className="font-action text-[11px] font-bold uppercase tracking-wider text-white/50">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
             Maior Registrado
           </span>
         </div>
 
-        <div className="my-1 flex items-baseline gap-2">
-          <span className="font-display text-xl font-bold leading-tight tracking-tight text-white/85 sm:text-2xl">
+        <div className="my-1.5 flex items-baseline gap-2">
+          <span className="font-display text-xl font-extrabold leading-tight tracking-tight text-white sm:text-2xl">
             {loadingHistory && !priceHistory ? (
-              <span className="inline-block h-6 w-24 animate-pulse rounded-[2px] bg-white/10" />
+              <span className="inline-block h-6 w-24 animate-pulse rounded-lg bg-white/10" />
             ) : priceHistory?.highestPrice != null ? (
               formatPrice(priceHistory.highestPrice)
             ) : (
@@ -563,7 +568,7 @@ function PriceCardsGrid({ game, priceHistory, loadingHistory }) {
           </span>
         </div>
 
-        <div className="truncate font-action text-[10px] font-medium text-white/40">
+        <div className="truncate text-[11px] font-medium text-slate-400">
           {priceHistory?.highestPrice != null
             ? 'Pico histórico no Xbox'
             : loadingHistory
@@ -595,7 +600,7 @@ function RewardsBadge({ price }) {
       href="https://rewards.bing.com"
       target="_blank"
       rel="noreferrer"
-      className="group inline-flex w-fit items-center gap-2 rounded-[2px] border border-amber-400/25 bg-amber-400/10 px-3 py-1.5 text-xs text-amber-200 transition hover:border-amber-400/45 hover:bg-amber-400/15"
+      className="group inline-flex w-fit items-center gap-2 rounded-full border border-amber-400/25 bg-amber-400/10 px-4 py-1.5 text-xs text-amber-200 transition hover:border-amber-400/45 hover:bg-amber-400/15"
       title="Calcular pontos necessários para resgatar cartões de presente Xbox no Microsoft Rewards"
     >
       <img
@@ -606,14 +611,14 @@ function RewardsBadge({ price }) {
           e.currentTarget.style.display = 'none';
         }}
       />
-      <span className="font-sans">
+      <span>
         Em torno de{' '}
         <strong className="font-display text-sm font-bold text-amber-300">
           {formatarPontosRewards(pontos)}
         </strong>{' '}
         pontos no Microsoft Rewards
       </span>
-      <ExternalLink className="h-3 w-3 text-amber-300/60 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+      <ExternalLink className="h-3 w-3 text-amber-300/70 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
     </a>
   );
 }
@@ -622,22 +627,22 @@ function Skeleton() {
   return (
     <div className="mt-8 grid animate-pulse grid-cols-1 gap-6 lg:grid-cols-12">
       <div className="space-y-4 lg:col-span-3">
-        <div className="aspect-[2/3] w-full rounded-[2px] bg-white/5" />
-        <div className="h-48 w-full rounded-[2px] bg-white/5" />
+        <div className="aspect-[2/3] w-full rounded-2xl bg-[#151c33]" />
+        <div className="h-48 w-full rounded-2xl bg-[#151c33]" />
       </div>
       <div className="space-y-4 lg:col-span-6">
-        <div className="h-5 w-28 rounded-[2px] bg-white/5" />
-        <div className="h-12 w-3/4 rounded-[2px] bg-white/5" />
+        <div className="h-6 w-28 rounded-full bg-[#151c33]" />
+        <div className="h-12 w-3/4 rounded-2xl bg-[#151c33]" />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="h-24 rounded-[2px] bg-white/5" />
-          <div className="h-24 rounded-[2px] bg-white/5" />
-          <div className="h-24 rounded-[2px] bg-white/5" />
+          <div className="h-24 rounded-2xl bg-[#151c33]" />
+          <div className="h-24 rounded-2xl bg-[#151c33]" />
+          <div className="h-24 rounded-2xl bg-[#151c33]" />
         </div>
-        <div className="h-64 rounded-[2px] bg-white/5" />
+        <div className="h-64 rounded-2xl bg-[#151c33]" />
       </div>
       <div className="space-y-4 lg:col-span-3">
-        <div className="h-48 w-full rounded-[2px] bg-white/5" />
-        <div className="h-40 w-full rounded-[2px] bg-white/5" />
+        <div className="h-48 w-full rounded-2xl bg-[#151c33]" />
+        <div className="h-40 w-full rounded-2xl bg-[#151c33]" />
       </div>
     </div>
   );
@@ -645,22 +650,22 @@ function Skeleton() {
 
 function ErrorState({ message, onRetry }) {
   return (
-    <div className="mx-auto mt-20 max-w-lg rounded-[2px] border border-white/12 bg-[#0d1218] p-8 text-center">
-      <AlertTriangle className="mx-auto h-10 w-10 text-yellow-400" />
-      <h2 className="mt-4 font-title text-2xl font-light text-white">Não foi possível carregar o jogo</h2>
-      <p className="mt-2 font-sans text-sm text-white/60">{message}</p>
+    <div className="mx-auto mt-20 max-w-lg rounded-3xl border border-white/[0.09] bg-[#151c33]/90 p-8 text-center shadow-portal-card">
+      <AlertTriangle className="mx-auto h-10 w-10 text-amber-400" />
+      <h2 className="mt-4 font-display text-2xl font-bold text-white">Não foi possível carregar o jogo</h2>
+      <p className="mt-2 text-sm text-slate-300/80">{message}</p>
       <div className="mt-6 flex justify-center gap-3">
         <button
           type="button"
           onClick={onRetry}
-          className="flex items-center gap-2 rounded-[2px] bg-xbox-green px-4 py-2.5 font-action text-xs font-bold uppercase tracking-wider text-white transition hover:bg-xbox-bright"
+          className="flex items-center gap-2 rounded-full bg-portal-blue px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-portal-blue transition hover:brightness-110"
         >
           <RotateCw className="h-4 w-4" /> Tentar novamente
         </button>
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="rounded-[2px] border border-white/15 px-4 py-2.5 font-action text-xs font-bold uppercase tracking-wider text-white/80 transition hover:bg-white/5"
+          className="rounded-full border border-white/15 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-200 transition hover:bg-white/5"
         >
           Voltar ao Portal
         </button>
