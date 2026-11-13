@@ -2,6 +2,18 @@ import { ExternalLink } from 'lucide-react';
 import XboxLogo from './XboxLogo.jsx';
 import { navigate, sectionPath } from '../lib/router.js';
 
+const rawUpdatedAt =
+  typeof __APP_UPDATED_AT__ !== 'undefined' ? __APP_UPDATED_AT__ : new Date().toISOString();
+const parsedUpdatedAt = new Date(rawUpdatedAt);
+const UPDATED_AT_DATE = Number.isNaN(parsedUpdatedAt.getTime()) ? new Date() : parsedUpdatedAt;
+const UPDATED_AT_ISO = UPDATED_AT_DATE.toISOString();
+const UPDATED_AT_LABEL = new Intl.DateTimeFormat('pt-BR', {
+  timeZone: 'America/Sao_Paulo',
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+}).format(UPDATED_AT_DATE);
+
 export default function PortalFooter() {
   return (
     <footer className="mt-20 border-t border-white/[0.06] bg-[#060807]">
@@ -17,6 +29,29 @@ export default function PortalFooter() {
             <p className="mt-1 text-xs text-white/40">
               Dados consultados em tempo real via Microsoft Store Display Catalog e Xbox Game Pass (mercado BR). Projeto independente não oficial.
             </p>
+            <div className="mt-2 flex flex-col gap-1 text-xs text-white/45 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2">
+              <span>
+                Desenvolvido por{' '}
+                <a
+                  href="https://paganini.dev"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-1 font-medium text-white/75 underline decoration-white/20 underline-offset-4 transition hover:text-xbox-neon hover:decoration-xbox-neon/60"
+                >
+                  paganini.dev
+                  <ExternalLink className="h-3 w-3 text-white/45 transition-colors group-hover:text-xbox-neon" />
+                </a>
+              </span>
+              <span className="hidden text-white/20 sm:inline" aria-hidden="true">
+                ·
+              </span>
+              <span>
+                Última atualização:{' '}
+                <time dateTime={UPDATED_AT_ISO} className="tabular-nums text-white/60">
+                  {UPDATED_AT_LABEL}
+                </time>
+              </span>
+            </div>
           </div>
         </div>
 
