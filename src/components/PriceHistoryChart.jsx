@@ -64,9 +64,9 @@ export default function PriceHistoryChart({ data }) {
 
       // 1. Linhas de grade e valores no eixo Y
       const steps = 4;
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.045)';
       ctx.lineWidth = 1;
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
       ctx.font = '11px monospace';
       ctx.textAlign = 'right';
 
@@ -82,10 +82,10 @@ export default function PriceHistoryChart({ data }) {
         ctx.fillText(`R$ ${Math.round(val)}`, padding.left - 8, y + 4);
       }
 
-      // 2. Área sombreada verde sob a curva
+      // 2. Área sombreada verde suave sob a curva
       const grad = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
-      grad.addColorStop(0, 'rgba(82, 214, 39, 0.30)');
-      grad.addColorStop(1, 'rgba(82, 214, 39, 0.0)');
+      grad.addColorStop(0, 'rgba(74, 222, 128, 0.16)');
+      grad.addColorStop(1, 'rgba(74, 222, 128, 0.0)');
 
       ctx.beginPath();
       ctx.moveTo(getX(0), getY(activePoints[0].price));
@@ -110,14 +110,14 @@ export default function PriceHistoryChart({ data }) {
         ctx.lineTo(currX, getY(activePoints[i - 1].price));
         ctx.lineTo(currX, currY);
       }
-      ctx.strokeStyle = '#52d627';
-      ctx.lineWidth = 2.4;
+      ctx.strokeStyle = '#4ade80';
+      ctx.lineWidth = 2;
       ctx.stroke();
 
-      // 4. Linha pontilhada dourada do menor preço histórico
+      // 4. Linha pontilhada discreta do menor preço histórico
       if (data.lowestPrice != null && data.lowestPrice >= minP && data.lowestPrice <= maxP) {
         const lowY = getY(data.lowestPrice);
-        ctx.strokeStyle = 'rgba(241, 196, 15, 0.65)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
         ctx.setLineDash([4, 4]);
         ctx.beginPath();
         ctx.moveTo(padding.left, lowY);
@@ -127,7 +127,7 @@ export default function PriceHistoryChart({ data }) {
       }
 
       // 5. Rótulos das datas no eixo X
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
       ctx.font = '11px monospace';
       ctx.textAlign = 'left';
       ctx.fillText(formatDateShort(activePoints[0].date), padding.left, padding.top + chartH + 20);
@@ -141,7 +141,7 @@ export default function PriceHistoryChart({ data }) {
         const ptY = getY(hoveredPoint.price);
 
         // Linha vertical guia
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
         ctx.setLineDash([2, 2]);
         ctx.beginPath();
         ctx.moveTo(ptX, padding.top);
@@ -151,11 +151,11 @@ export default function PriceHistoryChart({ data }) {
 
         // Ponto verde destacado
         ctx.beginPath();
-        ctx.arc(ptX, ptY, 5, 0, Math.PI * 2);
-        ctx.fillStyle = '#52d627';
+        ctx.arc(ptX, ptY, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#4ade80';
         ctx.fill();
         ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1.75;
         ctx.stroke();
       }
     };
@@ -213,22 +213,22 @@ export default function PriceHistoryChart({ data }) {
   return (
     <div
       ref={containerRef}
-      className="rounded-2xl border border-white/[0.08] bg-[#141a16]/90 p-4 shadow-portal-card backdrop-blur-xl sm:p-5"
+      className="liquid-glass rounded-2xl p-4 sm:p-5"
     >
       {/* Topo do gráfico: título, fonte e botões de filtro */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-3.5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-3.5">
         <div className="flex items-center gap-2">
-          <TrendingDown className="h-4 w-4 text-xbox-neon" />
-          <h3 className="font-display text-base font-bold tracking-tight text-white">
+          <TrendingDown className="h-4 w-4 text-white/55" />
+          <h3 className="font-display text-sm font-semibold tracking-tight text-white sm:text-base">
             Histórico de Preços
           </h3>
-          <span className="hidden text-xs text-neutral-400 sm:inline">
-            • {data.storeName || 'Microsoft Store'}
+          <span className="hidden text-xs text-white/35 sm:inline">
+            · {data.storeName || 'Microsoft Store'}
           </span>
         </div>
 
-        {/* Filtros de período */}
-        <div className="flex items-center gap-1 rounded-full border border-white/[0.08] bg-[#0d120f] p-1">
+        {/* Filtros de período estilo Liquid Glass */}
+        <div className="liquid-pill-bar flex items-center gap-0.5 rounded-full p-0.5">
           {[
             { id: 'all', label: 'Tudo' },
             { id: '1y', label: '1 Ano' },
@@ -237,10 +237,10 @@ export default function PriceHistoryChart({ data }) {
             <button
               key={btn.id}
               onClick={() => setRange(btn.id)}
-              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+              className={`rounded-full px-3 py-1 text-[11px] font-medium transition ${
                 range === btn.id
-                  ? 'bg-xbox-green text-white shadow-sm'
-                  : 'text-neutral-300/75 hover:bg-white/5 hover:text-white'
+                  ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
+                  : 'text-white/50 hover:text-white/85'
               }`}
             >
               {btn.label}
@@ -250,30 +250,30 @@ export default function PriceHistoryChart({ data }) {
       </div>
 
       {/* Linha de status / tooltip superior */}
-      <div className="flex min-h-[24px] items-center justify-between pb-1 pt-3 text-xs">
+      <div className="flex min-h-[22px] items-center justify-between pb-1 pt-2.5 text-xs">
         {hoveredPoint ? (
-          <div className="flex items-center gap-2 font-mono text-xbox-neon">
-            <Calendar className="h-3.5 w-3.5" />
+          <div className="flex items-center gap-2 font-mono text-white/80">
+            <Calendar className="h-3.5 w-3.5 text-xbox-neon" />
             <span>{formatDateFull(hoveredPoint.date)}</span>
-            <span className="text-neutral-500">•</span>
-            <span className="font-bold text-white">{formatPrice(hoveredPoint.price)}</span>
+            <span className="text-white/30">·</span>
+            <span className="font-semibold text-white">{formatPrice(hoveredPoint.price)}</span>
           </div>
         ) : (
-          <div className="text-[11px] text-neutral-400">
-            Passe o mouse ou toque para inspecionar os valores
+          <div className="text-[11px] text-white/35">
+            Passe o mouse ou toque para inspecionar
           </div>
         )}
 
         {data.lowestPrice != null && (
-          <div className="flex items-center gap-1.5 font-mono text-[11px] text-amber-300">
-            <span className="inline-block h-1.5 w-3 border-b border-dashed border-amber-300"></span>
-            <span>Menor: {formatPrice(data.lowestPrice)}</span>
+          <div className="flex items-center gap-1.5 font-mono text-[11px] text-white/50">
+            <span className="inline-block h-1.5 w-3 border-b border-dashed border-white/35"></span>
+            <span>Menor: <strong className="font-medium text-white/80">{formatPrice(data.lowestPrice)}</strong></span>
           </div>
         )}
       </div>
 
       {/* Canvas do Gráfico */}
-      <div className="relative mt-2 h-56 w-full overflow-hidden rounded-xl border border-white/[0.08] bg-[#0b100d] sm:h-64">
+      <div className="relative mt-1.5 h-52 w-full overflow-hidden rounded-xl border border-white/[0.05] bg-black/20 sm:h-60">
         <canvas
           ref={canvasRef}
           onMouseMove={handleMouseMove}
@@ -284,24 +284,24 @@ export default function PriceHistoryChart({ data }) {
         {/* Tooltip flutuante */}
         {hoveredPoint && (
           <div
-            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full transform rounded-xl border border-xbox-neon/50 bg-[#0b100d]/95 px-3 py-1.5 text-center text-xs shadow-2xl backdrop-blur-md transition-all duration-75"
+            className="liquid-glass pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full transform rounded-xl px-3 py-1.5 text-center text-xs transition-all duration-75"
             style={{
               left: `${hoveredPoint.x}px`,
               top: `${Math.max(30, hoveredPoint.y - 12)}px`,
             }}
           >
-            <div className="text-sm font-bold text-white">{formatPrice(hoveredPoint.price)}</div>
-            <div className="font-mono text-[10px] text-neutral-400">{formatDateShort(hoveredPoint.date)}</div>
+            <div className="text-xs font-bold text-white">{formatPrice(hoveredPoint.price)}</div>
+            <div className="font-mono text-[10px] text-white/50">{formatDateShort(hoveredPoint.date)}</div>
           </div>
         )}
       </div>
 
       {/* Rodapé com botão de histórico tabular e link Deku Deals */}
-      <div className="mt-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs">
         {data.recentChanges && data.recentChanges.length > 0 && (
           <button
             onClick={() => setShowTable((v) => !v)}
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-white/[0.04] px-3 py-1.5 text-neutral-200 transition hover:bg-white/10 hover:text-white"
+            className="liquid-glass-subtle inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-medium text-white/65 transition hover:border-white/15 hover:bg-white/[0.06] hover:text-white"
           >
             {showTable ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             <span>Tabela de alterações ({data.recentChanges.length})</span>
@@ -313,7 +313,7 @@ export default function PriceHistoryChart({ data }) {
             href={data.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-neutral-400 transition hover:text-xbox-neon"
+            className="inline-flex items-center gap-1 text-[11px] text-white/40 transition hover:text-white/75"
           >
             <span>Ver no Deku Deals</span>
             <ExternalLink className="h-3 w-3" />
@@ -323,27 +323,27 @@ export default function PriceHistoryChart({ data }) {
 
       {/* Tabela de alterações recentes */}
       {showTable && data.recentChanges && data.recentChanges.length > 0 && (
-        <div className="mt-3 overflow-hidden rounded-xl border border-white/[0.08] bg-[#0d120f]">
+        <div className="liquid-glass-subtle mt-3 overflow-hidden rounded-xl">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-white/[0.08] bg-white/[0.03] text-neutral-400">
-                <th className="px-3.5 py-2.5 font-semibold">Data</th>
-                <th className="px-3.5 py-2.5 font-semibold">Preço</th>
-                <th className="px-3.5 py-2.5 font-semibold">Variação</th>
+              <tr className="border-b border-white/[0.06] bg-white/[0.02] text-white/45">
+                <th className="px-3.5 py-2 font-medium">Data</th>
+                <th className="px-3.5 py-2 font-medium">Preço</th>
+                <th className="px-3.5 py-2 font-medium">Variação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.05]">
+            <tbody className="divide-y divide-white/[0.04]">
               {data.recentChanges.map((c, i) => (
                 <tr key={i} className="hover:bg-white/[0.02]">
-                  <td className="px-3.5 py-2 font-mono text-neutral-300">{formatDateFull(c.date)}</td>
-                  <td className="px-3.5 py-2 font-semibold text-white">{formatPrice(c.price)}</td>
+                  <td className="px-3.5 py-2 font-mono text-white/65">{formatDateFull(c.date)}</td>
+                  <td className="px-3.5 py-2 font-semibold text-white/90">{formatPrice(c.price)}</td>
                   <td
                     className={`px-3.5 py-2 font-mono font-medium ${
                       c.diff < 0
                         ? 'text-xbox-neon'
                         : c.diff > 0
-                        ? 'text-rose-400'
-                        : 'text-neutral-500'
+                        ? 'text-rose-400/90'
+                        : 'text-white/35'
                     }`}
                   >
                     {c.diff > 0 ? '+' : ''}

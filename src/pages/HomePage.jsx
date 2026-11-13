@@ -124,12 +124,11 @@ export default function HomePage({ section = 'geral' }) {
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-clip bg-xbox-bg text-neutral-100">
-      {/* Atmosfera de fundo em tons Xbox */}
+      {/* Atmosfera de fundo sutil */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute -left-32 top-0 h-[38rem] w-[38rem] rounded-full bg-xbox-green/20 blur-[180px]" />
-        <div className="absolute -right-24 top-1/4 h-[34rem] w-[34rem] rounded-full bg-xbox-bright/12 blur-[190px]" />
-        <div className="absolute bottom-0 left-1/3 h-[26rem] w-[26rem] rounded-full bg-xbox-neon/[0.06] blur-[180px]" />
-        <div className="absolute inset-0 bg-grid opacity-[0.04]" />
+        <div className="absolute -left-32 top-0 h-[38rem] w-[38rem] rounded-full bg-xbox-green/[0.08] blur-[200px]" />
+        <div className="absolute -right-24 top-1/4 h-[34rem] w-[34rem] rounded-full bg-white/[0.025] blur-[190px]" />
+        <div className="absolute inset-0 bg-grid opacity-[0.03]" />
       </div>
 
       <PortalHeader activeSection={section} overlayHero={isOverview} />
@@ -143,7 +142,7 @@ export default function HomePage({ section = 'geral' }) {
             recentGames={recentGames}
           />
 
-          <main className="relative z-20 mx-auto w-full min-w-0 max-w-[1540px] flex-1 px-4 pt-4 sm:px-6 lg:px-10">
+          <main className="relative z-20 mx-auto w-full min-w-0 max-w-[1480px] flex-1 px-4 pt-4 sm:px-6 lg:px-10">
             <OverviewSection
               portal={portal}
               loading={loading}
@@ -160,16 +159,17 @@ export default function HomePage({ section = 'geral' }) {
           </main>
         </>
       ) : (
-        <main className="relative z-10 mx-auto w-full min-w-0 max-w-[1540px] flex-1 px-4 pt-6 sm:px-6 lg:px-10">
-          {/* Banner compacto atmosférico nas sub-seções */}
-          <section className="relative overflow-hidden rounded-3xl border border-white/[0.09] bg-gradient-to-br from-[#152418] via-[#131915] to-[#0d120f] p-6 shadow-portal-card sm:p-8">
-            <div className="pointer-events-none absolute -right-16 -top-16 h-60 w-60 rounded-full bg-xbox-green/25 blur-[90px]" />
+        <main className="relative z-10 mx-auto w-full min-w-0 max-w-[1480px] flex-1 px-4 pt-6 sm:px-6 lg:px-10">
+          {/* Banner compacto Liquid Glass nas sub-seções */}
+          <section className="liquid-glass relative overflow-hidden rounded-3xl p-6 sm:p-8">
+            <div className="pointer-events-none absolute -right-16 -top-16 h-60 w-60 rounded-full bg-xbox-green/15 blur-[90px]" />
             <div className="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-xbox-neon/35 bg-xbox-neon/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-xbox-neon">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/50">
+                  <span className="h-1.5 w-1.5 rounded-full bg-xbox-neon" />
                   Portal Xbox Brasil
                 </span>
-                <h1 className="mt-2.5 font-display text-2xl font-bold tracking-tight text-white sm:text-4xl">
+                <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-white sm:text-4xl">
                   {section === 'lancamentos' && 'Radar de Próximos Lançamentos'}
                   {section === 'ofertas' && 'Em Alta & Ofertas na Microsoft Store'}
                   {section === 'gamepass' && 'Catálogo Xbox Game Pass'}
@@ -257,7 +257,7 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
 
       {/* Conteúdo central focado na busca */}
       <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-xbox-neon/35 bg-[#0e1510]/80 px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.18em] text-xbox-neon backdrop-blur-md">
+        <span className="liquid-glass-subtle inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/75">
           <XboxLogo className="h-3.5 w-3.5 text-xbox-neon" />
           Portal Xbox Brasil
         </span>
@@ -266,7 +266,7 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
           Quando lança<span className="text-xbox-neon">?</span>
         </h1>
 
-        <p className="mt-3 max-w-xl text-sm leading-relaxed text-neutral-200/85 sm:text-base">
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/65 sm:text-base">
           Consulte datas de lançamento, horários oficiais, contagem regressiva e histórico de preços de qualquer jogo na Xbox Store Brasil.
         </p>
 
@@ -279,9 +279,9 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
           />
         </div>
 
-        <div className="mt-5 flex w-full flex-col items-center gap-3">
+        <div className="mt-5 flex w-full flex-col items-center gap-2.5">
           <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs">
-            <span className="mr-1 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+            <span className="mr-1 text-[11px] font-medium text-white/45">
               Populares:
             </span>
             {QUICK_PICKS.map((item) => (
@@ -289,7 +289,7 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
                 key={item.id}
                 type="button"
                 onClick={() => navigate(gamePath(item.id))}
-                className="rounded-full border border-white/[0.12] bg-[#0e1410]/80 px-3 py-1.5 text-xs font-medium text-neutral-200 backdrop-blur-md transition hover:border-xbox-neon/50 hover:bg-xbox-green/25 hover:text-white"
+                className="liquid-glass-subtle rounded-full px-3 py-1.5 text-xs font-medium text-white/75 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
               >
                 {item.label}
               </button>
@@ -298,8 +298,8 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
 
           {recentGames.length > 0 && (
             <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs">
-              <span className="mr-1 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
-                <History className="h-3 w-3 text-xbox-neon" />
+              <span className="mr-1 inline-flex items-center gap-1 text-[11px] font-medium text-white/45">
+                <History className="h-3 w-3 text-white/50" />
                 Recentes:
               </span>
               {recentGames.slice(0, 5).map((rg) => (
@@ -307,7 +307,7 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
                   key={rg.id}
                   type="button"
                   onClick={() => navigate(gamePath(rg.id))}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-[#0c110e]/80 px-3 py-1.5 text-xs text-neutral-200 backdrop-blur-md transition hover:border-xbox-neon/50 hover:bg-xbox-green/20 hover:text-white"
+                  className="liquid-glass-subtle inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs text-white/70 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
                 >
                   <span className="max-w-[160px] truncate">{rg.title}</span>
                 </button>
@@ -361,8 +361,8 @@ function OverviewSection({
       <section>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-xbox-neon">
-              <Flame className="h-3.5 w-3.5" />
+            <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">
+              <Flame className="h-3.5 w-3.5 text-xbox-neon" />
               Microsoft Store Brasil
             </span>
             <h2 className="mt-1 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
@@ -371,7 +371,7 @@ function OverviewSection({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex flex-wrap items-center gap-1 rounded-full border border-white/[0.08] bg-[#121814] p-1">
+            <div className="liquid-pill-bar flex flex-wrap items-center gap-0.5 rounded-full p-1">
               {[
                 { id: 'trending', label: 'Em Alta' },
                 { id: 'deals', label: 'Ofertas' },
@@ -381,10 +381,10 @@ function OverviewSection({
                   key={tab.id}
                   type="button"
                   onClick={() => setPopularTab(tab.id)}
-                  className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+                  className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
                     popularTab === tab.id
-                      ? 'bg-xbox-green text-white shadow-sm'
-                      : 'text-neutral-300/75 hover:text-white'
+                      ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
+                      : 'text-white/55 hover:text-white'
                   }`}
                 >
                   {tab.label}
@@ -397,7 +397,7 @@ function OverviewSection({
                 type="button"
                 onClick={() => scrollPopular(-1)}
                 aria-label="Rolar populares para a esquerda"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.1] bg-[#141a16] text-neutral-300 transition hover:border-xbox-neon/45 hover:text-white"
+                className="liquid-glass-subtle flex h-9 w-9 items-center justify-center rounded-full text-white/65 transition hover:border-white/20 hover:text-white"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
@@ -405,7 +405,7 @@ function OverviewSection({
                 type="button"
                 onClick={() => scrollPopular(1)}
                 aria-label="Rolar populares para a direita"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.1] bg-[#141a16] text-neutral-300 transition hover:border-xbox-neon/45 hover:text-white"
+                className="liquid-glass-subtle flex h-9 w-9 items-center justify-center rounded-full text-white/65 transition hover:border-white/20 hover:text-white"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -414,10 +414,10 @@ function OverviewSection({
             <button
               type="button"
               onClick={() => onSeeAllOffers(popularTab)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-white/[0.04] px-3.5 py-2 text-xs font-semibold text-neutral-200 transition hover:border-xbox-neon/45 hover:text-white"
+              className="liquid-glass-subtle inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-medium text-white/75 transition hover:border-white/20 hover:text-white"
             >
               <span>Ver todos</span>
-              <ArrowRight className="h-3.5 w-3.5 text-xbox-neon" />
+              <ArrowRight className="h-3.5 w-3.5 text-white/50" />
             </button>
           </div>
         </div>
@@ -471,8 +471,8 @@ function OverviewSection({
         <section className="min-w-0 xl:col-span-8">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-xbox-neon">
-                <Gamepad2 className="h-3.5 w-3.5" />
+              <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">
+                <Gamepad2 className="h-3.5 w-3.5 text-xbox-neon" />
                 Catálogo por Assinatura
               </span>
               <h2 className="mt-1 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
@@ -481,7 +481,7 @@ function OverviewSection({
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <div className="flex flex-wrap gap-1 rounded-full border border-white/[0.08] bg-[#121814] p-1">
+              <div className="liquid-pill-bar flex flex-wrap gap-0.5 rounded-full p-1">
                 {[
                   { id: 'comingSoonGp', label: 'Chegando' },
                   { id: 'recentGp', label: 'Novos' },
@@ -491,10 +491,10 @@ function OverviewSection({
                     key={tab.id}
                     type="button"
                     onClick={() => setGpOverviewTab(tab.id)}
-                    className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+                    className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
                       gpOverviewTab === tab.id
-                        ? 'bg-xbox-green text-white shadow-sm'
-                        : 'text-neutral-300/75 hover:text-white'
+                        ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
+                        : 'text-white/55 hover:text-white'
                     }`}
                   >
                     {tab.label}
@@ -505,10 +505,10 @@ function OverviewSection({
               <button
                 type="button"
                 onClick={() => navigate(sectionPath('gamepass'))}
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-white/[0.04] px-3.5 py-2 text-xs font-semibold text-neutral-200 transition hover:border-xbox-neon/45 hover:text-white"
+                className="liquid-glass-subtle inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-medium text-white/75 transition hover:border-white/20 hover:text-white"
               >
                 <span>Ver catálogo</span>
-                <ArrowRight className="h-3.5 w-3.5 text-xbox-neon" />
+                <ArrowRight className="h-3.5 w-3.5 text-white/50" />
               </button>
             </div>
           </div>
@@ -565,7 +565,7 @@ function ReleasesSection({ portal, loading, nowMs, filter, setFilter, sort, setS
   return (
     <section className="mt-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-1.5">
+        <div className="liquid-pill-bar flex flex-wrap gap-1 rounded-full p-1">
           {[
             { id: 'all', label: 'Todos próximos' },
             { id: 'dated', label: 'Com data marcada' },
@@ -576,10 +576,10 @@ function ReleasesSection({ portal, loading, nowMs, filter, setFilter, sort, setS
               key={btn.id}
               type="button"
               onClick={() => setFilter(btn.id)}
-              className={`rounded-full border px-4 py-1.5 text-xs font-semibold transition ${
+              className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
                 filter === btn.id
-                  ? 'border-xbox-neon/45 bg-xbox-green text-white shadow-sm'
-                  : 'border-white/[0.09] bg-[#141a16] text-neutral-300 hover:border-white/25 hover:text-white'
+                  ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
+                  : 'text-white/55 hover:text-white'
               }`}
             >
               {btn.label}
@@ -588,16 +588,16 @@ function ReleasesSection({ portal, loading, nowMs, filter, setFilter, sort, setS
         </div>
 
         <div className="flex items-center gap-2 text-xs">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+          <span className="text-[11px] font-medium text-white/45">
             Ordenar:
           </span>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="rounded-full border border-white/[0.12] bg-[#141a16] px-3.5 py-1.5 text-xs font-medium text-white outline-none focus:border-xbox-neon"
+            className="liquid-glass-subtle rounded-full px-3.5 py-1.5 text-xs font-medium text-white outline-none focus:border-white/25"
           >
-            <option value="soonest">Mais próximos primeiro</option>
-            <option value="alpha">Ordem alfabética (A-Z)</option>
+            <option value="soonest" className="bg-[#0e1210]">Mais próximos primeiro</option>
+            <option value="alpha" className="bg-[#0e1210]">Ordem alfabética (A-Z)</option>
           </select>
         </div>
       </div>
@@ -630,31 +630,32 @@ function OffersSection({ portal, loading, nowMs, filter, setFilter }) {
   return (
     <section className="mt-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-1.5">
+        <div className="liquid-pill-bar flex flex-wrap gap-1 rounded-full p-1">
           {[
             { id: 'trending', label: 'Em Alta na Loja BR', icon: Flame },
             { id: 'deals', label: 'Com Desconto Ativo', icon: Tag },
             { id: 'free', label: 'Gratuitos para Jogar', icon: Sparkles },
           ].map((btn) => {
             const Icon = btn.icon;
+            const active = filter === btn.id;
             return (
               <button
                 key={btn.id}
                 type="button"
                 onClick={() => setFilter(btn.id)}
-                className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-semibold transition ${
-                  filter === btn.id
-                    ? 'border-xbox-neon/45 bg-xbox-green text-white shadow-sm'
-                    : 'border-white/[0.09] bg-[#141a16] text-neutral-300 hover:border-white/25 hover:text-white'
+                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
+                  active
+                    ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
+                    : 'text-white/55 hover:text-white'
                 }`}
               >
-                <Icon className="h-3.5 w-3.5" />
+                <Icon className={`h-3.5 w-3.5 ${active ? 'text-xbox-neon' : 'text-white/40'}`} />
                 {btn.label}
               </button>
             );
           })}
         </div>
-        <span className="rounded-full bg-white/[0.05] px-3 py-1 font-mono text-xs text-neutral-300">
+        <span className="liquid-glass-subtle rounded-full px-3 py-1 font-mono text-xs text-white/60">
           {items.length} títulos
         </span>
       </div>
@@ -685,28 +686,31 @@ function GamePassSection({ portal, loading, nowMs, filter, setFilter }) {
   return (
     <section className="mt-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-1.5">
+        <div className="liquid-pill-bar flex flex-wrap gap-1 rounded-full p-1">
           {[
             { id: 'comingSoon', label: 'Chegando ao Game Pass' },
             { id: 'recent', label: 'Adicionados recentemente' },
             { id: 'leavingSoon', label: 'Saindo em breve' },
-          ].map((btn) => (
-            <button
-              key={btn.id}
-              type="button"
-              onClick={() => setFilter(btn.id)}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-semibold transition ${
-                filter === btn.id
-                  ? 'border-xbox-neon/50 bg-xbox-green text-white shadow-sm'
-                  : 'border-white/[0.09] bg-[#141a16] text-neutral-300 hover:border-white/25 hover:text-white'
-              }`}
-            >
-              <Gamepad2 className="h-3.5 w-3.5" />
-              {btn.label}
-            </button>
-          ))}
+          ].map((btn) => {
+            const active = filter === btn.id;
+            return (
+              <button
+                key={btn.id}
+                type="button"
+                onClick={() => setFilter(btn.id)}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
+                  active
+                    ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
+                    : 'text-white/55 hover:text-white'
+                }`}
+              >
+                <Gamepad2 className={`h-3.5 w-3.5 ${active ? 'text-xbox-neon' : 'text-white/40'}`} />
+                {btn.label}
+              </button>
+            );
+          })}
         </div>
-        <span className="rounded-full bg-white/[0.05] px-3 py-1 font-mono text-xs text-neutral-300">
+        <span className="liquid-glass-subtle rounded-full px-3 py-1 font-mono text-xs text-white/60">
           {items.length} títulos
         </span>
       </div>
@@ -744,24 +748,24 @@ function ToolsSection() {
         <RewardsCalculatorWidget expanded />
         <div className="space-y-6">
           <StoreLookupGuideWidget />
-          <div className="rounded-2xl border border-white/[0.08] bg-[#141a16]/90 p-5 shadow-portal-card backdrop-blur-xl">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-neutral-200">
+          <div className="liquid-glass rounded-2xl p-5">
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">
               <Info className="h-3.5 w-3.5 text-xbox-neon" />
               Tipos de Lançamento no Xbox
             </div>
-            <div className="mt-3.5 space-y-3 text-xs leading-relaxed text-neutral-300/80">
-              <div className="rounded-xl border border-white/[0.07] bg-[#0d120f] p-3">
-                <strong className="block text-xbox-neon">
+            <div className="mt-3.5 space-y-2.5 text-xs leading-relaxed text-white/60">
+              <div className="liquid-glass-subtle rounded-xl p-3">
+                <strong className="block font-semibold text-white">
                   1. Lançamento Local (Meia-noite regional)
                 </strong>
                 Cada país libera às 00:00 do seu próprio fuso horário. É quando o Truque da Nova Zelândia funciona melhor, antecipando o jogo em até 15h–16h no Brasil.
               </div>
-              <div className="rounded-xl border border-white/[0.07] bg-[#0d120f] p-3">
-                <strong className="block text-xbox-mint">2. Lançamento Global Simultâneo</strong>
+              <div className="liquid-glass-subtle rounded-xl p-3">
+                <strong className="block font-semibold text-white">2. Lançamento Global Simultâneo</strong>
                 Todos os países recebem o acesso exatamente no mesmo minuto (geralmente 01:00 UTC ou 14:00 BRT). O site detecta isso automaticamente na ficha de cada jogo.
               </div>
-              <div className="rounded-xl border border-white/[0.07] bg-[#0d120f] p-3">
-                <strong className="block text-amber-300">
+              <div className="liquid-glass-subtle rounded-xl p-3">
+                <strong className="block font-semibold text-white">
                   3. Acesso Antecipado (Edições Deluxe/Premium)
                 </strong>
                 Algumas edições especiais liberam de 2 a 5 dias antes da edição padrão. Você pode buscar pelo nome da edição específica ou colar o link dela na busca.
@@ -778,8 +782,8 @@ function SectionHeader({ icon: Icon, eyebrow, title, actionLabel, onAction }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-xbox-neon">
-          <Icon className="h-3.5 w-3.5" />
+        <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">
+          <Icon className="h-3.5 w-3.5 text-xbox-neon" />
           {eyebrow}
         </span>
         <h2 className="mt-1 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
@@ -790,10 +794,10 @@ function SectionHeader({ icon: Icon, eyebrow, title, actionLabel, onAction }) {
         <button
           type="button"
           onClick={onAction}
-          className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-white/[0.04] px-4 py-2 text-xs font-semibold text-neutral-200 transition hover:border-xbox-neon/45 hover:text-white"
+          className="liquid-glass-subtle inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium text-white/75 transition hover:border-white/20 hover:text-white"
         >
           <span>{actionLabel}</span>
-          <ArrowRight className="h-3.5 w-3.5 text-xbox-neon" />
+          <ArrowRight className="h-3.5 w-3.5 text-white/50" />
         </button>
       )}
     </div>

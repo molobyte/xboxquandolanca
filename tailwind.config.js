@@ -7,15 +7,15 @@ export default {
         xbox: {
           green: '#107C10',
           bright: '#16a34a',
-          neon: '#52d627',
+          neon: '#4ade80',
           lime: '#9bf00b',
           mint: '#86efac',
-          bg: '#0a0d0b',
-          deep: '#070908',
-          surface: '#141a16',
-          panel: '#18201b',
-          elevated: '#1d2721',
-          border: '#25312a',
+          bg: '#080a09',
+          deep: '#050706',
+          surface: '#111513',
+          panel: '#151a17',
+          elevated: '#1a201c',
+          border: '#222a25',
         },
       },
       fontFamily: {
@@ -27,10 +27,10 @@ export default {
         mono: ['"JetBrains Mono"', 'ui-monospace', 'Consolas', 'monospace'],
       },
       boxShadow: {
-        glow: '0 0 0 2px rgba(82, 214, 39, 0.2), 0 0 36px -8px rgba(16, 124, 16, 0.5)',
-        'xbox-glow': '0 0 0 1px rgba(82, 214, 39, 0.35), 0 12px 32px -10px rgba(16, 124, 16, 0.6)',
-        'portal-card': '0 18px 40px -18px rgba(2, 8, 4, 0.88)',
-        'xbox-cta': '0 10px 30px -6px rgba(16, 124, 16, 0.65)',
+        glow: '0 0 0 1px rgba(74, 222, 128, 0.22), 0 12px 32px -10px rgba(16, 124, 16, 0.32)',
+        'xbox-glow': '0 0 0 1px rgba(74, 222, 128, 0.28), 0 12px 32px -10px rgba(16, 124, 16, 0.4)',
+        'portal-card': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 20px 48px -20px rgba(0, 0, 0, 0.72)',
+        'xbox-cta': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.2), 0 10px 26px -8px rgba(16, 124, 16, 0.45)',
       },
       keyframes: {
         'fade-in': {

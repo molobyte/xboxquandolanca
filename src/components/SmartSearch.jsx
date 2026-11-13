@@ -150,20 +150,20 @@ export default function SmartSearch({
   return (
     <div ref={wrapRef} className="relative w-full text-left">
       <div
-        className={`group flex items-center gap-3 border backdrop-blur-xl transition-all
-          focus-within:border-xbox-neon/70 focus-within:bg-[#131a15] focus-within:shadow-glow
+        className={`group flex items-center gap-3 transition-all
+          focus-within:border-white/25 focus-within:bg-white/[0.07]
           ${
             isHero
-              ? 'h-16 rounded-2xl border-white/[0.16] bg-[#0d120f]/90 px-5 shadow-[0_24px_60px_-15px_rgba(0,0,0,0.9)] sm:h-[70px] sm:px-6'
+              ? 'liquid-glass h-15 rounded-2xl px-5 sm:h-16 sm:px-6'
               : big
-              ? 'h-14 rounded-2xl border-white/[0.11] bg-[#0e1310]/90 px-4 sm:h-[60px] sm:px-5'
-              : 'h-10 rounded-full border-white/[0.11] bg-[#0e1310]/90 px-4'
+              ? 'liquid-glass h-13 rounded-2xl px-4 sm:h-14 sm:px-5'
+              : 'liquid-glass-subtle h-9 rounded-full px-3.5'
           }`}
       >
         {directId ? (
-          <Link2 className={`shrink-0 text-xbox-neon ${isHero ? 'h-5 w-5 sm:h-6 sm:w-6' : big ? 'h-5 w-5' : 'h-4 w-4'}`} />
+          <Link2 className={`shrink-0 text-xbox-neon ${isHero ? 'h-5 w-5' : big ? 'h-5 w-5' : 'h-3.5 w-3.5'}`} />
         ) : (
-          <Search className={`shrink-0 text-neutral-400 transition group-focus-within:text-xbox-neon ${isHero ? 'h-5 w-5 sm:h-6 sm:w-6' : big ? 'h-5 w-5' : 'h-4 w-4'}`} />
+          <Search className={`shrink-0 text-white/45 transition group-focus-within:text-white/85 ${isHero ? 'h-5 w-5' : big ? 'h-5 w-5' : 'h-3.5 w-3.5'}`} />
         )}
         <input
           ref={inputRef}
@@ -180,8 +180,8 @@ export default function SmartSearch({
             placeholder ||
             (big ? 'Busque qualquer jogo Xbox ou cole o link da Microsoft Store…' : 'Buscar jogo ou colar URL…')
           }
-          className={`w-full min-w-0 bg-transparent text-left font-sans text-white outline-none placeholder:text-neutral-400/75 ${
-            isHero ? 'text-base sm:text-lg' : big ? 'text-sm sm:text-base' : 'text-xs sm:text-sm'
+          className={`w-full min-w-0 bg-transparent text-left font-sans text-white outline-none placeholder:text-white/40 ${
+            isHero ? 'text-base sm:text-lg' : big ? 'text-sm sm:text-base' : 'text-xs'
           }`}
           role="combobox"
           aria-expanded={!!showPanel}
@@ -190,9 +190,9 @@ export default function SmartSearch({
           spellCheck={false}
           autoComplete="off"
         />
-        {loading && <Loader2 className="h-4 w-4 shrink-0 animate-spin text-xbox-neon" />}
+        {loading && <Loader2 className="h-4 w-4 shrink-0 animate-spin text-white/60" />}
         {big && !loading && query && (
-          <kbd className="hidden shrink-0 items-center gap-1 rounded-lg border border-white/15 bg-white/[0.06] px-2.5 py-1 font-sans text-[11px] font-semibold text-neutral-300 sm:flex">
+          <kbd className="hidden shrink-0 items-center gap-1 rounded-lg border border-white/10 bg-white/[0.05] px-2 py-0.5 font-sans text-[11px] font-medium text-white/60 sm:flex">
             <CornerDownLeft className="h-3 w-3" /> Enter
           </kbd>
         )}
@@ -202,7 +202,7 @@ export default function SmartSearch({
         <div
           id={listId}
           role="listbox"
-          className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-white/[0.12] bg-[#131915]/98 shadow-2xl backdrop-blur-xl animate-fade-in"
+          className="liquid-glass absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl bg-[#0e1210]/95 animate-fade-in"
         >
           {directId ? (
             <button
