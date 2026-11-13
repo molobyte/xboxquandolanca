@@ -12,6 +12,8 @@ const UPDATED_AT_LABEL = new Intl.DateTimeFormat('pt-BR', {
   day: '2-digit',
   month: '2-digit',
   year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
 }).format(UPDATED_AT_DATE);
 
 export default function PortalFooter() {
