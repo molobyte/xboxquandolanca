@@ -3,10 +3,6 @@ import { calcularCashbackRewards } from '../lib/rewards.js';
 import { formatPrice } from '../lib/priceHistory.js';
 
 const intFmt = new Intl.NumberFormat('pt-BR');
-const pctFmt = new Intl.NumberFormat('pt-BR', {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
 
 export default function RewardsCashbackCard({ price, inGamePass = false }) {
   if (!price || typeof price.list !== 'number') return null;
@@ -60,13 +56,11 @@ export default function RewardsCashbackCard({ price, inGamePass = false }) {
       ) : (
         <>
           <div className="liquid-glass-subtle custom-scrollbar mt-3.5 overflow-x-auto rounded-xl">
-            <table className="w-full min-w-[540px] text-left text-xs">
+            <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-white/[0.06] bg-white/[0.02] text-[11px] text-white/45">
                   <th className="px-3.5 py-2.5 font-medium">Perfil / Assinatura</th>
-                  <th className="px-3.5 py-2.5 font-medium">Regra Aplicada</th>
                   <th className="px-3.5 py-2.5 text-right font-medium">Pontos Recebidos</th>
-                  <th className="px-3.5 py-2.5 text-right font-medium">Retorno Estimado</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.04]">
@@ -82,22 +76,12 @@ export default function RewardsCashbackCard({ price, inGamePass = false }) {
                       <td className="px-3.5 py-2.5 font-medium text-white/90">
                         {row.perfil}
                       </td>
-                      <td className="px-3.5 py-2.5 font-mono text-[11px] text-white/60">
-                        {row.regraTexto}
-                      </td>
                       <td
-                        className={`px-3.5 py-2.5 text-right font-mono font-semibold tabular-nums ${
+                        className={`px-3.5 py-2.5 text-right font-mono font-semibold tabular-nums whitespace-nowrap ${
                           isUltimate ? 'text-xbox-neon' : 'text-white/90'
                         }`}
                       >
                         {intFmt.format(row.pontos)} pts
-                      </td>
-                      <td
-                        className={`px-3.5 py-2.5 text-right font-mono tabular-nums ${
-                          isUltimate ? 'font-medium text-xbox-mint' : 'text-white/70'
-                        }`}
-                      >
-                        ~{formatPrice(row.valorCashbackBRL)} ({pctFmt.format(row.percentualCashback)}%)
                       </td>
                     </tr>
                   );
