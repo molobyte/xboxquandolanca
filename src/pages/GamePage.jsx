@@ -581,7 +581,7 @@ function PriceCardsGrid({ game, priceHistory, loadingHistory }) {
           className="group flex items-center justify-between gap-2 border-t border-white/[0.06] bg-white/[0.015] px-4 py-2 text-[11px] text-white/50 transition hover:bg-white/[0.035] hover:text-white/75"
           title="Calcular pontos necessários para resgatar cartões de presente Xbox no Microsoft Rewards"
         >
-          <span className="flex items-center gap-2 truncate">
+          <span className="flex min-w-0 items-center gap-2">
             <img
               src="https://rewards.bing.com/rewardscdn/images/rewards.png"
               alt=""
@@ -590,12 +590,12 @@ function PriceCardsGrid({ game, priceHistory, loadingHistory }) {
                 e.currentTarget.style.display = 'none';
               }}
             />
-            <span className="truncate">
-              Em torno de{' '}
+            <span className="leading-snug">
+              Custa em torno de{' '}
               <strong className="font-semibold text-white/85">
                 {formatarPontosRewards(pontosRewards)}
               </strong>{' '}
-              pontos no Microsoft Rewards
+              pontos de Microsoft Rewards para adquirir esse jogo
             </span>
           </span>
           <ExternalLink className="h-3 w-3 shrink-0 text-white/35 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white/70" />
