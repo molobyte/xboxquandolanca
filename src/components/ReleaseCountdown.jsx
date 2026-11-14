@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { CheckCircle2, Clock, CalendarClock } from 'lucide-react';
+import CountryFlag from './CountryFlag.jsx';
+import NewZealandTrickCard from './NewZealandTrickCard.jsx';
 
 const dateFmt = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 const dateTimeFmt = new Intl.DateTimeFormat('pt-BR', {
@@ -21,8 +23,8 @@ function useNow() {
 
 const pad = (n) => String(n).padStart(2, '0');
 
-/** Card do canto superior direito: contador limpo de 3 colunas ou "já disponível". */
-export default function ReleaseCountdown({ date, tba }) {
+/** Card do canto superior direito: contador limpo de 3 colunas, data de lançamento e Truque NZ unificados. */
+export default function ReleaseCountdown({ gameId, date, tba }) {
   const now = useNow();
 
   if (tba || !date) {
@@ -95,10 +97,15 @@ export default function ReleaseCountdown({ date, tba }) {
           </div>
         ))}
       </div>
-      <div className="mt-2.5 flex items-baseline justify-between gap-2 border-t border-white/[0.06] pt-2.5 text-[11px] sm:mt-3.5 sm:pt-3 sm:text-xs">
-        <span className="text-[10px] text-white/45 sm:text-[11px]">Lançamento</span>
-        <span className="font-medium text-white/90">{dateTimeFmt.format(date)}</span>
+      <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-white/[0.06] pt-2.5 text-[11px] sm:mt-3.5 sm:pt-3 sm:text-xs">
+        <span className="flex items-center gap-1.5 text-[10px] text-white/50 sm:text-[11px]">
+          <CountryFlag code="BR" className="h-2.5 w-3.5 shrink-0" />
+          <span>Lançamento (BR)</span>
+        </span>
+        <span className="text-right font-medium text-white/95">{dateTimeFmt.format(date)}</span>
       </div>
+
+      {gameId && <NewZealandTrickCard gameId={gameId} brazilDate={date} tba={tba} embedded />}
     </Card>
   );
 }

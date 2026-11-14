@@ -17,7 +17,6 @@ import { recordRecentGame } from '../lib/portal.js';
 import PortalHeader from '../components/PortalHeader.jsx';
 import PortalFooter from '../components/PortalFooter.jsx';
 import ReleaseCountdown from '../components/ReleaseCountdown.jsx';
-import NewZealandTrickCard from '../components/NewZealandTrickCard.jsx';
 import HoloTiltCover from '../components/HoloTiltCover.jsx';
 import { calcularPontosRewards, formatarPontosRewards } from '../lib/rewards.js';
 import { getPriceHistory, formatPrice } from '../lib/priceHistory.js';
@@ -421,12 +420,11 @@ function GameDetails({ game }) {
           </div>
         </section>
 
-        {/* Coluna Lateral Direita (3 cols no Desktop): Contador + Truque NZ + Atalhos */}
+        {/* Coluna Lateral Direita (3 cols no Desktop): Contador + Truque NZ unificados + Atalhos */}
         <aside className="contents lg:sticky lg:top-20 lg:order-3 lg:col-span-3 lg:flex lg:min-w-0 lg:flex-col lg:gap-4">
-          {/* Bloco 2 no Mobile: Contagem Regressiva + Truque da Nova Zelândia logo abaixo do título/capa */}
-          <div className="order-2 flex min-w-0 flex-col gap-3 sm:gap-4 lg:order-none">
-            <ReleaseCountdown date={game.releaseDate} tba={game.releaseTba} />
-            <NewZealandTrickCard gameId={game.id} brazilDate={game.releaseDate} tba={game.releaseTba} />
+          {/* Bloco 2 no Mobile: Contagem Regressiva + Truque da Nova Zelândia em um único container */}
+          <div className="order-2 min-w-0 lg:order-none">
+            <ReleaseCountdown gameId={game.id} date={game.releaseDate} tba={game.releaseTba} />
           </div>
 
           <div className="liquid-glass order-6 min-w-0 rounded-2xl p-3.5 sm:p-4 lg:order-none">
@@ -674,8 +672,8 @@ function Skeleton() {
         <div className="h-56 rounded-2xl bg-white/[0.04] sm:h-64" />
       </div>
       <div className="space-y-4 lg:col-span-3">
-        <div className="h-36 w-full rounded-2xl bg-white/[0.04] sm:h-44" />
-        <div className="h-36 w-full rounded-2xl bg-white/[0.04] sm:h-40" />
+        <div className="h-64 w-full rounded-2xl bg-white/[0.04] sm:h-72" />
+        <div className="h-24 w-full rounded-2xl bg-white/[0.04]" />
       </div>
     </div>
   );
