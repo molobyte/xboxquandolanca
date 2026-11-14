@@ -119,6 +119,28 @@ function extractReleaseDate(p) {
   return { date: null, tba: true };
 }
 
+const GAME_PASS_PRODUCT_RE = /CFQ7TTC0(KHS0|K6L8|KGQ8|P85B|K5DJ)/i;
+
+function extractInGamePass(p) {
+  const now = Date.now();
+  for (const sku of p.DisplaySkuAvailabilities || []) {
+    for (const a of sku.Availabilities || []) {
+      if (!a.Actions?.includes('License')) continue;
+      const start = a.Conditions?.StartDate ? new Date(a.Conditions.StartDate).getTime() : 0;
+      const end = a.Conditions?.EndDate ? new Date(a.Conditions.EndDate).getTime() : Infinity;
+      if (start > now || now > end) continue;
+
+      const keys = (a.LicensingData?.SatisfyingEntitlementKeys || []).flatMap(
+        (item) => item.EntitlementKeys || []
+      );
+      if (keys.some((k) => GAME_PASS_PRODUCT_RE.test(k))) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 function extractPrice(p) {
   for (const sku of p.DisplaySkuAvailabilities || []) {
     for (const a of sku.Availabilities || []) {
@@ -261,6 +283,7 @@ export function mapProduct(p) {
     rating: allTime && allTime.RatingCount > 0 ? { average: allTime.AverageRating, count: allTime.RatingCount } : null,
     ageRating: classInd?.RatingId?.split(':')[1] || null,
     price: extractPrice(p),
+    inGamePass: extractInGamePass(p),
     platforms: extractPlatforms(p),
     features: [...new Set(features)],
     bundleIds,
@@ -290,6 +313,10 @@ function applyBundleInfo(game, bundles) {
       .filter((b) => b.price && !/\bupgrade\b/i.test(b.title))
       .sort((a, b) => a.price.list - b.price.list)[0];
     if (priced) next.price = priced.price;
+  }
+
+  if (!next.inGamePass && bundles.some((b) => b.inGamePass)) {
+    next.inGamePass = true;
   }
 
   return next;

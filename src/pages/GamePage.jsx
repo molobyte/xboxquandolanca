@@ -22,6 +22,7 @@ import HoloTiltCover from '../components/HoloTiltCover.jsx';
 import { calcularPontosRewards, formatarPontosRewards } from '../lib/rewards.js';
 import { getPriceHistory, formatPrice } from '../lib/priceHistory.js';
 import PriceHistoryChart from '../components/PriceHistoryChart.jsx';
+import RewardsCashbackCard from '../components/RewardsCashbackCard.jsx';
 
 const dateFmt = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
@@ -319,6 +320,13 @@ function GameDetails({ game }) {
           {(activeTab === 'all' || activeTab === 'prices') && hasHistoryChart && (
             <div id="price-chart-section" className="mt-5">
               <PriceHistoryChart data={priceHistory} />
+            </div>
+          )}
+
+          {/* Conteúdo: Cashback Microsoft Rewards (imediatamente abaixo do Histórico de Preços) */}
+          {(activeTab === 'all' || activeTab === 'prices') && game.price && (
+            <div id="rewards-cashback-section" className="mt-5">
+              <RewardsCashbackCard price={game.price} inGamePass={game.inGamePass} />
             </div>
           )}
 
