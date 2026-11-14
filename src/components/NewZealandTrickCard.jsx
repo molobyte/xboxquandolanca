@@ -98,12 +98,12 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
   const minutesNZ = Math.floor((totalSecondsNZ % 3600) / 60);
 
   return (
-    <div className="liquid-glass w-full rounded-2xl p-4 transition-all sm:p-5">
+    <div className="liquid-glass w-full rounded-2xl p-3.5 transition-all sm:p-5">
       {/* Cenário 1: Permite o Truque da Nova Zelândia */}
       {canUseNewZealandTrick && (
         <>
           <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60 sm:text-[11px] sm:tracking-[0.14em]">
               <Zap className="h-3.5 w-3.5 text-xbox-neon" />
               Truque da Nova Zelândia
             </span>
@@ -114,7 +114,7 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
 
           {/* Destaque principal */}
           {isAvailableNowInNZ ? (
-            <div className="liquid-glass-subtle mt-3.5 rounded-xl border-xbox-neon/30 bg-xbox-green/[0.15] p-3.5 text-white">
+            <div className="liquid-glass-subtle mt-2.5 rounded-xl border-xbox-neon/30 bg-xbox-green/[0.15] p-3 text-white sm:mt-3.5 sm:p-3.5">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-xbox-neon" />
                 <p className="text-xs font-semibold uppercase tracking-wide text-xbox-neon">
@@ -126,11 +126,11 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
               </p>
             </div>
           ) : (
-            <div className="mt-3">
-              <h4 className="font-display text-lg font-semibold text-white">
+            <div className="mt-2 sm:mt-3">
+              <h4 className="font-display text-base font-semibold text-white sm:text-lg">
                 Jogue <strong className="font-bold text-xbox-neon">{hoursAheadOfBrazil}h antes</strong> no Xbox
               </h4>
-              <p className="mt-1.5 flex items-center gap-1.5 text-xs text-white/50">
+              <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-white/50 sm:mt-1.5 sm:text-xs">
                 <CountryFlag code="NZ" className="h-2.5 w-3.5" />
                 <span>{brDateTimeFmt.format(nzRelease)}</span>
                 <span className="text-white/35">(Brasília)</span>
@@ -138,7 +138,7 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
 
               {/* Mini contagem regressiva para a NZ */}
               {diffNZ > 0 && (
-                <div className="liquid-glass-subtle mt-3 flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-xs">
+                <div className="liquid-glass-subtle mt-2.5 flex items-center justify-between gap-2 rounded-xl px-3 py-1.5 text-xs sm:mt-3 sm:py-2">
                   <span className="flex items-center gap-1.5 text-[11px] text-white/50">
                     <Clock className="h-3.5 w-3.5 shrink-0 text-white/40" />
                     Libera na NZ em
@@ -153,10 +153,10 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
           )}
 
           {/* Como fazer o truque no Xbox (Passo a passo expansível) */}
-          <div className="mt-3.5 border-t border-white/[0.06] pt-3">
+          <div className="mt-2.5 border-t border-white/[0.06] pt-2.5 sm:mt-3.5 sm:pt-3">
             <button
               onClick={() => setShowHowTo((v) => !v)}
-              className="flex w-full items-center justify-between text-left text-xs font-medium text-white/55 transition hover:text-white/90"
+              className="flex w-full items-center justify-between text-left text-[11px] font-medium text-white/55 transition hover:text-white/90 sm:text-xs"
             >
               <span className="flex items-center gap-1.5">
                 <HelpCircle className="h-3.5 w-3.5 text-white/40" />
@@ -184,15 +184,15 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
       {/* Cenário 2: Lançamento Global Simultâneo */}
       {isSimultaneous && (
         <div>
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60 sm:text-[11px] sm:tracking-[0.14em]">
             <Globe className="h-3.5 w-3.5 text-xbox-neon" />
             Lançamento Global Simultâneo
           </span>
 
-          <p className="mt-2.5 font-display text-base font-semibold text-white">
+          <p className="mt-2 font-display text-sm font-semibold text-white sm:mt-2.5 sm:text-base">
             Mesmo horário no mundo todo
           </p>
-          <p className="mt-1 text-xs leading-relaxed text-white/60">
+          <p className="mt-1 text-[11px] leading-relaxed text-white/60 sm:text-xs">
             Liberado simultaneamente em todas as regiões (às{' '}
             <strong className="font-medium text-white/90">{shortBrDateTimeFmt.format(brazilDate)}</strong> de Brasília). Mudar para a Nova Zelândia não antecipará o acesso.
           </p>
@@ -201,10 +201,10 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba }) {
 
       {/* Tabela de outros países (Retrátil) */}
       {regions && regions.length > 0 && (
-        <div className="mt-3 border-t border-white/[0.06] pt-2.5">
+        <div className="mt-2.5 border-t border-white/[0.06] pt-2 sm:mt-3 sm:pt-2.5">
           <button
             onClick={() => setShowAllRegions((v) => !v)}
-            className="flex w-full items-center justify-between text-left text-xs font-medium text-white/55 transition hover:text-white/90"
+            className="flex w-full items-center justify-between text-left text-[11px] font-medium text-white/55 transition hover:text-white/90 sm:text-xs"
           >
             <span className="flex items-center gap-1.5">
               <Globe className="h-3.5 w-3.5 text-white/40" />

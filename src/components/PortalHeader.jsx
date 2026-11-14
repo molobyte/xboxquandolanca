@@ -76,22 +76,22 @@ export default function PortalHeader({
   return (
     <>
       <header className={`${positionClass} transition-all duration-300 ${surfaceClass}`}>
-        <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-10">
+        <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-2.5 px-3.5 py-2.5 sm:gap-3 sm:px-6 sm:py-3 lg:px-10">
           {/* Marca */}
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="group flex shrink-0 items-center gap-2.5 rounded-full py-1 pr-2 text-left transition hover:opacity-95"
+            className="group flex shrink-0 items-center gap-2 rounded-full py-0.5 pr-2 text-left transition hover:opacity-95 sm:gap-2.5 sm:py-1"
             aria-label="Ir para a página inicial do portal"
           >
             {isGamePage && (
               <ArrowLeft className="h-4 w-4 text-white/45 transition group-hover:-translate-x-0.5 group-hover:text-white" />
             )}
-            <span className="liquid-glass-subtle flex h-8 w-8 items-center justify-center rounded-xl">
-              <XboxLogo className="h-4 w-4 text-xbox-neon" />
+            <span className="liquid-glass-subtle flex h-7 w-7 items-center justify-center rounded-xl sm:h-8 sm:w-8">
+              <XboxLogo className="h-3.5 w-3.5 text-xbox-neon sm:h-4 sm:w-4" />
             </span>
             <div className={`flex items-center gap-2 ${showSearch ? 'hidden sm:flex' : ''}`}>
-              <span className="font-display text-lg font-bold tracking-tight text-white">
+              <span className="font-display text-base font-bold tracking-tight text-white sm:text-lg">
                 Quando lança<span className="text-xbox-neon">?</span>
               </span>
               {!showSearch && (
@@ -141,7 +141,7 @@ export default function PortalHeader({
                 type="button"
                 onClick={() => setSearchModalOpen(true)}
                 aria-label="Abrir busca rápida de jogos"
-                className="liquid-glass-subtle flex h-9 shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-3 text-white/75 transition hover:border-white/20 hover:bg-white/[0.07] hover:text-white"
+                className="liquid-glass-subtle flex h-8 w-8 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full text-white/75 transition hover:border-white/20 hover:bg-white/[0.07] hover:text-white sm:h-9 sm:w-auto sm:px-3"
               >
                 <Search className="h-3.5 w-3.5 shrink-0 text-white/55" />
                 <span className="hidden text-xs font-medium xl:inline">
@@ -161,7 +161,7 @@ export default function PortalHeader({
             overlayHero && !scrolled ? 'bg-[#060807]/60 backdrop-blur-md' : 'bg-[#080a09]/85'
           }`}
         >
-          <div className="no-scrollbar mx-auto flex max-w-[1480px] items-center gap-1.5 overflow-x-auto px-4 py-2 sm:px-6">
+          <div className="no-scrollbar mx-auto flex max-w-[1480px] items-center gap-1 overflow-x-auto px-3.5 py-1.5 sm:gap-1.5 sm:px-6 sm:py-2">
             {PORTAL_NAV_ITEMS.map((item) => {
               const Icon = item.icon;
               const active = !isGamePage && activeSection === item.id;
@@ -170,7 +170,7 @@ export default function PortalHeader({
                   key={item.id}
                   type="button"
                   onClick={() => navigate(sectionPath(item.id))}
-                  className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 font-sans text-xs font-medium transition ${
+                  className={`flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 font-sans text-[11px] font-medium transition sm:px-3 sm:text-xs ${
                     active
                       ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]'
                       : 'text-white/55 hover:bg-white/[0.05] hover:text-white'

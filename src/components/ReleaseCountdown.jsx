@@ -29,8 +29,8 @@ export default function ReleaseCountdown({ date, tba }) {
     return (
       <Card>
         <Label icon={CalendarClock}>Lançamento</Label>
-        <p className="mt-2 font-title text-3xl font-light">A anunciar</p>
-        <p className="mt-1 font-sans text-sm text-white/50">A loja ainda não divulgou a data.</p>
+        <p className="mt-1.5 font-title text-2xl font-light sm:mt-2 sm:text-3xl">A anunciar</p>
+        <p className="mt-1 font-sans text-xs text-white/50 sm:text-sm">A loja ainda não divulgou a data.</p>
       </Card>
     );
   }
@@ -40,11 +40,19 @@ export default function ReleaseCountdown({ date, tba }) {
   if (diff <= 0) {
     return (
       <Card released>
-        <Label icon={CheckCircle2} className="text-xbox-neon">
-          Já disponível
-        </Label>
-        <p className="mt-2 font-action text-[11px] uppercase tracking-wider text-white/50">Disponível desde</p>
-        <p className="mt-1 font-title text-2xl font-light capitalize-first">{dateFmt.format(date)}</p>
+        <div className="flex items-center justify-between gap-2 sm:block">
+          <Label icon={CheckCircle2} className="text-xbox-neon">
+            Já disponível
+          </Label>
+          <div className="flex items-baseline gap-1.5 sm:mt-2 sm:block">
+            <p className="font-action text-[10px] uppercase tracking-wider text-white/50 sm:text-[11px]">
+              Disponível desde
+            </p>
+            <p className="font-title text-sm font-medium capitalize-first text-white sm:mt-1 sm:text-2xl sm:font-light">
+              {dateFmt.format(date)}
+            </p>
+          </div>
+        </div>
       </Card>
     );
   }
@@ -72,23 +80,23 @@ export default function ReleaseCountdown({ date, tba }) {
   return (
     <Card>
       <Label icon={Clock}>Disponível em</Label>
-      <div className="mt-3.5 grid grid-cols-3 gap-2 text-center">
+      <div className="mt-2.5 grid grid-cols-3 gap-2 text-center sm:mt-3.5">
         {columns.map(([value, unit]) => (
           <div
             key={unit}
-            className="liquid-glass-subtle flex flex-col items-center justify-center rounded-xl px-2 py-2.5 transition"
+            className="liquid-glass-subtle flex flex-col items-center justify-center rounded-xl px-2 py-2 transition sm:py-2.5"
           >
-            <span className="font-display text-2xl font-bold tabular-nums tracking-tight text-white sm:text-3xl">
+            <span className="font-display text-xl font-bold tabular-nums tracking-tight text-white sm:text-3xl">
               {pad(value)}
             </span>
-            <span className="mt-0.5 text-[10px] font-medium uppercase tracking-wider text-white/45">
+            <span className="mt-0.5 text-[9px] font-medium uppercase tracking-wider text-white/45 sm:text-[10px]">
               {unit}
             </span>
           </div>
         ))}
       </div>
-      <div className="mt-3.5 flex items-baseline justify-between gap-2 border-t border-white/[0.06] pt-3 text-xs">
-        <span className="text-[11px] text-white/45">Lançamento</span>
+      <div className="mt-2.5 flex items-baseline justify-between gap-2 border-t border-white/[0.06] pt-2.5 text-[11px] sm:mt-3.5 sm:pt-3 sm:text-xs">
+        <span className="text-[10px] text-white/45 sm:text-[11px]">Lançamento</span>
         <span className="font-medium text-white/90">{dateTimeFmt.format(date)}</span>
       </div>
     </Card>
@@ -98,7 +106,7 @@ export default function ReleaseCountdown({ date, tba }) {
 function Card({ children, released = false }) {
   return (
     <div
-      className={`liquid-glass w-full rounded-2xl p-4 sm:p-5 ${
+      className={`liquid-glass w-full rounded-2xl p-3.5 sm:p-5 ${
         released ? 'border-xbox-neon/25 bg-xbox-green/[0.12]' : ''
       }`}
     >

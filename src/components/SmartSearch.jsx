@@ -154,16 +154,16 @@ export default function SmartSearch({
           focus-within:border-white/25 focus-within:bg-white/[0.07]
           ${
             isHero
-              ? 'liquid-glass h-15 rounded-2xl px-5 sm:h-16 sm:px-6'
+              ? 'liquid-glass h-12 rounded-2xl px-3.5 sm:h-16 sm:px-6'
               : big
-              ? 'liquid-glass h-13 rounded-2xl px-4 sm:h-14 sm:px-5'
-              : 'liquid-glass-subtle h-9 rounded-full px-3.5'
+              ? 'liquid-glass h-11 rounded-2xl px-3.5 sm:h-14 sm:px-5'
+              : 'liquid-glass-subtle h-8 rounded-full px-3 sm:h-9 sm:px-3.5'
           }`}
       >
         {directId ? (
-          <Link2 className={`shrink-0 text-xbox-neon ${isHero ? 'h-5 w-5' : big ? 'h-5 w-5' : 'h-3.5 w-3.5'}`} />
+          <Link2 className={`shrink-0 text-xbox-neon ${isHero ? 'h-4 w-4 sm:h-5 sm:w-5' : big ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-3.5 w-3.5'}`} />
         ) : (
-          <Search className={`shrink-0 text-white/45 transition group-focus-within:text-white/85 ${isHero ? 'h-5 w-5' : big ? 'h-5 w-5' : 'h-3.5 w-3.5'}`} />
+          <Search className={`shrink-0 text-white/45 transition group-focus-within:text-white/85 ${isHero ? 'h-4 w-4 sm:h-5 sm:w-5' : big ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-3.5 w-3.5'}`} />
         )}
         <input
           ref={inputRef}
@@ -181,7 +181,7 @@ export default function SmartSearch({
             (big ? 'Busque qualquer jogo Xbox ou cole o link da Microsoft Store…' : 'Buscar jogo ou colar URL…')
           }
           className={`w-full min-w-0 bg-transparent text-left font-sans text-white outline-none placeholder:text-white/40 ${
-            isHero ? 'text-base sm:text-lg' : big ? 'text-sm sm:text-base' : 'text-xs'
+            isHero ? 'text-[13px] sm:text-lg' : big ? 'text-[13px] sm:text-base' : 'text-xs'
           }`}
           role="combobox"
           aria-expanded={!!showPanel}

@@ -225,7 +225,7 @@ export default function HomePage({ section = 'geral' }) {
 
 function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
   return (
-    <section className="relative flex min-h-[76vh] flex-col items-center justify-center px-4 pb-16 pt-32 sm:px-6 sm:pt-36 lg:min-h-[78vh] lg:px-10 lg:pt-28">
+    <section className="relative flex min-h-[58vh] flex-col items-center justify-center px-3.5 pb-10 pt-24 sm:min-h-[76vh] sm:px-6 sm:pb-16 sm:pt-36 lg:min-h-[78vh] lg:px-10 lg:pt-28">
       {/* Camada de backgrounds em movimento lento e crossfade suave */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden bg-[#0a0d0b]">
         <div className="absolute left-1/2 top-1/2 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-xbox-green/20 blur-[160px]" />
@@ -257,20 +257,20 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
 
       {/* Conteúdo central focado na busca */}
       <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center text-center">
-        <span className="liquid-glass-subtle inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/75">
-          <XboxLogo className="h-3.5 w-3.5 text-xbox-neon" />
+        <span className="liquid-glass-subtle inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/75 sm:gap-2 sm:px-3.5 sm:py-1.5 sm:text-[11px] sm:tracking-[0.16em]">
+          <XboxLogo className="h-3 w-3 text-xbox-neon sm:h-3.5 sm:w-3.5" />
           Portal Xbox Brasil
         </span>
 
-        <h1 className="mt-5 font-display text-4xl font-extrabold tracking-tight text-white drop-shadow-[0_6px_24px_rgba(0,0,0,0.65)] sm:text-5xl lg:text-6xl">
+        <h1 className="mt-3.5 font-display text-3xl font-extrabold tracking-tight text-white drop-shadow-[0_6px_24px_rgba(0,0,0,0.65)] sm:mt-5 sm:text-5xl lg:text-6xl">
           Quando lança<span className="text-xbox-neon">?</span>
         </h1>
 
-        <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/65 sm:text-base">
+        <p className="mt-2.5 max-w-xl text-xs leading-relaxed text-white/65 sm:mt-3 sm:text-base">
           Consulte datas de lançamento, horários oficiais, contagem regressiva e histórico de preços de qualquer jogo na Xbox Store Brasil.
         </p>
 
-        <div className="mt-7 w-full">
+        <div className="mt-5 w-full sm:mt-7">
           <SmartSearch
             size="hero"
             autoFocus
@@ -279,9 +279,9 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
           />
         </div>
 
-        <div className="mt-5 flex w-full flex-col items-center gap-2.5">
-          <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs">
-            <span className="mr-1 text-[11px] font-medium text-white/45">
+        <div className="mt-4 flex w-full flex-col items-center gap-2 sm:mt-5 sm:gap-2.5">
+          <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-1.5 text-xs">
+            <span className="mr-0.5 text-[10px] font-medium text-white/45 sm:mr-1 sm:text-[11px]">
               Populares:
             </span>
             {QUICK_PICKS.map((item) => (
@@ -289,7 +289,7 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
                 key={item.id}
                 type="button"
                 onClick={() => navigate(gamePath(item.id))}
-                className="liquid-glass-subtle rounded-full px-3 py-1.5 text-xs font-medium text-white/75 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
+                className="liquid-glass-subtle rounded-full px-2.5 py-1 text-[11px] font-medium text-white/75 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white sm:px-3 sm:py-1.5 sm:text-xs"
               >
                 {item.label}
               </button>
@@ -297,8 +297,8 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
           </div>
 
           {recentGames.length > 0 && (
-            <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs">
-              <span className="mr-1 inline-flex items-center gap-1 text-[11px] font-medium text-white/45">
+            <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-1.5 text-xs">
+              <span className="mr-0.5 inline-flex items-center gap-1 text-[10px] font-medium text-white/45 sm:mr-1 sm:text-[11px]">
                 <History className="h-3 w-3 text-white/50" />
                 Recentes:
               </span>
@@ -307,9 +307,9 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
                   key={rg.id}
                   type="button"
                   onClick={() => navigate(gamePath(rg.id))}
-                  className="liquid-glass-subtle inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs text-white/70 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
+                  className="liquid-glass-subtle inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] text-white/70 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white sm:px-3 sm:py-1.5 sm:text-xs"
                 >
-                  <span className="max-w-[160px] truncate">{rg.title}</span>
+                  <span className="max-w-[140px] truncate sm:max-w-[160px]">{rg.title}</span>
                 </button>
               ))}
             </div>
@@ -356,22 +356,22 @@ function OverviewSection({
   };
 
   return (
-    <div className="mt-4 space-y-14">
+    <div className="mt-2 space-y-10 sm:mt-4 sm:space-y-14">
       {/* BLOCO 1: POPULARES & OFERTAS (Cards Poster estilo "Popular Games") */}
       <section>
-        <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
           <div>
-            <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">
-              <Flame className="h-3.5 w-3.5 text-xbox-neon" />
+            <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/45 sm:text-[11px] sm:tracking-[0.16em]">
+              <Flame className="h-3 w-3 text-xbox-neon sm:h-3.5 sm:w-3.5" />
               Microsoft Store Brasil
             </span>
-            <h2 className="mt-1 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            <h2 className="mt-0.5 font-display text-xl font-bold tracking-tight text-white sm:mt-1 sm:text-3xl">
               Populares na Loja
             </h2>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="liquid-pill-bar flex flex-wrap items-center gap-0.5 rounded-full p-1">
+          <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:flex-wrap">
+            <div className="liquid-pill-bar flex items-center gap-0.5 rounded-full p-1">
               {[
                 { id: 'trending', label: 'Em Alta' },
                 { id: 'deals', label: 'Ofertas' },
@@ -381,7 +381,7 @@ function OverviewSection({
                   key={tab.id}
                   type="button"
                   onClick={() => setPopularTab(tab.id)}
-                  className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
+                  className={`rounded-full px-3 py-1 text-[11px] font-medium transition sm:px-3.5 sm:py-1.5 sm:text-xs ${
                     popularTab === tab.id
                       ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
                       : 'text-white/55 hover:text-white'
@@ -414,10 +414,10 @@ function OverviewSection({
             <button
               type="button"
               onClick={() => onSeeAllOffers(popularTab)}
-              className="liquid-glass-subtle inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-medium text-white/75 transition hover:border-white/20 hover:text-white"
+              className="liquid-glass-subtle inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium text-white/75 transition hover:border-white/20 hover:text-white sm:px-3.5 sm:py-2 sm:text-xs"
             >
               <span>Ver todos</span>
-              <ArrowRight className="h-3.5 w-3.5 text-white/50" />
+              <ArrowRight className="h-3 w-3 text-white/50 sm:h-3.5 sm:w-3.5" />
             </button>
           </div>
         </div>
@@ -427,12 +427,12 @@ function OverviewSection({
         ) : popularItems.length > 0 ? (
           <div
             ref={popularRailRef}
-            className="no-scrollbar mt-5 flex snap-x gap-4 overflow-x-auto pb-2 scroll-smooth"
+            className="no-scrollbar mt-4 flex snap-x gap-3 overflow-x-auto pb-2 scroll-smooth sm:mt-5 sm:gap-4"
           >
             {popularItems.map((g) => (
               <div
                 key={g.id}
-                className="w-[175px] shrink-0 snap-start sm:w-[205px] lg:w-[225px]"
+                className="w-[152px] shrink-0 snap-start sm:w-[205px] lg:w-[225px]"
               >
                 <GamePortalCard game={g} nowMs={nowMs} variant="poster" />
               </div>
@@ -456,7 +456,7 @@ function OverviewSection({
         {loading ? (
           <CardsSkeleton count={8} />
         ) : upcomingCards.length > 0 ? (
-          <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-4 grid grid-cols-1 gap-3.5 sm:mt-5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
             {upcomingCards.map((g) => (
               <GamePortalCard key={g.id} game={g} nowMs={nowMs} variant="wide" />
             ))}
@@ -469,19 +469,19 @@ function OverviewSection({
       {/* BLOCO 3: RADAR GAME PASS ("Hot News!" cards horizontais) + FERRAMENTAS ("Detail orders") */}
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
         <section className="min-w-0 xl:col-span-8">
-          <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="flex flex-wrap items-end justify-between gap-2.5 sm:gap-3">
             <div>
-              <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">
-                <Gamepad2 className="h-3.5 w-3.5 text-xbox-neon" />
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/45 sm:text-[11px] sm:tracking-[0.16em]">
+                <Gamepad2 className="h-3 w-3 text-xbox-neon sm:h-3.5 sm:w-3.5" />
                 Catálogo por Assinatura
               </span>
-              <h2 className="mt-1 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              <h2 className="mt-0.5 font-display text-xl font-bold tracking-tight text-white sm:mt-1 sm:text-3xl">
                 Radar Game Pass
               </h2>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="liquid-pill-bar flex flex-wrap gap-0.5 rounded-full p-1">
+            <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:flex-wrap">
+              <div className="liquid-pill-bar flex items-center gap-0.5 rounded-full p-1">
                 {[
                   { id: 'comingSoonGp', label: 'Chegando' },
                   { id: 'recentGp', label: 'Novos' },
@@ -491,7 +491,7 @@ function OverviewSection({
                     key={tab.id}
                     type="button"
                     onClick={() => setGpOverviewTab(tab.id)}
-                    className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
+                    className={`rounded-full px-3 py-1 text-[11px] font-medium transition sm:px-3.5 sm:py-1.5 sm:text-xs ${
                       gpOverviewTab === tab.id
                         ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
                         : 'text-white/55 hover:text-white'
@@ -505,10 +505,10 @@ function OverviewSection({
               <button
                 type="button"
                 onClick={() => navigate(sectionPath('gamepass'))}
-                className="liquid-glass-subtle inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-medium text-white/75 transition hover:border-white/20 hover:text-white"
+                className="liquid-glass-subtle inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium text-white/75 transition hover:border-white/20 hover:text-white sm:px-3.5 sm:py-2 sm:text-xs"
               >
                 <span>Ver catálogo</span>
-                <ArrowRight className="h-3.5 w-3.5 text-white/50" />
+                <ArrowRight className="h-3 w-3 text-white/50 sm:h-3.5 sm:w-3.5" />
               </button>
             </div>
           </div>
@@ -516,7 +516,7 @@ function OverviewSection({
           {loading ? (
             <EditorialSkeleton count={6} />
           ) : gpItems.length > 0 ? (
-            <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:mt-5 sm:gap-4 md:grid-cols-2">
               {gpItems.map((g) => (
                 <GamePortalCard
                   key={g.id}
@@ -565,7 +565,7 @@ function ReleasesSection({ portal, loading, nowMs, filter, setFilter, sort, setS
   return (
     <section className="mt-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="liquid-pill-bar flex flex-wrap gap-1 rounded-full p-1">
+        <div className="liquid-pill-bar no-scrollbar flex w-full items-center gap-1 overflow-x-auto rounded-full p-1 sm:w-auto sm:flex-wrap">
           {[
             { id: 'all', label: 'Todos próximos' },
             { id: 'dated', label: 'Com data marcada' },
@@ -576,7 +576,7 @@ function ReleasesSection({ portal, loading, nowMs, filter, setFilter, sort, setS
               key={btn.id}
               type="button"
               onClick={() => setFilter(btn.id)}
-              className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
+              className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 text-[11px] font-medium transition sm:px-3.5 sm:py-1.5 sm:text-xs ${
                 filter === btn.id
                   ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
                   : 'text-white/55 hover:text-white'
@@ -635,7 +635,7 @@ function OffersSection({ portal, loading, nowMs, filter, setFilter }) {
   return (
     <section className="mt-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="liquid-pill-bar flex flex-wrap gap-1 rounded-full p-1">
+        <div className="liquid-pill-bar no-scrollbar flex w-full items-center gap-1 overflow-x-auto rounded-full p-1 sm:w-auto sm:flex-wrap">
           {[
             { id: 'trending', label: 'Em Alta na Loja BR', icon: Flame },
             { id: 'deals', label: 'Com Desconto Ativo', icon: Tag },
@@ -648,7 +648,7 @@ function OffersSection({ portal, loading, nowMs, filter, setFilter }) {
                 key={btn.id}
                 type="button"
                 onClick={() => setFilter(btn.id)}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
+                className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-[11px] font-medium transition sm:px-3.5 sm:py-1.5 sm:text-xs ${
                   active
                     ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
                     : 'text-white/55 hover:text-white'
@@ -691,7 +691,7 @@ function GamePassSection({ portal, loading, nowMs, filter, setFilter }) {
   return (
     <section className="mt-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="liquid-pill-bar flex flex-wrap gap-1 rounded-full p-1">
+        <div className="liquid-pill-bar no-scrollbar flex w-full items-center gap-1 overflow-x-auto rounded-full p-1 sm:w-auto sm:flex-wrap">
           {[
             { id: 'comingSoon', label: 'Chegando ao Game Pass' },
             { id: 'recent', label: 'Adicionados recentemente' },
@@ -703,7 +703,7 @@ function GamePassSection({ portal, loading, nowMs, filter, setFilter }) {
                 key={btn.id}
                 type="button"
                 onClick={() => setFilter(btn.id)}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
+                className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-[11px] font-medium transition sm:px-3.5 sm:py-1.5 sm:text-xs ${
                   active
                     ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
                     : 'text-white/55 hover:text-white'
@@ -785,13 +785,13 @@ function ToolsSection() {
 
 function SectionHeader({ icon: Icon, eyebrow, title, actionLabel, onAction }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-3">
+    <div className="flex flex-wrap items-end justify-between gap-2.5 sm:gap-3">
       <div>
-        <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">
-          <Icon className="h-3.5 w-3.5 text-xbox-neon" />
+        <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/45 sm:text-[11px] sm:tracking-[0.16em]">
+          <Icon className="h-3 w-3 text-xbox-neon sm:h-3.5 sm:w-3.5" />
           {eyebrow}
         </span>
-        <h2 className="mt-1 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
+        <h2 className="mt-0.5 font-display text-xl font-bold tracking-tight text-white sm:mt-1 sm:text-3xl">
           {title}
         </h2>
       </div>
@@ -799,10 +799,10 @@ function SectionHeader({ icon: Icon, eyebrow, title, actionLabel, onAction }) {
         <button
           type="button"
           onClick={onAction}
-          className="liquid-glass-subtle inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium text-white/75 transition hover:border-white/20 hover:text-white"
+          className="liquid-glass-subtle inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium text-white/75 transition hover:border-white/20 hover:text-white sm:px-4 sm:py-2 sm:text-xs"
         >
           <span>{actionLabel}</span>
-          <ArrowRight className="h-3.5 w-3.5 text-white/50" />
+          <ArrowRight className="h-3 w-3 text-white/50 sm:h-3.5 sm:w-3.5" />
         </button>
       )}
     </div>
@@ -811,11 +811,11 @@ function SectionHeader({ icon: Icon, eyebrow, title, actionLabel, onAction }) {
 
 function PosterRailSkeleton({ count = 6 }) {
   return (
-    <div className="mt-5 flex gap-4 overflow-hidden">
+    <div className="mt-4 flex gap-3 overflow-hidden sm:mt-5 sm:gap-4">
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="aspect-[3/4] w-[175px] shrink-0 animate-pulse rounded-2xl border border-white/[0.07] bg-[#141a16] sm:w-[205px] lg:w-[225px]"
+          className="aspect-[3/4] w-[152px] shrink-0 animate-pulse rounded-2xl border border-white/[0.07] bg-[#141a16] sm:w-[205px] lg:w-[225px]"
         />
       ))}
     </div>

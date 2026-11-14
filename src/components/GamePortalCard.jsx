@@ -84,10 +84,10 @@ export default function GamePortalCard({
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#060807] via-[#060807]/50 via-40% to-black/10" />
 
         {/* Badge superior direito */}
-        <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
+        <div className="absolute inset-x-2.5 top-2.5 flex items-start justify-between gap-1.5 sm:inset-x-3 sm:top-3 sm:gap-2">
           <div>
             {game.inGamePass && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/60 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white/85 backdrop-blur-md">
+              <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/60 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white/85 backdrop-blur-md sm:px-2 sm:text-[10px]">
                 <Gamepad2 className="h-2.5 w-2.5 text-xbox-neon" />
                 GP
               </span>
@@ -95,12 +95,12 @@ export default function GamePortalCard({
           </div>
 
           {discountPct ? (
-            <span className="rounded-full border border-xbox-neon/35 bg-xbox-green/80 px-2 py-0.5 text-[10px] font-bold tracking-wide text-white backdrop-blur-md">
+            <span className="rounded-full border border-xbox-neon/35 bg-xbox-green/80 px-1.5 py-0.5 text-[9px] font-bold tracking-wide text-white backdrop-blur-md sm:px-2 sm:text-[10px]">
               -{discountPct}%
             </span>
           ) : badgeOverride ? (
             <span
-              className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider backdrop-blur-md ${getToneClasses(
+              className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider backdrop-blur-md sm:px-2 sm:text-[10px] ${getToneClasses(
                 badge.tone
               )}`}
             >
@@ -108,7 +108,7 @@ export default function GamePortalCard({
             </span>
           ) : badge.tone === 'upcoming' || badge.tone === 'imminent' ? (
             <span
-              className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider backdrop-blur-md ${getToneClasses(
+              className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider backdrop-blur-md sm:px-2 sm:text-[10px] ${getToneClasses(
                 badge.tone
               )}`}
             >
@@ -116,37 +116,37 @@ export default function GamePortalCard({
               {badge.label}
             </span>
           ) : isFree || game.inGamePass ? (
-            <span className="rounded-full border border-white/15 bg-black/60 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white/85 backdrop-blur-md">
+            <span className="rounded-full border border-white/15 bg-black/60 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-white/85 backdrop-blur-md sm:px-2 sm:text-[10px]">
               {isFree ? 'Grátis' : 'Game Pass'}
             </span>
           ) : null}
         </div>
 
         {/* Rodapé sobre a arte */}
-        <div className="relative z-10 p-3.5 sm:p-4">
-          <div className="mb-1 flex items-baseline gap-1.5">
+        <div className="relative z-10 p-3 sm:p-4">
+          <div className="mb-0.5 flex items-baseline gap-1.5 sm:mb-1">
             {hasDiscount && (
-              <span className="text-[11px] text-white/45 line-through">
+              <span className="text-[10px] text-white/45 line-through sm:text-[11px]">
                 {formatPrice(game.price.msrp)}
               </span>
             )}
             {hasPrice ? (
               <span
-                className={`font-display text-sm font-bold ${
+                className={`font-display text-xs font-bold sm:text-sm ${
                   isFree || hasDiscount ? 'text-xbox-neon' : 'text-white/95'
                 }`}
               >
                 {isFree ? 'Gratuito' : formatPrice(game.price.list)}
               </span>
             ) : (
-              <span className="text-[11px] font-medium text-white/60">Ver ficha</span>
+              <span className="text-[10px] font-medium text-white/60 sm:text-[11px]">Ver ficha</span>
             )}
           </div>
 
-          <h3 className="line-clamp-1 font-display text-[15px] font-bold text-white transition group-hover:text-white/90 sm:text-base">
+          <h3 className="line-clamp-2 font-display text-[13px] font-bold leading-tight text-white transition group-hover:text-white/90 sm:line-clamp-1 sm:text-base sm:leading-normal">
             {game.title}
           </h3>
-          <p className="mt-0.5 line-clamp-1 text-xs text-white/50">
+          <p className="mt-0.5 line-clamp-1 text-[11px] text-white/50 sm:text-xs">
             {badge.tone === 'upcoming' || badge.tone === 'imminent'
               ? dateLabel
               : game.publisher || game.category || 'Microsoft Store BR'}
@@ -162,9 +162,9 @@ export default function GamePortalCard({
       <button
         type="button"
         onClick={() => navigate(gamePath(game.id))}
-        className={`liquid-glass group flex w-full min-w-0 items-stretch gap-3.5 rounded-2xl p-3.5 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.06] ${className}`}
+        className={`liquid-glass group flex w-full min-w-0 items-stretch gap-3 rounded-2xl p-3 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.06] sm:gap-3.5 sm:p-3.5 ${className}`}
       >
-        <div className="relative aspect-[4/5] w-24 shrink-0 overflow-hidden rounded-xl border border-white/[0.07] bg-black/30 sm:w-28">
+        <div className="relative aspect-[4/5] w-20 shrink-0 overflow-hidden rounded-xl border border-white/[0.07] bg-black/30 sm:w-28">
           {thumbImg ? (
             <img
               src={thumbImg}
@@ -237,7 +237,7 @@ export default function GamePortalCard({
     <button
       type="button"
       onClick={() => navigate(gamePath(game.id))}
-      className={`group relative flex aspect-[16/10] w-full min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] p-3.5 text-left shadow-portal-card transition-all duration-300 hover:-translate-y-1 hover:border-white/20 ${className}`}
+      className={`group relative flex aspect-[16/9] w-full min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] p-3 text-left shadow-portal-card transition-all duration-300 hover:-translate-y-1 hover:border-white/20 sm:aspect-[16/10] sm:p-3.5 ${className}`}
     >
       {game.cardHero || game.cover ? (
         <img

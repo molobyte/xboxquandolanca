@@ -48,7 +48,10 @@ export default function PriceHistoryChart({ data }) {
 
       ctx.clearRect(0, 0, width, height);
 
-      const padding = { top: 22, right: 20, bottom: 28, left: 62 };
+      const isCompact = width < 440;
+      const padding = isCompact
+        ? { top: 18, right: 12, bottom: 24, left: 50 }
+        : { top: 22, right: 20, bottom: 28, left: 62 };
       const chartW = width - padding.left - padding.right;
       const chartH = height - padding.top - padding.bottom;
 
@@ -67,7 +70,7 @@ export default function PriceHistoryChart({ data }) {
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.045)';
       ctx.lineWidth = 1;
       ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-      ctx.font = '11px monospace';
+      ctx.font = isCompact ? '10px monospace' : '11px monospace';
       ctx.textAlign = 'right';
 
       for (let i = 0; i <= steps; i++) {
@@ -79,7 +82,7 @@ export default function PriceHistoryChart({ data }) {
         ctx.lineTo(padding.left + chartW, y);
         ctx.stroke();
 
-        ctx.fillText(`R$ ${Math.round(val)}`, padding.left - 8, y + 4);
+        ctx.fillText(`R$ ${Math.round(val)}`, padding.left - 6, y + 4);
       }
 
       // 2. Área sombreada verde suave sob a curva
@@ -173,14 +176,15 @@ export default function PriceHistoryChart({ data }) {
     };
   }, [activePoints, data.lowestPrice, hoveredPoint]);
 
-  // Manipulador de mouse no canvas
-  const handleMouseMove = (e) => {
+  // Manipulador de mouse e toque no canvas
+  const updateHoverFromClientCoords = (clientX, clientY) => {
     const canvas = canvasRef.current;
     if (!canvas || !activePoints.length) return;
 
     const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const padding = { left: 62, right: 20 };
+    const mouseX = clientX - rect.left;
+    const isCompact = rect.width < 440;
+    const padding = isCompact ? { left: 50, right: 12 } : { left: 62, right: 20 };
     const chartW = rect.width - padding.left - padding.right;
 
     if (mouseX >= padding.left && mouseX <= padding.left + chartW) {
@@ -197,10 +201,21 @@ export default function PriceHistoryChart({ data }) {
         price: point.price,
         date: point.date,
         x: ptX,
-        y: e.clientY - rect.top,
+        y: clientY - rect.top,
       });
     } else {
       setHoveredPoint(null);
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    updateHoverFromClientCoords(e.clientX, e.clientY);
+  };
+
+  const handleTouchMove = (e) => {
+    if (e.touches && e.touches.length > 0) {
+      const touch = e.touches[0];
+      updateHoverFromClientCoords(touch.clientX, touch.clientY);
     }
   };
 
@@ -273,11 +288,14 @@ export default function PriceHistoryChart({ data }) {
       </div>
 
       {/* Canvas do Gráfico */}
-      <div className="relative mt-1.5 h-52 w-full overflow-hidden rounded-xl border border-white/[0.05] bg-black/20 sm:h-60">
+      <div className="relative mt-1.5 h-44 w-full overflow-hidden rounded-xl border border-white/[0.05] bg-black/20 sm:h-60">
         <canvas
           ref={canvasRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
+          onTouchStart={handleTouchMove}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleMouseLeave}
           className="block h-full w-full cursor-crosshair"
         />
 
