@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Zap, Globe, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
-import { getRegionalReleases, REGIONAL_MARKETS } from '../lib/xbox.js';
+import { getRegionalReleases } from '../lib/xbox.js';
 import CountryFlag from './CountryFlag.jsx';
 
 const compactBrPartsFmt = new Intl.DateTimeFormat('pt-BR', {
@@ -114,76 +114,75 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba, embedded 
         </span>
       </div>
 
-      {/* Lista de países */}
+      {/* Lista de países (completa quando há diferença regional; apenas Brasil quando é horário global simultâneo) */}
       <div className="mt-2.5 flex flex-col gap-1">
-        {countries.map((item) => {
-          const isBest = hasEarlyRegion && item.code === bestCode;
-          return (
-            <div
-              key={item.code}
-              className={
-                isBest
-                  ? 'my-0.5 rounded-xl border border-xbox-neon/35 bg-xbox-green/[0.16] px-2.5 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
-                  : 'flex items-center justify-between gap-2 rounded-lg px-2 py-1'
-              }
-            >
-              {isBest ? (
-                <>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="flex min-w-0 items-center gap-2 whitespace-nowrap text-xs font-semibold text-white">
+        {(hasEarlyRegion ? countries : [{ code: 'BR', name: 'Brasil', date: brazilDate }]).map(
+          (item) => {
+            const isBest = hasEarlyRegion && item.code === bestCode;
+            return (
+              <div
+                key={item.code}
+                className={
+                  isBest
+                    ? 'my-0.5 rounded-xl border border-xbox-neon/35 bg-xbox-green/[0.16] px-2.5 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
+                    : 'flex items-center justify-between gap-2 rounded-lg px-2 py-1'
+                }
+              >
+                {isBest ? (
+                  <>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="flex min-w-0 items-center gap-2 whitespace-nowrap text-xs font-semibold text-white">
+                        <CountryFlag code={item.code} className="h-3 w-4 shrink-0" />
+                        <span className="truncate">{item.name}</span>
+                      </span>
+                      <span className="shrink-0 whitespace-nowrap font-mono text-[11px] font-semibold tabular-nums text-xbox-neon">
+                        {formatCompactBrDateTime(item.date)}
+                      </span>
+                    </div>
+
+                    <div className="mt-1 flex items-center justify-between gap-2 border-t border-xbox-neon/15 pt-1 text-[10px]">
+                      <span className="inline-flex items-center gap-1 whitespace-nowrap font-semibold text-xbox-neon">
+                        <Zap className="h-3 w-3 shrink-0" />
+                        {isAvailableNowInBest ? 'Já disponível agora' : `Sai ${bestAheadHours}h mais cedo`}
+                      </span>
+                      {!isAvailableNowInBest && diffBestMs > 0 && (
+                        <span className="whitespace-nowrap font-mono tabular-nums text-white/80">
+                          em {daysBest > 0 ? `${pad(daysBest)}d ` : ''}{pad(hoursBest)}h {pad(minutesBest)}m
+                        </span>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span
+                      className={`flex min-w-0 items-center gap-2 whitespace-nowrap text-xs ${
+                        item.code === 'BR' ? 'font-medium text-white/90' : 'text-white/65'
+                      }`}
+                    >
                       <CountryFlag code={item.code} className="h-3 w-4 shrink-0" />
                       <span className="truncate">{item.name}</span>
                     </span>
-                    <span className="shrink-0 whitespace-nowrap font-mono text-[11px] font-semibold tabular-nums text-xbox-neon">
+                    <span className="shrink-0 whitespace-nowrap font-mono text-[11px] tabular-nums text-white/85">
                       {formatCompactBrDateTime(item.date)}
                     </span>
-                  </div>
+                  </>
+                )}
+              </div>
+            );
+          }
+        )}
 
-                  <div className="mt-1 flex items-center justify-between gap-2 border-t border-xbox-neon/15 pt-1 text-[10px]">
-                    <span className="inline-flex items-center gap-1 whitespace-nowrap font-semibold text-xbox-neon">
-                      <Zap className="h-3 w-3 shrink-0" />
-                      {isAvailableNowInBest ? 'Já disponível agora' : `Sai ${bestAheadHours}h mais cedo`}
-                    </span>
-                    {!isAvailableNowInBest && diffBestMs > 0 && (
-                      <span className="whitespace-nowrap font-mono tabular-nums text-white/80">
-                        em {daysBest > 0 ? `${pad(daysBest)}d ` : ''}{pad(hoursBest)}h {pad(minutesBest)}m
-                      </span>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <span
-                    className={`flex min-w-0 items-center gap-2 whitespace-nowrap text-xs ${
-                      item.code === 'BR' ? 'font-medium text-white/90' : 'text-white/65'
-                    }`}
-                  >
-                    <CountryFlag code={item.code} className="h-3 w-4 shrink-0" />
-                    <span className="truncate">{item.name}</span>
-                  </span>
-                  <span className="shrink-0 whitespace-nowrap font-mono text-[11px] tabular-nums text-white/85">
-                    {formatCompactBrDateTime(item.date)}
-                  </span>
-                </>
-              )}
-            </div>
-          );
-        })}
+        {/* Skeleton discreto enquanto verifica se o lançamento é regional ou global */}
+        {loading && (
+          <div className="mt-1 h-9 w-full animate-pulse rounded-xl bg-white/[0.04]" />
+        )}
 
-        {/* Skeleton discreto enquanto busca os demais países */}
-        {loading &&
-          REGIONAL_MARKETS.map((m) => (
-            <div
-              key={m.code}
-              className="flex animate-pulse items-center justify-between gap-2 px-2 py-1"
-            >
-              <span className="flex items-center gap-2">
-                <CountryFlag code={m.code} className="h-3 w-4 shrink-0 opacity-50" />
-                <span className="h-3 w-20 rounded bg-white/[0.06]" />
-              </span>
-              <span className="h-3 w-24 rounded bg-white/[0.06]" />
-            </div>
-          ))}
+        {/* Texto informativo quando o lançamento é global simultâneo */}
+        {!loading && !hasEarlyRegion && (
+          <p className="liquid-glass-subtle mt-1.5 rounded-xl px-3 py-2.5 text-[11px] leading-relaxed text-white/60">
+            Este jogo terá lançamento global simultâneo. Não haverá diferença de horário entre regiões, portanto alterar a localidade do console não antecipará o acesso.
+          </p>
+        )}
       </div>
 
       {/* Menu retrátil de como fazer o truque de troca de região (apenas quando há região mais cedo) */}
