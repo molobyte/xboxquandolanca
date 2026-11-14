@@ -4,6 +4,7 @@
 const CACHE_TTL_MS = 15 * 60 * 1000;
 let cachedFeed = null;
 let cachedAt = 0;
+let inflightFeedPromise = null;
 
 const SIGLS = {
   comingSoonGp: '095bda36-f5cd-43f2-9ee1-0a72f371fb96',
@@ -68,14 +69,17 @@ async function fetchTrendingStoreIds(limit = 32) {
     .slice(0, limit);
 }
 
-async function fetchUpcomingStoreIds(maxPages = 8) {
+async function fetchUpcomingStoreIds(maxPages = 5) {
   const seen = new Set();
   const ids = [];
   let encodedCT;
   const nowMs = Date.now();
   const cutoffMs = nowMs - 24 * 60 * 60 * 1000;
+  const loopDeadline = Date.now() + 4200;
 
   for (let page = 0; page < maxPages; page++) {
+    if (page > 0 && Date.now() >= loopDeadline) break;
+
     const body = JSON.stringify({
       Filters: UPCOMING_FILTERS_B64,
       ReturnFilters: false,
@@ -91,7 +95,7 @@ async function fetchUpcomingStoreIds(maxPages = 8) {
         'ms-cv': 'portal.1',
         'Content-Type': 'application/json',
       },
-      { method: 'POST', body, timeoutMs: 5000 }
+      { method: 'POST', body, timeoutMs: 3000 }
     );
 
     if (!data) break;
@@ -130,35 +134,53 @@ async function fetchUpcomingStoreIds(maxPages = 8) {
   return ids;
 }
 
+async function refreshPortalFeed() {
+  if (inflightFeedPromise) return inflightFeedPromise;
+
+  inflightFeedPromise = (async () => {
+    try {
+      const [comingSoonGp, recentGp, leavingSoonGp, trending, upcomingStore] = await Promise.all([
+        fetchSiglIds(SIGLS.comingSoonGp, 16),
+        fetchSiglIds(SIGLS.recentGp, 16),
+        fetchSiglIds(SIGLS.leavingSoonGp, 12),
+        fetchTrendingStoreIds(36),
+        fetchUpcomingStoreIds(5),
+      ]);
+
+      const payload = {
+        comingSoonGp,
+        recentGp,
+        leavingSoonGp,
+        trending,
+        upcomingStore,
+        fetchedAt: new Date().toISOString(),
+      };
+
+      if (comingSoonGp.length || recentGp.length || trending.length || upcomingStore.length) {
+        cachedFeed = payload;
+        cachedAt = Date.now();
+      }
+
+      return cachedFeed || payload;
+    } finally {
+      inflightFeedPromise = null;
+    }
+  })();
+
+  return inflightFeedPromise;
+}
+
 export async function fetchPortalFeed() {
   const now = Date.now();
-  if (cachedFeed && now - cachedAt < CACHE_TTL_MS) {
+  if (cachedFeed) {
+    if (now - cachedAt >= CACHE_TTL_MS) {
+      // Stale-while-revalidate em memória: entrega imediato e atualiza em background
+      refreshPortalFeed().catch(() => {});
+    }
     return cachedFeed;
   }
 
-  const [comingSoonGp, recentGp, leavingSoonGp, trending, upcomingStore] = await Promise.all([
-    fetchSiglIds(SIGLS.comingSoonGp, 16),
-    fetchSiglIds(SIGLS.recentGp, 16),
-    fetchSiglIds(SIGLS.leavingSoonGp, 12),
-    fetchTrendingStoreIds(36),
-    fetchUpcomingStoreIds(8),
-  ]);
-
-  const payload = {
-    comingSoonGp,
-    recentGp,
-    leavingSoonGp,
-    trending,
-    upcomingStore,
-    fetchedAt: new Date().toISOString(),
-  };
-
-  if (comingSoonGp.length || recentGp.length || trending.length || upcomingStore.length) {
-    cachedFeed = payload;
-    cachedAt = now;
-  }
-
-  return payload;
+  return refreshPortalFeed();
 }
 
 async function handlePortalFeedMiddleware(_req, res) {

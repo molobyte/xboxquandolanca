@@ -12,7 +12,7 @@ export default async function handler(req, res) {
 
   try {
     const data = await fetchPortalFeed();
-    res.setHeader('Cache-Control', 'public, s-maxage=900, stale-while-revalidate=3600');
+    res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=86400');
     res.statusCode = 200;
     res.end(JSON.stringify({ success: true, data }));
   } catch (err) {

@@ -52,6 +52,7 @@ export default function GamePortalCard({
   nowMs = Date.now(),
   badgeOverride = null,
   variant = 'wide',
+  priority = false,
   className = '',
 }) {
   const badge = badgeOverride || getReleaseBadge(game, nowMs);
@@ -71,7 +72,8 @@ export default function GamePortalCard({
           <img
             src={posterImg}
             alt={game.title}
-            loading="lazy"
+            loading={priority ? 'eager' : 'lazy'}
+            decoding="async"
             className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
           />
         ) : (
@@ -169,7 +171,8 @@ export default function GamePortalCard({
             <img
               src={thumbImg}
               alt={game.title}
-              loading="lazy"
+              loading={priority ? 'eager' : 'lazy'}
+              decoding="async"
               className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
             />
           ) : (
@@ -243,7 +246,8 @@ export default function GamePortalCard({
         <img
           src={game.cardHero || game.cover}
           alt={game.title}
-          loading="lazy"
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
           className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
       ) : (

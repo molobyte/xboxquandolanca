@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowRight,
   CalendarClock,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Clock,
@@ -23,6 +24,7 @@ import {
   StoreLookupGuideWidget,
 } from '../components/PortalSidebarTools.jsx';
 import {
+  getCachedPortalSnapshot,
   getPortalData,
   getRecentGames,
 } from '../lib/portal.js';
@@ -37,8 +39,8 @@ const QUICK_PICKS = [
 ];
 
 export default function HomePage({ section = 'geral' }) {
-  const [portal, setPortal] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [portal, setPortal] = useState(() => getCachedPortalSnapshot());
+  const [loading, setLoading] = useState(() => !getCachedPortalSnapshot());
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [bgIndex, setBgIndex] = useState(0);
   const [recentGames, setRecentGames] = useState(() => getRecentGames());
@@ -66,23 +68,34 @@ export default function HomePage({ section = 'geral' }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true);
-    getPortalData(controller.signal)
+    const hasInitialSnapshot = Boolean(getCachedPortalSnapshot());
+    if (!hasInitialSnapshot) setLoading(true);
+
+    getPortalData(controller.signal, {
+      onPartial: (partialData) => {
+        if (controller.signal.aborted) return;
+        setPortal((prev) => prev || partialData);
+        setLoading(false);
+      },
+    })
       .then((data) => {
+        if (controller.signal.aborted) return;
         setPortal(data);
-        setBgIndex(0);
+        setLoading(false);
       })
       .catch((err) => {
-        if (err?.name !== 'AbortError') {
-          setPortal({
-            upcoming: [],
-            datedUpcoming: [],
-            trending: [],
-            comingSoonGp: [],
-            recentGp: [],
-            leavingSoonGp: [],
-            deals: [],
-          });
+        if (err?.name !== 'AbortError' && !hasInitialSnapshot) {
+          setPortal((prev) =>
+            prev || {
+              upcoming: [],
+              datedUpcoming: [],
+              trending: [],
+              comingSoonGp: [],
+              recentGp: [],
+              leavingSoonGp: [],
+              deals: [],
+            }
+          );
         }
       })
       .finally(() => {
@@ -232,6 +245,10 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
 
         {bgSlides.map((slide, idx) => {
           const isActive = idx === activeBgIndex;
+          const isNext = bgSlides.length > 1 && idx === (activeBgIndex + 1) % bgSlides.length;
+          const isPrev = bgSlides.length > 1 && idx === (activeBgIndex - 1 + bgSlides.length) % bgSlides.length;
+          if (!isActive && !isNext && !isPrev) return null;
+
           return (
             <div
               key={slide.id}
@@ -243,6 +260,8 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
               <img
                 src={slide.hero}
                 alt=""
+                loading={idx === 0 || isActive ? 'eager' : 'lazy'}
+                decoding="async"
                 className="hero-bg-drift h-full w-full object-cover object-center will-change-transform"
                 style={{ animationDirection: idx % 2 === 0 ? 'normal' : 'reverse' }}
               />
@@ -429,12 +448,12 @@ function OverviewSection({
             ref={popularRailRef}
             className="no-scrollbar mt-4 flex snap-x gap-3 overflow-x-auto pb-2 scroll-smooth sm:mt-5 sm:gap-4"
           >
-            {popularItems.map((g) => (
+            {popularItems.map((g, idx) => (
               <div
                 key={g.id}
                 className="w-[152px] shrink-0 snap-start sm:w-[205px] lg:w-[225px]"
               >
-                <GamePortalCard game={g} nowMs={nowMs} variant="poster" />
+                <GamePortalCard game={g} nowMs={nowMs} variant="poster" priority={idx < 4} />
               </div>
             ))}
           </div>
@@ -457,8 +476,8 @@ function OverviewSection({
           <CardsSkeleton count={8} />
         ) : upcomingCards.length > 0 ? (
           <div className="mt-4 grid grid-cols-1 gap-3.5 sm:mt-5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
-            {upcomingCards.map((g) => (
-              <GamePortalCard key={g.id} game={g} nowMs={nowMs} variant="wide" />
+            {upcomingCards.map((g, idx) => (
+              <GamePortalCard key={g.id} game={g} nowMs={nowMs} variant="wide" priority={idx < 4} />
             ))}
           </div>
         ) : (
@@ -546,7 +565,30 @@ function OverviewSection({
   );
 }
 
+function getReleasesPageSize() {
+  if (typeof window !== 'undefined' && window.innerWidth < 640) {
+    return 15;
+  }
+  return 16;
+}
+
 function ReleasesSection({ portal, loading, nowMs, filter, setFilter, sort, setSort }) {
+  const [pageSize, setPageSize] = useState(() => getReleasesPageSize());
+  const [visibleCount, setVisibleCount] = useState(() => getReleasesPageSize());
+
+  useEffect(() => {
+    const onResize = () => {
+      const nextSize = getReleasesPageSize();
+      setPageSize(nextSize);
+    };
+    window.addEventListener('resize', onResize, { passive: true });
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  useEffect(() => {
+    setVisibleCount(getReleasesPageSize());
+  }, [filter, sort]);
+
   const items = useMemo(() => {
     if (!portal) return [];
     let list = [...(portal.upcoming || [])];
@@ -561,6 +603,11 @@ function ReleasesSection({ portal, loading, nowMs, filter, setFilter, sort, setS
     }
     return list;
   }, [portal, filter, sort]);
+
+  const visibleItems = useMemo(() => items.slice(0, visibleCount), [items, visibleCount]);
+  const hasMore = visibleCount < items.length;
+  const remainingCount = Math.max(0, items.length - visibleCount);
+  const nextBatchCount = Math.min(pageSize, remainingCount);
 
   return (
     <section className="mt-8">
@@ -590,7 +637,7 @@ function ReleasesSection({ portal, loading, nowMs, filter, setFilter, sort, setS
         <div className="flex items-center gap-2 text-xs">
           {!loading && (
             <span className="liquid-glass-subtle rounded-full px-3 py-1.5 font-mono text-xs text-white/60">
-              {items.length} títulos
+              {visibleItems.length} de {items.length} títulos
             </span>
           )}
           <span className="text-[11px] font-medium text-white/45">
@@ -609,12 +656,30 @@ function ReleasesSection({ portal, loading, nowMs, filter, setFilter, sort, setS
 
       {loading ? (
         <CardsSkeleton count={8} />
-      ) : items.length > 0 ? (
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {items.map((g) => (
-            <GamePortalCard key={g.id} game={g} nowMs={nowMs} variant="wide" />
-          ))}
-        </div>
+      ) : visibleItems.length > 0 ? (
+        <>
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {visibleItems.map((g, idx) => (
+              <GamePortalCard key={g.id} game={g} nowMs={nowMs} variant="wide" priority={idx < 4} />
+            ))}
+          </div>
+
+          {hasMore && (
+            <div className="mt-8 flex flex-col items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => setVisibleCount((prev) => prev + pageSize)}
+                className="liquid-glass group inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3 text-xs font-semibold text-white transition hover:border-xbox-neon/45 hover:bg-xbox-green/20 sm:text-sm"
+              >
+                <span>Carregar mais (+{nextBatchCount})</span>
+                <ChevronDown className="h-4 w-4 text-xbox-neon transition-transform group-hover:translate-y-0.5" />
+              </button>
+              <span className="font-mono text-[11px] text-white/45">
+                Exibindo {visibleItems.length} de {items.length} lançamentos
+              </span>
+            </div>
+          )}
+        </>
       ) : (
         <EmptyStrip text="Nenhum jogo encontrado para este filtro." />
       )}

@@ -1,6 +1,8 @@
 import { getGamesByIds, resolveMissingReleaseDates } from './xbox.js';
 
 const PORTAL_CACHE_TTL_MS = 5 * 60 * 1000;
+const PORTAL_STORAGE_TTL_MS = 30 * 60 * 1000;
+const PORTAL_STORAGE_KEY = 'xbox_quando_lanca_portal_v2';
 let cachedPortal = null;
 let cachedAt = 0;
 
@@ -128,52 +130,75 @@ function dedupeGames(list) {
   return orderedKeys.map((k) => byKey.get(k));
 }
 
-export async function getPortalData(signal) {
-  const now = Date.now();
-  if (cachedPortal && now - cachedAt < PORTAL_CACHE_TTL_MS) {
-    return cachedPortal;
-  }
+function reviveGameDates(g) {
+  if (!g) return g;
+  return {
+    ...g,
+    releaseDate: g.releaseDate ? new Date(g.releaseDate) : null,
+  };
+}
 
-  let feed = null;
+export function getCachedPortalSnapshot() {
+  if (cachedPortal) return cachedPortal;
   try {
-    const res = await fetch('/api/portal-feed', { signal });
-    if (res.ok) {
-      const json = await res.json();
-      if (json?.success && json.data) feed = json.data;
-    }
-  } catch (err) {
-    if (err?.name === 'AbortError') throw err;
+    const raw = localStorage.getItem(PORTAL_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.data || !parsed?.savedAt) return null;
+    if (Date.now() - parsed.savedAt > PORTAL_STORAGE_TTL_MS) return null;
+    const d = parsed.data;
+    return {
+      upcoming: (d.upcoming || []).map(reviveGameDates),
+      datedUpcoming: (d.datedUpcoming || []).map(reviveGameDates),
+      trending: (d.trending || []).map(reviveGameDates),
+      comingSoonGp: (d.comingSoonGp || []).map(reviveGameDates),
+      recentGp: (d.recentGp || []).map(reviveGameDates),
+      leavingSoonGp: (d.leavingSoonGp || []).map(reviveGameDates),
+      deals: (d.deals || []).map(reviveGameDates),
+      fetchedAt: d.fetchedAt,
+    };
+  } catch {
+    return null;
   }
+}
 
-  if (
-    !feed ||
-    (!feed.trending?.length &&
-      !feed.comingSoonGp?.length &&
-      !feed.recentGp?.length &&
-      !feed.upcomingStore?.length)
-  ) {
-    feed = FALLBACK_FEED;
+function savePortalSnapshot(result) {
+  try {
+    const compactGame = (g) => ({
+      id: g.id,
+      title: g.title,
+      publisher: g.publisher,
+      category: g.category,
+      releaseDate: g.releaseDate ? g.releaseDate.toISOString() : null,
+      releaseTba: g.releaseTba,
+      cover: g.cover,
+      coverIsSquare: g.coverIsSquare,
+      hero: g.hero,
+      cardHero: g.cardHero,
+      price: g.price,
+      inGamePass: g.inGamePass,
+      platforms: g.platforms,
+    });
+    const payload = {
+      savedAt: Date.now(),
+      data: {
+        upcoming: (result.upcoming || []).map(compactGame),
+        datedUpcoming: (result.datedUpcoming || []).map(compactGame),
+        trending: (result.trending || []).map(compactGame),
+        comingSoonGp: (result.comingSoonGp || []).map(compactGame),
+        recentGp: (result.recentGp || []).map(compactGame),
+        leavingSoonGp: (result.leavingSoonGp || []).map(compactGame),
+        deals: (result.deals || []).map(compactGame),
+        fetchedAt: result.fetchedAt,
+      },
+    };
+    localStorage.setItem(PORTAL_STORAGE_KEY, JSON.stringify(payload));
+  } catch {
+    // Ignora falhas de quota do localStorage
   }
+}
 
-  const allIds = [
-    ...(feed.comingSoonGp || []),
-    ...(feed.upcomingStore || []),
-    ...(feed.trending || []),
-    ...(feed.recentGp || []),
-    ...(feed.leavingSoonGp || []),
-  ];
-
-  const rawGames = await getGamesByIds(allIds, signal);
-  const upcomingCandidateIds = new Set(
-    [...(feed.comingSoonGp || []), ...(feed.upcomingStore || [])].map((id) => id.toUpperCase())
-  );
-  const gamesToResolve = rawGames.filter(
-    (g) => upcomingCandidateIds.has(g.id.toUpperCase()) && (g.releaseTba || !g.releaseDate)
-  );
-  const resolvedSubset = await resolveMissingReleaseDates(gamesToResolve, signal);
-  const resolvedById = new Map(resolvedSubset.map((g) => [g.id.toUpperCase(), g]));
-  const games = rawGames.map((g) => resolvedById.get(g.id.toUpperCase()) || g);
-
+function buildPortalPayload(feed, games) {
   const byId = new Map(games.map((g) => [g.id.toUpperCase(), g]));
   const pickList = (ids) => dedupeGames((ids || []).map((id) => byId.get(id.toUpperCase())).filter(Boolean));
 
@@ -217,7 +242,7 @@ export async function getPortalData(signal) {
       return pctB - pctA;
     });
 
-  const result = {
+  return {
     upcoming,
     datedUpcoming,
     trending: trending.map((g) => ({ ...g, inGamePass: gpIds.has(g.id) })),
@@ -227,10 +252,87 @@ export async function getPortalData(signal) {
     deals,
     fetchedAt: feed.fetchedAt || new Date().toISOString(),
   };
+}
+
+export async function getPortalData(signal, options = {}) {
+  const { onPartial } = options;
+  const now = Date.now();
+  if (cachedPortal && now - cachedAt < PORTAL_CACHE_TTL_MS) {
+    return cachedPortal;
+  }
+
+  let feed = null;
+  try {
+    const controller = new AbortController();
+    const onAbort = () => controller.abort();
+    signal?.addEventListener('abort', onAbort, { once: true });
+    const feedTimeout = setTimeout(() => controller.abort(), 5500);
+    try {
+      const res = await fetch('/api/portal-feed', { signal: controller.signal });
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.success && json.data) feed = json.data;
+      }
+    } finally {
+      clearTimeout(feedTimeout);
+      signal?.removeEventListener('abort', onAbort);
+    }
+  } catch (err) {
+    if (signal?.aborted) throw err;
+  }
+
+  if (
+    !feed ||
+    (!feed.trending?.length &&
+      !feed.comingSoonGp?.length &&
+      !feed.recentGp?.length &&
+      !feed.upcomingStore?.length)
+  ) {
+    feed = FALLBACK_FEED;
+  }
+
+  // Fase 1 (First Paint Rápido): busca primeiro os ~40 IDs prioritários da Home (apenas 2 requisições)
+  const priorityIds = [
+    ...(feed.trending || []).slice(0, 14),
+    ...(feed.comingSoonGp || []).slice(0, 8),
+    ...(feed.upcomingStore || []).slice(0, 12),
+    ...(feed.recentGp || []).slice(0, 6),
+    ...(feed.leavingSoonGp || []).slice(0, 6),
+  ];
+
+  const allIds = [
+    ...(feed.comingSoonGp || []),
+    ...(feed.upcomingStore || []),
+    ...(feed.trending || []),
+    ...(feed.recentGp || []),
+    ...(feed.leavingSoonGp || []),
+  ];
+
+  if (onPartial) {
+    const priorityGames = await getGamesByIds(priorityIds, signal);
+    if (priorityGames.length > 0) {
+      onPartial(buildPortalPayload(feed, priorityGames));
+    }
+  }
+
+  // Fase 2: hidrata o restante (os 40 primeiros já vêm do cache em memória do xbox.js) + resolve datas de bundles
+  const rawGames = await getGamesByIds(allIds, signal);
+  const upcomingCandidateIds = new Set(
+    [...(feed.comingSoonGp || []), ...(feed.upcomingStore || [])].map((id) => id.toUpperCase())
+  );
+  const gamesToResolve = rawGames.filter(
+    (g) => upcomingCandidateIds.has(g.id.toUpperCase()) && (g.releaseTba || !g.releaseDate)
+  );
+  const resolvedSubset = await resolveMissingReleaseDates(gamesToResolve, signal);
+  const resolvedById = new Map(resolvedSubset.map((g) => [g.id.toUpperCase(), g]));
+  const games = rawGames.map((g) => resolvedById.get(g.id.toUpperCase()) || g);
+
+  const result = buildPortalPayload(feed, games);
 
   if (games.length > 0) {
     cachedPortal = result;
-    cachedAt = now;
+    cachedAt = Date.now();
+    savePortalSnapshot(result);
   }
 
   return result;
