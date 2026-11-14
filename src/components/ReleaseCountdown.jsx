@@ -97,15 +97,17 @@ export default function ReleaseCountdown({ gameId, date, tba }) {
           </div>
         ))}
       </div>
-      <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-white/[0.06] pt-2.5 text-[11px] sm:mt-3.5 sm:pt-3 sm:text-xs">
-        <span className="flex items-center gap-1.5 text-[10px] text-white/50 sm:text-[11px]">
-          <CountryFlag code="BR" className="h-2.5 w-3.5 shrink-0" />
-          <span>Lançamento (BR)</span>
-        </span>
-        <span className="text-right font-medium text-white/95">{dateTimeFmt.format(date)}</span>
-      </div>
-
-      {gameId && <NewZealandTrickCard gameId={gameId} brazilDate={date} tba={tba} embedded />}
+      {gameId ? (
+        <NewZealandTrickCard gameId={gameId} brazilDate={date} tba={tba} embedded />
+      ) : (
+        <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-white/[0.06] pt-2.5 text-[11px] sm:mt-3.5 sm:pt-3 sm:text-xs">
+          <span className="flex items-center gap-1.5 text-[10px] text-white/50 sm:text-[11px]">
+            <CountryFlag code="BR" className="h-2.5 w-3.5 shrink-0" />
+            <span>Brasil</span>
+          </span>
+          <span className="text-right font-medium text-white/95">{dateTimeFmt.format(date)}</span>
+        </div>
+      )}
     </Card>
   );
 }

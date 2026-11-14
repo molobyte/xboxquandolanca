@@ -462,8 +462,8 @@ export async function getGamesByIds(ids, signal) {
 export const REGIONAL_MARKETS = [
   { code: 'NZ', name: 'Nova Zelândia', flag: '🇳🇿', timeZone: 'Pacific/Auckland' },
   { code: 'JP', name: 'Japão', flag: '🇯🇵', timeZone: 'Asia/Tokyo' },
-  { code: 'GB', name: 'Reino Unido / Europa', flag: '🇬🇧', timeZone: 'Europe/London' },
-  { code: 'US', name: 'Estados Unidos (ET)', flag: '🇺🇸', timeZone: 'America/New_York' },
+  { code: 'GB', name: 'Reino Unido', flag: '🇬🇧', timeZone: 'Europe/London' },
+  { code: 'US', name: 'Estados Unidos', flag: '🇺🇸', timeZone: 'America/New_York' },
 ];
 
 const regionalCache = new Map();

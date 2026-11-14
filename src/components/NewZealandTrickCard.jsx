@@ -1,22 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Zap, Globe, ChevronDown, ChevronUp, HelpCircle, CheckCircle2, Clock } from 'lucide-react';
-import { getRegionalReleases } from '../lib/xbox.js';
+import { Zap, Globe, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { getRegionalReleases, REGIONAL_MARKETS } from '../lib/xbox.js';
 import CountryFlag from './CountryFlag.jsx';
 
-const brDateTimeFmt = new Intl.DateTimeFormat('pt-BR', {
+const compactBrPartsFmt = new Intl.DateTimeFormat('pt-BR', {
   day: '2-digit',
-  month: 'long',
-  year: 'numeric',
+  month: '2-digit',
+  year: '2-digit',
   hour: '2-digit',
   minute: '2-digit',
 });
 
-const shortBrDateTimeFmt = new Intl.DateTimeFormat('pt-BR', {
-  day: '2-digit',
-  month: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-});
+function formatCompactBrDateTime(date) {
+  if (!date) return '—';
+  return compactBrPartsFmt.format(date).replace(', ', ' · ').replace(' ', ' · ');
+}
 
 function useNow() {
   const [now, setNow] = useState(() => Date.now());
@@ -33,7 +31,6 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba, embedded 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showHowTo, setShowHowTo] = useState(false);
-  const [showAllRegions, setShowAllRegions] = useState(false);
   const now = useNow();
 
   // Não exibe se o jogo não tem data anunciada ou se já lançou no Brasil
@@ -70,208 +67,160 @@ export default function NewZealandTrickCard({ gameId, brazilDate, tba, embedded 
     return null;
   }
 
-  if (loading) {
-    return (
-      <div
-        className={
-          embedded
-            ? 'mt-3 animate-pulse border-t border-white/[0.06] pt-3 sm:mt-3.5 sm:pt-3.5'
-            : 'liquid-glass w-full animate-pulse rounded-2xl p-5'
-        }
-      >
-        <div className="flex items-center justify-between gap-2">
-          <div className="h-3 w-36 rounded bg-white/10" />
-          <div className="h-4 w-20 rounded-full bg-white/10" />
-        </div>
-        <div className="mt-2.5 h-12 w-full rounded-xl bg-white/[0.05]" />
-      </div>
-    );
-  }
-
-  if (!data || (!data.nzRelease && !data.isSimultaneous)) {
-    return null;
-  }
-
-  const { nzRelease, isSimultaneous, canUseNewZealandTrick, hoursAheadOfBrazil, regions } = data;
-  const isAvailableNowInNZ = nzRelease && nzRelease.getTime() <= now;
-  const diffNZ = nzRelease ? nzRelease.getTime() - now : 0;
-
-  // Cálculo de contagem regressiva para a data da NZ
-  const totalSecondsNZ = Math.max(0, Math.floor(diffNZ / 1000));
-  const daysNZ = Math.floor(totalSecondsNZ / 86400);
-  const hoursNZ = Math.floor((totalSecondsNZ % 86400) / 3600);
-  const minutesNZ = Math.floor((totalSecondsNZ % 3600) / 60);
-
   const wrapperCls = embedded
     ? 'mt-3 border-t border-white/[0.06] pt-3 transition-all sm:mt-3.5 sm:pt-3.5'
     : 'liquid-glass w-full rounded-2xl p-3.5 transition-all sm:p-5';
 
+  // Lista base sempre começa com o Brasil e adiciona os demais países
+  const remoteRegions = data?.regions?.filter((r) => r.code !== 'BR' && r.date) || [];
+  const countries = [
+    { code: 'BR', name: 'Brasil', date: brazilDate },
+    ...remoteRegions,
+  ];
+
+  // Identifica se há um país com lançamento antecipado (> 1h antes do Brasil)
+  let bestCode = null;
+  let bestDate = null;
+  let bestAheadHours = 0;
+
+  for (const c of countries) {
+    if (!c.date || c.code === 'BR') continue;
+    const diffHours = Math.round((brazilDate.getTime() - c.date.getTime()) / (1000 * 60 * 60));
+    if (diffHours > 1 && diffHours > bestAheadHours) {
+      bestAheadHours = diffHours;
+      bestCode = c.code;
+      bestDate = c.date;
+    }
+  }
+
+  const hasEarlyRegion = Boolean(bestCode && bestDate);
+  const isAvailableNowInBest = hasEarlyRegion && bestDate.getTime() <= now;
+  const diffBestMs = hasEarlyRegion ? Math.max(0, bestDate.getTime() - now) : 0;
+  const totalSecondsBest = Math.floor(diffBestMs / 1000);
+  const daysBest = Math.floor(totalSecondsBest / 86400);
+  const hoursBest = Math.floor((totalSecondsBest % 86400) / 3600);
+  const minutesBest = Math.floor((totalSecondsBest % 3600) / 60);
+
   return (
     <div className={wrapperCls}>
-      {/* Cenário 1: Permite o Truque da Nova Zelândia */}
-      {canUseNewZealandTrick && (
-        <>
-          <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/65 sm:text-[11px] sm:tracking-[0.14em]">
-              <Zap className="h-3.5 w-3.5 text-xbox-neon" />
-              Truque da Nova Zelândia
-            </span>
-            <span className="rounded-full border border-xbox-neon/30 bg-xbox-green/20 px-2.5 py-0.5 text-[10px] font-semibold text-xbox-neon">
-              Jogue {hoursAheadOfBrazil}h antes
-            </span>
-          </div>
+      {/* Cabeçalho Horários pelo mundo */}
+      <div className="flex items-center justify-between gap-2">
+        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60 sm:text-[11px] sm:tracking-[0.14em]">
+          <Globe className="h-3.5 w-3.5 shrink-0 text-xbox-neon" />
+          <span>Horários pelo mundo</span>
+        </span>
+        <span className="whitespace-nowrap text-[10px] text-white/35">
+          Brasília
+        </span>
+      </div>
 
-          {/* Destaque principal e quadro comparativo organizado */}
-          {isAvailableNowInNZ ? (
-            <div className="liquid-glass-subtle mt-2.5 rounded-xl border-xbox-neon/30 bg-xbox-green/[0.15] p-3 text-white">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-xbox-neon" />
-                <p className="text-xs font-semibold uppercase tracking-wide text-xbox-neon">
-                  Já disponível na Nova Zelândia
-                </p>
-              </div>
-              <p className="mt-1 text-xs text-white/70">
-                Mude a localidade do seu console para jogar agora mesmo.
-              </p>
-            </div>
-          ) : (
-            <div className="liquid-glass-subtle mt-2.5 divide-y divide-white/[0.06] rounded-xl px-3 py-2 text-[11px] sm:text-xs">
-              <div className="flex items-center justify-between gap-2 pb-2">
-                <span className="flex items-center gap-1.5 text-white/55">
-                  <CountryFlag code="NZ" className="h-2.5 w-3.5 shrink-0" />
-                  <span>Liberação NZ (Brasília)</span>
-                </span>
-                <span className="text-right font-medium text-white/95">
-                  {brDateTimeFmt.format(nzRelease)}
-                </span>
-              </div>
+      {/* Lista de países */}
+      <div className="mt-2.5 flex flex-col gap-1">
+        {countries.map((item) => {
+          const isBest = hasEarlyRegion && item.code === bestCode;
+          return (
+            <div
+              key={item.code}
+              className={
+                isBest
+                  ? 'my-0.5 rounded-xl border border-xbox-neon/35 bg-xbox-green/[0.16] px-2.5 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
+                  : 'flex items-center justify-between gap-2 rounded-lg px-2 py-1'
+              }
+            >
+              {isBest ? (
+                <>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="flex min-w-0 items-center gap-2 whitespace-nowrap text-xs font-semibold text-white">
+                      <CountryFlag code={item.code} className="h-3 w-4 shrink-0" />
+                      <span className="truncate">{item.name}</span>
+                    </span>
+                    <span className="shrink-0 whitespace-nowrap font-mono text-[11px] font-semibold tabular-nums text-xbox-neon">
+                      {formatCompactBrDateTime(item.date)}
+                    </span>
+                  </div>
 
-              {diffNZ > 0 && (
-                <div className="flex items-center justify-between gap-2 pt-2">
-                  <span className="flex items-center gap-1.5 text-white/55">
-                    <Clock className="h-3.5 w-3.5 shrink-0 text-xbox-neon/80" />
-                    <span>Libera na NZ em</span>
+                  <div className="mt-1 flex items-center justify-between gap-2 border-t border-xbox-neon/15 pt-1 text-[10px]">
+                    <span className="inline-flex items-center gap-1 whitespace-nowrap font-semibold text-xbox-neon">
+                      <Zap className="h-3 w-3 shrink-0" />
+                      {isAvailableNowInBest ? 'Já disponível agora' : `Sai ${bestAheadHours}h mais cedo`}
+                    </span>
+                    {!isAvailableNowInBest && diffBestMs > 0 && (
+                      <span className="whitespace-nowrap font-mono tabular-nums text-white/80">
+                        em {daysBest > 0 ? `${pad(daysBest)}d ` : ''}{pad(hoursBest)}h {pad(minutesBest)}m
+                      </span>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span
+                    className={`flex min-w-0 items-center gap-2 whitespace-nowrap text-xs ${
+                      item.code === 'BR' ? 'font-medium text-white/90' : 'text-white/65'
+                    }`}
+                  >
+                    <CountryFlag code={item.code} className="h-3 w-4 shrink-0" />
+                    <span className="truncate">{item.name}</span>
                   </span>
-                  <span className="font-mono text-xs font-semibold tabular-nums text-xbox-neon">
-                    {daysNZ > 0 && `${pad(daysNZ)}d `}
-                    {pad(hoursNZ)}h {pad(minutesNZ)}m
+                  <span className="shrink-0 whitespace-nowrap font-mono text-[11px] tabular-nums text-white/85">
+                    {formatCompactBrDateTime(item.date)}
                   </span>
-                </div>
+                </>
               )}
             </div>
-          )}
+          );
+        })}
 
-          {/* Como fazer o truque no Xbox (Passo a passo expansível) */}
-          <div className="mt-2.5 border-t border-white/[0.06] pt-2.5 sm:mt-3 sm:pt-2.5">
-            <button
-              type="button"
-              onClick={() => setShowHowTo((v) => !v)}
-              className="flex w-full items-center justify-between text-left text-[11px] font-medium text-white/55 transition hover:text-white/90 sm:text-xs"
+        {/* Skeleton discreto enquanto busca os demais países */}
+        {loading &&
+          REGIONAL_MARKETS.map((m) => (
+            <div
+              key={m.code}
+              className="flex animate-pulse items-center justify-between gap-2 px-2 py-1"
             >
-              <span className="flex items-center gap-1.5">
-                <HelpCircle className="h-3.5 w-3.5 text-white/40" />
-                Como fazer o truque no console?
+              <span className="flex items-center gap-2">
+                <CountryFlag code={m.code} className="h-3 w-4 shrink-0 opacity-50" />
+                <span className="h-3 w-20 rounded bg-white/[0.06]" />
               </span>
-              {showHowTo ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            </button>
+              <span className="h-3 w-24 rounded bg-white/[0.06]" />
+            </div>
+          ))}
+      </div>
 
-            {showHowTo && (
-              <div className="liquid-glass-subtle mt-2.5 space-y-2 rounded-xl p-3 text-xs text-white/75 animate-fade-in">
-                <ol className="list-inside list-decimal space-y-1">
-                  <li>No Xbox, vá em <strong className="font-medium text-white">Configurações &gt; Sistema &gt; Idioma e Localidade</strong>.</li>
-                  <li>Altere a <strong className="font-medium text-white">Localidade</strong> para <strong className="font-medium text-white">Nova Zelândia</strong>.</li>
-                  <li>Selecione <strong className="font-medium text-white">Reiniciar agora</strong> e aproveite!</li>
-                </ol>
-                <p className="border-t border-white/[0.06] pt-1.5 text-[11px] text-white/45">
-                  Não altera cobranças nem sua conta. Você pode voltar para o Brasil quando quiser.
-                </p>
-              </div>
-            )}
-          </div>
-        </>
-      )}
-
-      {/* Cenário 2: Lançamento Global Simultâneo */}
-      {isSimultaneous && (
-        <div>
-          <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/65 sm:text-[11px] sm:tracking-[0.14em]">
-              <Globe className="h-3.5 w-3.5 text-xbox-neon" />
-              Lançamento Global Simultâneo
-            </span>
-            <span className="liquid-glass-subtle rounded-full px-2 py-0.5 text-[10px] font-medium text-white/70">
-              Mesmo horário
-            </span>
-          </div>
-
-          <p className="mt-2 text-[11px] leading-relaxed text-white/60 sm:text-xs">
-            Liberado simultaneamente em todas as regiões no horário acima. Mudar a região para a Nova Zelândia não antecipará o acesso.
-          </p>
-        </div>
-      )}
-
-      {/* Tabela de outros países (Retrátil) */}
-      {regions && regions.length > 0 && (
+      {/* Menu retrátil de como fazer o truque de troca de região (apenas quando há região mais cedo) */}
+      {hasEarlyRegion && (
         <div className="mt-2.5 border-t border-white/[0.06] pt-2.5">
           <button
             type="button"
-            onClick={() => setShowAllRegions((v) => !v)}
-            className="flex w-full items-center justify-between text-left text-[11px] font-medium text-white/55 transition hover:text-white/90 sm:text-xs"
+            onClick={() => setShowHowTo((v) => !v)}
+            className="flex w-full items-center justify-between gap-2 text-left text-[11px] font-medium text-white/60 transition hover:text-white sm:text-xs"
           >
-            <span className="flex items-center gap-1.5">
-              <Globe className="h-3.5 w-3.5 text-white/40" />
-              Horários pelo mundo
+            <span className="flex min-w-0 items-center gap-1.5 whitespace-nowrap">
+              <HelpCircle className="h-3.5 w-3.5 shrink-0 text-xbox-neon" />
+              <span className="truncate">Como fazer o truque de região?</span>
             </span>
-            {showAllRegions ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+            {showHowTo ? (
+              <ChevronUp className="h-3.5 w-3.5 shrink-0" />
+            ) : (
+              <ChevronDown className="h-3.5 w-3.5 shrink-0" />
+            )}
           </button>
 
-          {showAllRegions && (
-            <div className="liquid-glass-subtle mt-2.5 flex flex-col divide-y divide-white/[0.05] rounded-xl px-3 py-1.5 text-xs animate-fade-in">
-              {/* Brasil como base */}
-              <div className="flex items-center justify-between py-2">
-                <span className="flex items-center gap-2 font-medium text-white/90">
-                  <CountryFlag code="BR" className="h-3 w-4" />
-                  Brasil (Sua região)
-                </span>
-                <span className="font-mono text-[11px] text-white/85">
-                  {shortBrDateTimeFmt.format(brazilDate)}
-                </span>
-              </div>
-
-              {regions
-                .filter((r) => r.code !== 'BR')
-                .map((r) => {
-                  if (!r.date) return null;
-                  const diffHours = Math.round((brazilDate.getTime() - r.date.getTime()) / (1000 * 60 * 60));
-                  return (
-                    <div key={r.code} className="flex items-center justify-between py-2">
-                      <span className="flex items-center gap-2 text-white/65">
-                        <CountryFlag code={r.code} className="h-3 w-4" />
-                        {r.name}
-                      </span>
-                      <div className="text-right">
-                        <span className="block font-mono text-[11px] text-white/85">
-                          {shortBrDateTimeFmt.format(r.date)}
-                        </span>
-                        {diffHours > 0 && (
-                          <span className="block text-[10px] font-medium text-xbox-neon">
-                            +{diffHours}h antes
-                          </span>
-                        )}
-                        {diffHours < 0 && (
-                          <span className="block text-[10px] text-white/40">
-                            {diffHours}h depois
-                          </span>
-                        )}
-                        {diffHours === 0 && (
-                          <span className="block text-[10px] text-white/50">
-                            Mesmo horário
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
+          {showHowTo && (
+            <div className="liquid-glass-subtle mt-2.5 space-y-2 rounded-xl p-3 text-xs text-white/75 animate-fade-in">
+              <ol className="list-inside list-decimal space-y-1">
+                <li>
+                  No Xbox, vá em <strong className="font-medium text-white">Configurações &gt; Sistema &gt; Idioma e Localidade</strong>.
+                </li>
+                <li>
+                  Altere a <strong className="font-medium text-white">Localidade</strong> para <strong className="font-medium text-white">Nova Zelândia</strong>.
+                </li>
+                <li>
+                  Selecione <strong className="font-medium text-white">Reiniciar agora</strong> e aproveite!
+                </li>
+              </ol>
+              <p className="border-t border-white/[0.06] pt-1.5 text-[11px] text-white/45">
+                Não altera cobranças nem sua conta. Você pode voltar para o Brasil quando quiser.
+              </p>
             </div>
           )}
         </div>
