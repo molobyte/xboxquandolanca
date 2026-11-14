@@ -91,7 +91,7 @@ export default function RewardsCashbackCard({ price, inGamePass = false }) {
           </div>
 
           <p className="mt-3 text-[11px] leading-relaxed text-white/40">
-            Cálculo baseado na conversão interna da Xbox Store (~R$ 5,57/US$) sobre o valor final pago. O Nível 2 exige acumular 500 pontos no mês. O bônus adicional de +5% (Premium/PC) e +10% (Ultimate) aplica-se apenas a jogos do catálogo ativo do Game Pass.
+            Cálculo estimado com base na conversão interna da Xbox Store (~R$ 5,57/US$) sobre o valor final pago (pode variar em ~1 ponto conforme arredondamento e atualização cambial da Microsoft). O Nível 2 exige acumular 500 pontos no mês. O bônus adicional de +5% (Premium/PC) e +10% (Ultimate) aplica-se apenas a jogos do catálogo ativo do Game Pass.
           </p>
         </>
       )}

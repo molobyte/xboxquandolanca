@@ -66,7 +66,11 @@ export function calcularCashbackRewards(precoBase, inGamePass = false) {
 
   return REWARDS_CASHBACK_PERFIS.map((perfil) => {
     const { base, bonus, total } = perfil.getRule(isGp);
-    const pontos = Math.floor((precoBase / TAXA_CAMBIO_USD) * total);
+    const usd = precoBase / TAXA_CAMBIO_USD;
+    // A Xbox Store trunca separadamente a pontuação base da compra e o bônus do catálogo Game Pass.
+    const pontosBase = Math.floor(usd * base);
+    const pontosBonus = bonus > 0 ? Math.floor(usd * bonus) : 0;
+    const pontos = pontosBase + pontosBonus;
     const valorCashbackBRL = pontos / REWARDS_CASHBACK_PONTOS_POR_REAL;
     const percentualCashback = (valorCashbackBRL / precoBase) * 100;
     const regraTexto =
