@@ -137,10 +137,20 @@ export default function HomePage({ section = 'geral' }) {
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-clip bg-xbox-bg text-neutral-100">
-      {/* Atmosfera de fundo sutil */}
+      {/* Atmosfera de fundo sutil (radial-gradient sem filtro blur pesado para evitar estouro de VRAM no iOS Safari) */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute -left-32 top-0 h-[38rem] w-[38rem] rounded-full bg-xbox-green/[0.08] blur-[200px]" />
-        <div className="absolute -right-24 top-1/4 h-[34rem] w-[34rem] rounded-full bg-white/[0.025] blur-[190px]" />
+        <div
+          className="absolute -left-32 top-0 h-[38rem] w-[38rem] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(16, 124, 16, 0.14) 0%, rgba(16, 124, 16, 0) 70%)',
+          }}
+        />
+        <div
+          className="absolute -right-24 top-1/4 h-[34rem] w-[34rem] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 70%)',
+          }}
+        />
         <div className="absolute inset-0 bg-grid opacity-[0.03]" />
       </div>
 
@@ -237,17 +247,25 @@ export default function HomePage({ section = 'geral' }) {
 }
 
 function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
+  const isCompactScreen = typeof window !== 'undefined' && window.innerWidth < 640;
+
   return (
     <section className="relative flex min-h-[58vh] flex-col items-center justify-center px-3.5 pb-10 pt-24 sm:min-h-[76vh] sm:px-6 sm:pb-16 sm:pt-36 lg:min-h-[78vh] lg:px-10 lg:pt-28">
       {/* Camada de backgrounds em movimento lento e crossfade suave */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden bg-[#0a0d0b]">
-        <div className="absolute left-1/2 top-1/2 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-xbox-green/20 blur-[160px]" />
+        <div
+          className="absolute left-1/2 top-1/2 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(16, 124, 16, 0.24) 0%, rgba(16, 124, 16, 0) 70%)',
+          }}
+        />
 
         {bgSlides.map((slide, idx) => {
           const isActive = idx === activeBgIndex;
-          const isNext = bgSlides.length > 1 && idx === (activeBgIndex + 1) % bgSlides.length;
-          const isPrev = bgSlides.length > 1 && idx === (activeBgIndex - 1 + bgSlides.length) % bgSlides.length;
-          if (!isActive && !isNext && !isPrev) return null;
+          const isNext = !isCompactScreen && bgSlides.length > 1 && idx === (activeBgIndex + 1) % bgSlides.length;
+          if (!isActive && !isNext) return null;
+
+          const bgSrc = isCompactScreen ? slide.cardHero || slide.hero : slide.hero;
 
           return (
             <div
@@ -258,11 +276,11 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
               }`}
             >
               <img
-                src={slide.hero}
+                src={bgSrc}
                 alt=""
-                loading={idx === 0 || isActive ? 'eager' : 'lazy'}
+                loading={isActive ? 'eager' : 'lazy'}
                 decoding="async"
-                className="hero-bg-drift h-full w-full object-cover object-center will-change-transform"
+                className="hero-bg-drift h-full w-full object-cover object-center"
                 style={{ animationDirection: idx % 2 === 0 ? 'normal' : 'reverse' }}
               />
             </div>
@@ -292,7 +310,6 @@ function HeroSearchSection({ bgSlides, activeBgIndex, recentGames }) {
         <div className="mt-5 w-full sm:mt-7">
           <SmartSearch
             size="hero"
-            autoFocus
             slashShortcut
             placeholder="Digite o nome do jogo ou cole o link da Microsoft Store..."
           />

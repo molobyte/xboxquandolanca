@@ -57,10 +57,20 @@ export default function GamePage({ id }) {
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-clip bg-xbox-bg text-neutral-100">
-      {/* Atmosfera sutil + Arte de fundo suavizada */}
+      {/* Atmosfera sutil + Arte de fundo suavizada (sem filtro blur de 200px para preservar VRAM no iOS Safari) */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute -left-32 top-0 h-[36rem] w-[36rem] rounded-full bg-xbox-green/[0.08] blur-[200px]" />
-        <div className="absolute right-0 top-1/3 h-[30rem] w-[30rem] rounded-full bg-white/[0.025] blur-[180px]" />
+        <div
+          className="absolute -left-32 top-0 h-[36rem] w-[36rem] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(16, 124, 16, 0.14) 0%, rgba(16, 124, 16, 0) 70%)',
+          }}
+        />
+        <div
+          className="absolute right-0 top-1/3 h-[30rem] w-[30rem] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 70%)',
+          }}
+        />
       </div>
 
       {game?.hero && (

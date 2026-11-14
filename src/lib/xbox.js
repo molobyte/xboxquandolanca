@@ -275,10 +275,10 @@ export function mapProduct(p) {
     category: translateCategory(p.Properties?.Category),
     releaseDate: date,
     releaseTba: tba,
-    cover: cover ? imageUrl(cover.Uri, { w: 480, q: 82 }) : null,
+    cover: cover ? imageUrl(cover.Uri, { w: 600 }) : null,
     coverIsSquare: cover ? cover.Width === cover.Height : false,
-    hero: hero ? imageUrl(hero.Uri, { w: 1440, q: 82 }) : null,
-    cardHero: hero ? imageUrl(hero.Uri, { w: 600, q: 82 }) : cover ? imageUrl(cover.Uri, { w: 480, q: 82 }) : null,
+    hero: hero ? imageUrl(hero.Uri, { w: 1920 }) : null,
+    cardHero: hero ? imageUrl(hero.Uri, { w: 640 }) : cover ? imageUrl(cover.Uri, { w: 600 }) : null,
     screenshots: extractScreenshots(images, 8),
     rating: allTime && allTime.RatingCount > 0 ? { average: allTime.AverageRating, count: allTime.RatingCount } : null,
     ageRating: classInd?.RatingId?.split(':')[1] || null,
@@ -352,7 +352,7 @@ export async function resolveMissingReleaseDates(games, signal) {
   );
   if (!pending.length) return games;
 
-  const bundleIds = [...new Set(pending.flatMap((g) => g.bundleIds))].slice(0, 40);
+  const bundleIds = [...new Set(pending.flatMap((g) => g.bundleIds))].slice(0, 20);
   if (!bundleIds.length) return games;
 
   try {
@@ -389,35 +389,14 @@ function setCachedProduct(game) {
   productCache.set(game.id.toUpperCase(), { game, at: Date.now() });
 }
 
-async function fetchCatalogChunkWithRetry(chunk, parentSignal, retries = 1) {
+async function fetchCatalogChunk(chunk, signal) {
   const url = `${CATALOG}/products?bigIds=${encodeURIComponent(chunk.join(','))}&market=${MARKET}&languages=${LANG}`;
-
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    if (parentSignal?.aborted) throw new DOMException('Aborted', 'AbortError');
-    const controller = new AbortController();
-    const onParentAbort = () => controller.abort();
-    parentSignal?.addEventListener('abort', onParentAbort, { once: true });
-    const timer = setTimeout(() => controller.abort(), 6500);
-
-    try {
-      const res = await fetch(url, { signal: controller.signal });
-      if (!res.ok) {
-        if (attempt < retries) continue;
-        return [];
-      }
-      const data = await res.json();
-      const mapped = (data.Products || []).map(mapProduct);
-      for (const g of mapped) setCachedProduct(g);
-      return mapped;
-    } catch (err) {
-      if (parentSignal?.aborted) throw err;
-      if (attempt >= retries) return [];
-    } finally {
-      clearTimeout(timer);
-      parentSignal?.removeEventListener('abort', onParentAbort);
-    }
-  }
-  return [];
+  const res = await fetch(url, { signal });
+  if (!res.ok) return [];
+  const data = await res.json();
+  const mapped = (data.Products || []).map(mapProduct);
+  for (const g of mapped) setCachedProduct(g);
+  return mapped;
 }
 
 /** Busca vários jogos em lote (até 20 BigIds por requisição) na Microsoft Store. */
@@ -444,7 +423,7 @@ export async function getGamesByIds(ids, signal) {
     }
 
     const responses = await Promise.allSettled(
-      chunks.map((chunk) => fetchCatalogChunkWithRetry(chunk, signal, 1))
+      chunks.map((chunk) => fetchCatalogChunk(chunk, signal))
     );
 
     for (const r of responses) {

@@ -102,21 +102,15 @@ async function fetchUpcomingStoreIds(maxPages = 5) {
 
     const channel = Object.values(data.channels || {})[0];
     const products = channel?.products || [];
-    for (const p of products) {
-      const id = p?.productId;
-      if (typeof id === 'string' && /^[A-Z0-9]{12}$/i.test(id) && !seen.has(id)) {
-        seen.add(id);
-        ids.push(id);
-      }
-    }
-
     const summaries = Array.isArray(data.productSummaries)
       ? data.productSummaries
       : Object.values(data.productSummaries || {});
 
+    const summaryById = new Map();
     let futureCount = 0;
     let oldestValidTs = null;
     for (const s of summaries) {
+      if (s?.productId) summaryById.set(String(s.productId).toUpperCase(), s);
       if (!s?.releaseDate) continue;
       const d = new Date(s.releaseDate);
       const ts = d.getTime();
@@ -125,13 +119,33 @@ async function fetchUpcomingStoreIds(maxPages = 5) {
       if (oldestValidTs === null || ts < oldestValidTs) oldestValidTs = ts;
     }
 
+    for (const p of products) {
+      const id = p?.productId;
+      if (typeof id !== 'string' || !/^[A-Z0-9]{12}$/i.test(id)) continue;
+      const upper = id.toUpperCase();
+      if (seen.has(upper)) continue;
+
+      const s = summaryById.get(upper);
+      if (s?.releaseDate) {
+        const d = new Date(s.releaseDate);
+        const ts = d.getTime();
+        // Ignora jogos que já lançaram no passado
+        if (!Number.isNaN(ts) && d.getUTCFullYear() >= 1900 && d.getUTCFullYear() < 2099 && ts < cutoffMs) {
+          continue;
+        }
+      }
+
+      seen.add(upper);
+      ids.push(upper);
+    }
+
     encodedCT = channel?.encodedCT;
-    if (!encodedCT || (futureCount === 0 && oldestValidTs !== null && oldestValidTs < cutoffMs)) {
+    if (!encodedCT || ids.length >= 48 || (futureCount === 0 && oldestValidTs !== null && oldestValidTs < cutoffMs)) {
       break;
     }
   }
 
-  return ids;
+  return ids.slice(0, 48);
 }
 
 async function refreshPortalFeed() {
