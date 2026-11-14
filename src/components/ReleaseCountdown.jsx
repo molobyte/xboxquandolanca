@@ -42,15 +42,15 @@ export default function ReleaseCountdown({ gameId, date, tba }) {
   if (diff <= 0) {
     return (
       <Card released>
-        <div className="flex items-center justify-between gap-2 sm:block">
+        <div className="flex items-center justify-between gap-3 sm:block">
           <Label icon={CheckCircle2} className="text-xbox-neon">
             Já disponível
           </Label>
-          <div className="flex items-baseline gap-1.5 sm:mt-2 sm:block">
-            <p className="font-action text-[10px] uppercase tracking-wider text-white/50 sm:text-[11px]">
+          <div className="min-w-0 text-right sm:mt-2 sm:text-left">
+            <p className="font-action text-[9px] uppercase tracking-[0.12em] text-white/45 sm:text-[11px] sm:tracking-wider">
               Disponível desde
             </p>
-            <p className="font-title text-sm font-medium capitalize-first text-white sm:mt-1 sm:text-2xl sm:font-light">
+            <p className="mt-0.5 truncate whitespace-nowrap font-title text-xs font-medium capitalize-first text-white sm:mt-1 sm:text-2xl sm:font-light">
               {dateFmt.format(date)}
             </p>
           </div>
@@ -126,8 +126,8 @@ function Card({ children, released = false }) {
 
 function Label({ icon: Icon, children, className = 'text-white/60' }) {
   return (
-    <p className={`flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] ${className}`}>
-      <Icon className="h-3.5 w-3.5 text-xbox-neon" />
+    <p className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.12em] sm:gap-2 sm:tracking-[0.14em] ${className}`}>
+      <Icon className="h-3.5 w-3.5 shrink-0 text-xbox-neon" />
       {children}
     </p>
   );
