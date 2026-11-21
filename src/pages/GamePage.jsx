@@ -22,6 +22,7 @@ import { calcularPontosRewards, formatarPontosRewards } from '../lib/rewards.js'
 import { getPriceHistory, formatPrice } from '../lib/priceHistory.js';
 import PriceHistoryChart from '../components/PriceHistoryChart.jsx';
 import RewardsCashbackCard from '../components/RewardsCashbackCard.jsx';
+import GameReceptionCard from '../components/GameReceptionCard.jsx';
 
 const dateFmt = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
@@ -146,6 +147,15 @@ function GameDetails({ game }) {
 
   const hasHistoryChart = Boolean(priceHistory && priceHistory.history?.length > 1);
   const hasScreenshots = game.screenshots.length > 0;
+  const isReleased = Boolean(
+    !game.releaseTba && game.releaseDate && game.releaseDate.getTime() <= Date.now()
+  );
+  const hasReceptionData = Boolean(
+    priceHistory?.reviews?.metacritic ||
+      priceHistory?.reviews?.opencritic ||
+      priceHistory?.howLongToBeat?.entries?.length
+  );
+  const showReceptionCard = isReleased && (loadingHistory || hasReceptionData);
 
   const tabs = [
     { id: 'all', label: 'Visão Completa', icon: Layers },
@@ -430,12 +440,23 @@ function GameDetails({ game }) {
           </div>
         </section>
 
-        {/* Coluna Lateral Direita (3 cols no Desktop): Contador + Truque NZ unificados + Atalhos */}
+        {/* Coluna Lateral Direita (3 cols no Desktop): Contador + Truque NZ unificados + Crítica/HLTB + Atalhos */}
         <aside className="contents lg:sticky lg:top-20 lg:order-3 lg:col-span-3 lg:flex lg:min-w-0 lg:flex-col lg:gap-4">
           {/* Bloco 2 no Mobile: Contagem Regressiva + Truque da Nova Zelândia em um único container */}
           <div className="order-2 min-w-0 lg:order-none">
             <ReleaseCountdown gameId={game.id} date={game.releaseDate} tba={game.releaseTba} />
           </div>
+
+          {/* Notas da Crítica (Metacritic + OpenCritic) e HowLongToBeat — apenas para jogos já lançados */}
+          {showReceptionCard && (
+            <div className="order-3 min-w-0 lg:order-none">
+              <GameReceptionCard
+                reviews={priceHistory?.reviews}
+                howLongToBeat={priceHistory?.howLongToBeat}
+                loading={loadingHistory}
+              />
+            </div>
+          )}
 
           <div className="liquid-glass order-6 min-w-0 rounded-2xl p-3.5 sm:p-4 lg:order-none">
             <span className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-white/40">

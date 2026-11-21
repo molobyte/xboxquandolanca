@@ -19,21 +19,161 @@ function slugify(text = '') {
     .replace(/^-+|-+$/g, '');
 }
 
-export function extractPriceData(html, sourceUrl) {
-  const match = html.match(/id=['"]price_history_data['"][^>]*>(.*?)<\/script>/s);
-  if (!match) return null;
+function extractAttr(tagHtml, attrName) {
+  const re = new RegExp(`\\b${attrName}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i');
+  const m = tagHtml.match(re);
+  return m ? (m[1] ?? m[2] ?? m[3] ?? '').trim() : null;
+}
 
-  let rawData;
-  try {
-    rawData = JSON.parse(match[1]);
-  } catch (e) {
-    return null;
+function decodeHtmlEntities(str = '') {
+  return str
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&#xbd;|&frac12;/gi, '½')
+    .replace(/&#xbc;|&frac14;/gi, '¼')
+    .replace(/&#xbe;|&frac34;/gi, '¾')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function formatHltbTime(raw = '') {
+  const cleaned = decodeHtmlEntities(raw);
+  if (!cleaned) return null;
+
+  // Ex.: "60 hours", "101½ hours", "1 hour", "45 mins", "45 minutes"
+  const hourMatch = cleaned.match(/(\d+)\s*(½|\.5)?\s*hours?/i);
+  if (hourMatch) {
+    const whole = Number(hourMatch[1]);
+    const hasHalf = Boolean(hourMatch[2]);
+    return hasHalf ? `${whole}h30` : `${whole}h`;
   }
 
-  const headers = rawData.headers || [];
-  const rows = rawData.data || [];
+  const minMatch = cleaned.match(/(\d+)\s*(?:mins?|minutes?)/i);
+  if (minMatch) {
+    return `${Number(minMatch[1])}min`;
+  }
 
-  if (rows.length === 0) return null;
+  return cleaned;
+}
+
+export function extractReviewsData(html) {
+  let metacritic = null;
+  let opencritic = null;
+
+  // Metacritic
+  const mcLiMatch = html.match(/<li\b[^>]*>\s*<strong>Metacritic:<\/strong>([\s\S]*?)<\/li>/i);
+  if (mcLiMatch) {
+    const block = mcLiMatch[1];
+    const anchorTagMatch = block.match(/<a\b[^>]*>/i);
+    const url = anchorTagMatch ? extractAttr(anchorTagMatch[0], 'href') : null;
+
+    let score = null;
+    let userScore = null;
+
+    const spanMatches = [...block.matchAll(/<span\b([^>]*)>([\s\S]*?)<\/span>/gi)];
+    for (const [, attrs, inner] of spanMatches) {
+      const text = decodeHtmlEntities(inner.replace(/<[^>]+>/g, ''));
+      if (!text || /^tbd$/i.test(text)) continue;
+
+      const isCriticBadge = /\bbg-/i.test(attrs) || /\brounded\b/i.test(attrs);
+      if (isCriticBadge && /^\d{1,3}$/.test(text)) {
+        const val = Number(text);
+        if (val >= 0 && val <= 100) score = val;
+      } else if (/^\d{1,2}(?:\.\d+)?$/.test(text)) {
+        const val = Number(text);
+        if (val >= 0 && val <= 10 && userScore === null) {
+          userScore = val;
+        } else if (val > 10 && val <= 100 && score === null) {
+          score = Math.round(val);
+        }
+      }
+    }
+
+    if (score !== null || userScore !== null) {
+      metacritic = { score, userScore, url };
+    }
+  }
+
+  // OpenCritic
+  const ocLiMatch = html.match(/<li\b[^>]*>\s*<strong>OpenCritic:<\/strong>([\s\S]*?)<\/li>/i);
+  if (ocLiMatch) {
+    const block = ocLiMatch[1];
+    const anchorMatch = block.match(/<a\b([^>]*)>([\s\S]*?)<\/a>/i);
+    if (anchorMatch) {
+      const anchorAttrs = anchorMatch[1];
+      const anchorInner = anchorMatch[2];
+      const url = extractAttr(`<a ${anchorAttrs}>`, 'href');
+
+      let tier = null;
+      const titleAttr = extractAttr(`<a ${anchorAttrs}>`, 'title') || extractAttr(`<a ${anchorAttrs}>`, 'alt') || '';
+      const tierFromTitle = titleAttr.match(/rating:\s*([a-z]+)/i);
+      const tierFromClass = anchorInner.match(/opencritic-tier\s+opencritic-([a-z]+)/i);
+      const rawTier = (tierFromTitle?.[1] || tierFromClass?.[1] || '').toLowerCase();
+      if (rawTier) {
+        tier = rawTier.charAt(0).toUpperCase() + rawTier.slice(1);
+      }
+
+      const plainText = decodeHtmlEntities(anchorInner.replace(/<[^>]+>/g, ' '));
+      const scoreMatch = plainText.match(/\b(\d{1,3})\b/);
+      if (scoreMatch) {
+        const score = Number(scoreMatch[1]);
+        if (score >= 0 && score <= 100) {
+          opencritic = { score, tier, url };
+        }
+      }
+    }
+  }
+
+  if (!metacritic && !opencritic) return null;
+  return { metacritic, opencritic };
+}
+
+export function extractHowLongToBeat(html) {
+  const hltbMatch = html.match(
+    /<li\b[^>]*>\s*<strong>\s*<a\b([^>]*howlongtobeat[^>]*)>[\s\S]*?<\/a>\s*:?\s*<\/strong>([\s\S]*?)<\/ul>\s*<\/li>/i
+  );
+  if (!hltbMatch) return null;
+
+  const url = extractAttr(`<a ${hltbMatch[1]}>`, 'href');
+  const listHtml = hltbMatch[2];
+  const entries = [];
+
+  const itemMatches = [...listHtml.matchAll(/<li\b[^>]*>\s*<strong>([^<:]+):?<\/strong>\s*([^<]+)<\/li>/gi)];
+  for (const [, rawLabel, rawVal] of itemMatches) {
+    const label = decodeHtmlEntities(rawLabel);
+    const rawValue = decodeHtmlEntities(rawVal);
+    const displayValue = formatHltbTime(rawValue);
+    if (!label || !displayValue) continue;
+    entries.push({ label, rawValue, displayValue });
+  }
+
+  if (entries.length === 0) return null;
+  return { url, entries };
+}
+
+export function extractPriceData(html, sourceUrl) {
+  // Extrai nome do jogo do <title>
+  let gameTitle = 'Jogo';
+  const titleMatch = html.match(/<title>([^<]+)<\/title>/i);
+  if (titleMatch) {
+    gameTitle = titleMatch[1].replace(/\s*[-|]\s*Deku Deals.*$/i, '').trim();
+  }
+
+  const reviews = extractReviewsData(html);
+  const howLongToBeat = extractHowLongToBeat(html);
+
+  const match = html.match(/id=['"]price_history_data['"][^>]*>(.*?)<\/script>/s);
+  let rawData = null;
+  if (match) {
+    try {
+      rawData = JSON.parse(match[1]);
+    } catch {
+      rawData = null;
+    }
+  }
+
+  const headers = rawData?.headers || [];
+  const rows = rawData?.data || [];
 
   // Descobre todas as colunas do Xbox / Microsoft Store
   const xboxColIndices = [];
@@ -51,13 +191,6 @@ export function extractPriceData(html, sourceUrl) {
   if (xboxColIndices.length === 0 && headers.length > 0) {
     xboxColIndices.push(0);
     storeName = headers[0];
-  }
-
-  // Extrai nome do jogo do <title>
-  let gameTitle = 'Jogo';
-  const titleMatch = html.match(/<title>([^<]+)<\/title>/i);
-  if (titleMatch) {
-    gameTitle = titleMatch[1].replace(/\s*[-|]\s*Deku Deals.*$/i, '').trim();
   }
 
   const history = [];
@@ -94,7 +227,7 @@ export function extractPriceData(html, sourceUrl) {
     }
   }
 
-  if (history.length === 0) {
+  if (history.length === 0 && !reviews && !howLongToBeat) {
     return null;
   }
 
@@ -116,14 +249,16 @@ export function extractPriceData(html, sourceUrl) {
   return {
     gameTitle,
     sourceUrl,
-    storeName,
+    storeName: history.length > 0 ? storeName : null,
     currentPrice: lastPrice,
     lowestPrice: lowestPrice === Infinity ? null : lowestPrice,
     lowestDate,
-    highestPrice,
+    highestPrice: history.length > 0 ? highestPrice : null,
     totalPoints: history.length,
     history,
     recentChanges: priceChanges.slice(-8).reverse(),
+    reviews,
+    howLongToBeat,
   };
 }
 
